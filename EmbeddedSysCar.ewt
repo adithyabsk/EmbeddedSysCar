@@ -2163,9 +2163,6 @@
             <name>$PROJ_DIR$\Compiled\LCD.r43</name>
         </file>
         <file>
-            <name>$PROJ_DIR$\Compiled\ports.r43</name>
-        </file>
-        <file>
             <name>$PROJ_DIR$\Compiled\switches.r43</name>
         </file>
         <file>
@@ -2176,7 +2173,16 @@
         <name>$PROJ_DIR$\clocks.c</name>
     </file>
     <file>
+        <name>$PROJ_DIR$\init.c</name>
+    </file>
+    <file>
+        <name>$PROJ_DIR$\led.c</name>
+    </file>
+    <file>
         <name>$PROJ_DIR$\main.c</name>
+    </file>
+    <file>
+        <name>$PROJ_DIR$\ports.c</name>
     </file>
     <file>
         <name>$PROJ_DIR$\system.c</name>

@@ -2,9 +2,10 @@
 //
 //  Description: This file contains the Function prototypes
 //
-//  Jim Carlson
-//  Aug 2013
+//  Adithya Balaji
+//  Jan 2019
 //  Built with IAR Embedded Workbench Version: V4.10A/W32 (5.40.1)
+//  Initial version by Jim Carlson
 //******************************************************************************
 // Functions
 
@@ -26,9 +27,9 @@ void Init_LEDs(void);
 void IR_LED_control(char selection);
 void Backlite_control(char selection);
 
-  // LCD
+// LCD
 void Display_Process(void);
-void Display_Update(char p_L1,char p_L2,char p_L3,char p_L4);
+void Display_Update(char p_L1, char p_L2, char p_L3, char p_L4);
 void enable_display_update(void);
 void update_string(char *string_data, int string);
 void Init_LCD(void);
