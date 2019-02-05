@@ -91,3 +91,6 @@
 #define FIVE                             (5)
 #define SIX                              (6)
 #define TEN                              (10)
+
+#define R_DRIVE                           (P6OUT |= R_FORWARD)
+#define L_DRIVE                           (P6OUT |= L_FORWARD)

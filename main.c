@@ -18,6 +18,7 @@
 
 // Function Prototypes
 void main(void);
+void set_drive(void);
 
 // Global Variables
 volatile char slow_input_down;
@@ -48,6 +49,7 @@ void main(void) {
     Init_Conditions();                   // Initialize Variables and Initial Conditions
     Init_Timers();                       // Initialize Timers
     Init_LCD();                          // Initialize LCD
+    set_drive();
     __delay_cycles(1000000);             // Dely LCD
     // Place the contents of what you want on the display, in between the quotes
     // Limited to 10 characters per line
@@ -110,4 +112,9 @@ void main(void) {
         //    Wheels();
 
     }
+}
+
+void set_drive(void) {
+    R_DRIVE;
+    L_DRIVE;
 }

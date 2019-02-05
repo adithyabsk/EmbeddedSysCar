@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <settings>
     <DebugChecksum>
-        <Checksum>1899535391</Checksum>
+        <Checksum>3742700046</Checksum>
     </DebugChecksum>
     <Stack>
         <FillEnabled>0</FillEnabled>
@@ -15,7 +15,7 @@
         <ByteLimit>50</ByteLimit>
     </Stack>
     <EEM_State_Storage>
-        <Buffer>010000000300000000000000</Buffer>
+        <Buffer>010000000000000000000000</Buffer>
     </EEM_State_Storage>
     <EEM_Sequencer>
         <Buffer>000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000</Buffer>
@@ -29,6 +29,9 @@
     <CallStack>
         <ShowArgs>0</ShowArgs>
     </CallStack>
+    <Disassembly>
+        <MixedMode>1</MixedMode>
+    </Disassembly>
     <PowerLog>
         <Title_0>Energy</Title_0>
         <Symbol_0>0 4 0</Symbol_0>
@@ -77,7 +80,9 @@
         <LogFile>_ ""</LogFile>
     </TermIOLog>
     <Aliases>
-        <Count>0</Count>
+        <A0>_ "E:\Dropbox\NCSU\Current\Homework\HW1\Homework_01_full\LCD.c" ""</A0>
+        <A1>_ "E:\Dropbox\NCSU\Current\Homework\HW1\Homework_01_full\timersB0.c" ""</A1>
+        <Count>2</Count>
         <SuppressDialog>0</SuppressDialog>
     </Aliases>
     <PowerProbe>
