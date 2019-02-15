@@ -77,12 +77,12 @@ void Menu_Process(void);
 
 // Ports
 void Init_Ports(void);
-void Init_Port1(void);
-void Init_Port2(void);
-void Init_Port3(void);
-void Init_Port4(void);
-void Init_Port5(void);
-void Init_Port6(void);
+void Init_Ports_1(void);
+void Init_Ports_2(void);
+void Init_Ports_3(int);
+void Init_Ports_4(void);
+void Init_Ports_5(void);
+void Init_Ports_6(void);
 
 // SPI
 void Init_SPI_B1(void);

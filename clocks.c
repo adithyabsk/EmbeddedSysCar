@@ -54,8 +54,8 @@ void Init_Clocks(void){
   CSCTL4 = SELA__XT1CLK;     // Set ACLK = XT1CLK = 32768Hz
   CSCTL4 |= SELMS__DCOCLKDIV;// DCOCLK = MCLK and SMCLK source
 
-  CSCTL5 |= DIVM_0;          // MCLK = DCOCLK = 8MHZ,
-  CSCTL5 |= DIVS_0;          // SMCLK = DCOCLK = 8MHz
+  CSCTL5 |= DIVM__1;          // MCLK = DCOCLK = 8MHZ
+  CSCTL5 |= DIVS__1;          // SMCLK = DCOCLK = 8MHz
 
   PM5CTL0 &= ~LOCKLPM5;      // Disable the GPIO power-on default high-impedance mode
                              // to activate previously configured port settings

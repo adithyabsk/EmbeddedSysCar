@@ -56,14 +56,8 @@ dkms.conf
 .cquery_cache/*
 
 # IAR ignore
-**/settings/*.crun
-**/settings/*.dbgdt
-**/settings/*.cspy
-**/settings/*.cspy.*
-**/settings/*.xcl
-**/settings/*.dni
-**/settings/*.wsdt
-**/settings/*.wspos
+/settings
+
 
 # IAR Debug Exe
 **/Exe/*.sim
@@ -74,3 +68,6 @@ dkms.conf
 **/Obj/*.pbd.*
 **/Obj/*.pbi
 **/Obj/*.pbi.* 
+
+# More IAR
+*.dep

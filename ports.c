@@ -15,7 +15,7 @@
 void Init_Ports(void);   // Inits the rest of the functions
 void Init_Ports_1(void); // Inits Port 1
 void Init_Ports_2(void); // Inits Port 2
-void Init_Ports_3(void); // Inits Port 3
+void Init_Ports_3(int); // Inits Port 3
 void Init_Ports_4(void); // Inits Port 4
 void Init_Ports_5(void); // Inits Port 5
 void Init_Ports_6(void); // Inits Port 6
@@ -24,7 +24,7 @@ void Init_Ports_6(void); // Inits Port 6
 void Init_Ports(void) {
     Init_Ports_1();
     Init_Ports_2();
-    Init_Ports_3();
+    Init_Ports_3(USE_GPIO);
     Init_Ports_4();
     Init_Ports_5();
     Init_Ports_6();
@@ -121,7 +121,7 @@ void Init_Ports_2(void) {
     P2SEL0 &= ~LFXIN;
 }
 
-void Init_Ports_3(void) {
+void Init_Ports_3(int is_p34_gpio) {
     // Clear P3
     P3SEL1 = INIT;
     P3SEL0 = INIT;
@@ -146,8 +146,13 @@ void Init_Ports_3(void) {
     P3SEL0 |= OA2P;
 
     // PIN 4 SMCLK (01)
-    P3SEL1 &= ~SMCLK_OUT;
-    P3SEL0 |= SMCLK_OUT;
+    if (is_p34_gpio == INIT) {
+        P3SEL1 &= ~SMCLK_OUT;
+        P3SEL0 &= ~SMCLK_OUT;
+    } else {
+        P3SEL1 &= ~SMCLK_OUT;
+        P3SEL0 |= SMCLK_OUT;
+    }
 
     // PIN 5 OA3O (11)
     P3SEL1 |= OA3O;

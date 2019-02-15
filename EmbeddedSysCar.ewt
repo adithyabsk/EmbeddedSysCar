@@ -2163,14 +2163,14 @@
             <name>$PROJ_DIR$\Compiled\LCD.r43</name>
         </file>
         <file>
-            <name>$PROJ_DIR$\Compiled\switches.r43</name>
-        </file>
-        <file>
             <name>$PROJ_DIR$\Compiled\timersB0.r43</name>
         </file>
     </group>
     <file>
         <name>$PROJ_DIR$\clocks.c</name>
+    </file>
+    <file>
+        <name>$PROJ_DIR$\functions.h</name>
     </file>
     <file>
         <name>$PROJ_DIR$\init.c</name>
@@ -2179,10 +2179,16 @@
         <name>$PROJ_DIR$\led.c</name>
     </file>
     <file>
+        <name>$PROJ_DIR$\macros.h</name>
+    </file>
+    <file>
         <name>$PROJ_DIR$\main.c</name>
     </file>
     <file>
         <name>$PROJ_DIR$\ports.c</name>
+    </file>
+    <file>
+        <name>$PROJ_DIR$\switches.c</name>
     </file>
     <file>
         <name>$PROJ_DIR$\system.c</name>

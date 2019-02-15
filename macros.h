@@ -46,6 +46,10 @@
 #define P3_6                           (0x40) // 6
 #define P3_7                           (0x80) // 7
 
+// Port 3.4 Switcher
+#define USE_GPIO                       (0x00)
+#define USE_SMCLK                      (0x01)
+
 // Port 4 Definitions
 #define RESET_LCD                      (0x01) // 0
 #define SW1                            (0x02) // 1
@@ -83,14 +87,43 @@
 #define GREEN_LED_OFF                  (P6OUT &= ~GRN_LED)
 
 // Indicies
-#define ZERO                             (0)
-#define ONE                              (1)
-#define TWO                              (2)
-#define THREE                            (3)
-#define FOUR                             (4)
-#define FIVE                             (5)
-#define SIX                              (6)
-#define TEN                              (10)
+#define ZERO                           (0)
+#define ONE                            (1)
+#define TWO                            (2)
+#define THREE                          (3)
+#define FOUR                           (4)
+#define FIVE                           (5)
+#define SIX                            (6)
+#define TEN                            (10)
+#define ELEVEN                         (11)
 
-#define R_DRIVE                           (P6OUT |= R_FORWARD)
-#define L_DRIVE                           (P6OUT |= L_FORWARD)
+// Drive
+#define R_DRIVE                        (P6OUT |= R_FORWARD)
+#define L_DRIVE                        (P6OUT |= L_FORWARD)
+
+// Change clocks
+#define MCLK4MHz                       (CSCTL5 |= DIVM__2)
+#define SMCLK500kHz                    (CSCTL5 |= DIVS__8)
+#define MCLKReset                      (CSCTL5 |= DIVM__1)
+#define SMCLKReset                     (CSCTL5 |= DIVS__1)
+
+// Switches
+#define UNLATCH                        (1)
+#define LATCH_TIME_DELTA               (20)
+
+// Main macros
+#define DELAY_TIME                     (1000000)
+#define DISP_0                         (0)
+#define DISP_1                         (1)
+#define DISP_2                         (2)
+#define DISP_3                         (3)
+#define UPDATE_0                       (0)
+#define UPDATE_1                       (1)
+#define UPDATE_3                       (3)
+#define TIME_250                       (250)
+#define TIME_200                       (200)
+#define TIME_150                       (150)
+#define TIME_100                       (100)
+#define TIME_50                        (50)
+#define DISP_CHANGED                   (1)
+

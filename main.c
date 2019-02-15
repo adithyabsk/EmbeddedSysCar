@@ -22,8 +22,8 @@ void set_drive(void);
 
 // Global Variables
 volatile char slow_input_down;
-extern char display_line[4][11];
-extern char *display[4];
+extern char display_line[FOUR][ELEVEN];
+extern char *display[FOUR];
 unsigned char display_mode;
 extern volatile unsigned char display_changed;
 extern volatile unsigned char update_display;
@@ -49,17 +49,17 @@ void main(void) {
     Init_Conditions();                   // Initialize Variables and Initial Conditions
     Init_Timers();                       // Initialize Timers
     Init_LCD();                          // Initialize LCD
-    set_drive();
-    __delay_cycles(1000000);             // Dely LCD
+    // set_drive();
+    __delay_cycles(DELAY_TIME);             // Dely LCD
     // Place the contents of what you want on the display, in between the quotes
     // Limited to 10 characters per line
 
-    strcpy(display_line[0], "   NCSU   ");
-    update_string(display_line[0], 0);
-    strcpy(display_line[1], " WOLFPACK ");
-    update_string(display_line[1], 1);
-    strcpy(display_line[2], "  ECE306  ");
-    update_string(display_line[3], 3);
+    strcpy(display_line[DISP_0], "   NCSU   ");
+    update_string(display_line[DISP_0], UPDATE_0);
+    strcpy(display_line[DISP_1], " WOLFPACK ");
+    update_string(display_line[DISP_1], UPDATE_1);
+    strcpy(display_line[DISP_2], "  ECE306  ");
+    update_string(display_line[DISP_3], UPDATE_3);
     enable_display_update();
     //  Display_Update(3,1,0,0);
 
@@ -68,41 +68,41 @@ void main(void) {
     //------------------------------------------------------------------------------
     while (ALWAYS) {                     // Can the Operating system run
         switch (Time_Sequence) {
-        case 250:
+        case TIME_250:
             if (one_time) {
                 Init_LEDs();
                 lcd_BIG_mid();
-                display_changed = 1;
-                one_time = 0;
+                display_changed = DISP_CHANGED;
+                one_time = INIT;
             }
-            Time_Sequence = 0;
+            Time_Sequence = INIT;
             break;
-        case 200:
+        case TIME_200:
             if (one_time) {
                 GREEN_LED_ON;            // Change State of LED 5
-                one_time = 0;
+                one_time = INIT;
             }
             break;
-        case 150:
+        case TIME_150:
             if (one_time) {
                 RED_LED_ON;              // Change State of LED 4
                 GREEN_LED_OFF;           // Change State of LED 5
-                one_time = 0;
+                one_time = INIT;
             }
             break;
-        case 100:
+        case TIME_100:
             if (one_time) {
                 lcd_4line();
                 GREEN_LED_ON;            // Change State of LED 5
-                display_changed = 1;
-                one_time = 0;
+                display_changed = DISP_CHANGED;
+                one_time = INIT;
             }
             break;
-        case  50:
+        case  TIME_50:
             if (one_time) {
                 RED_LED_OFF;             // Change State of LED 4
                 GREEN_LED_OFF;           // Change State of LED 5
-                one_time = 0;
+                one_time = INIT;
             }
             break;
         default: break;
