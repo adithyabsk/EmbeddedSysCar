@@ -42,12 +42,12 @@ void lcd_puts(char *s);
 void lcd_power_on(void);
 void lcd_write_line1(void);
 void lcd_write_line2(void);
-//void lcd_draw_time_page(void);
-//void lcd_power_off(void);
+// void lcd_draw_time_page(void);
+// void lcd_power_off(void);
 void lcd_enter_sleep(void);
 void lcd_exit_sleep(void);
-//void lcd_write(unsigned char c);
-//void out_lcd(unsigned char c);
+// void lcd_write(unsigned char c);
+// void out_lcd(unsigned char c);
 
 void Write_LCD_Ins(char instruction);
 void Write_LCD_Data(char data);
@@ -64,13 +64,13 @@ void lcd_4line(void);
 void lcd_out(char *s, char line, char position);
 void lcd_rotate(char view);
 
-//void lcd_write(char data, char command);
+// void lcd_write(char data, char command);
 void lcd_write(unsigned char c);
 void lcd_write_line1(void);
 void lcd_write_line2(void);
 void lcd_write_line3(void);
 
-void lcd_command( char data);
+void lcd_command(char data);
 void LCD_test(void);
 void LCD_iot_meassage_print(int nema_index);
 
@@ -124,7 +124,3 @@ void usleep10(unsigned int usec);
 void five_msec_sleep(unsigned int msec);
 void measure_delay(void);
 void out_control_words(void);
-
-
-
-
