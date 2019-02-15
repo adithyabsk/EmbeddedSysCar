@@ -61,15 +61,9 @@ void Switches_Process(void)
     // }
 
     if (!(P4IN & SW1)) {
-        CSCTL5 &= ~DIVM__2;
-        CSCTL5 &= ~DIVS__8;
-        Init_Ports_3(USE_GPIO);
-        CSCTL5 |= DIVM__1;
-        CSCTL5 |= DIVS__1;
+        Reset_SMClock8MHz();
     }
     if (!(P2IN & SW2)) {  
-        Init_Ports_3(USE_SMCLK);
-        CSCTL5 |= DIVM__2;
-        CSCTL5 |= DIVS__8;
+        Set_SMClock500kHz();
     }
 }

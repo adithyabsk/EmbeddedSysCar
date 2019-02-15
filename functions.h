@@ -21,6 +21,8 @@ __interrupt void switch_interrupt(void);
 
 // Clocks
 void Init_Clocks(void);
+void Reset_SMClock8MHz(void);
+void Set_SMClock500kHz(void);
 
 // LED Configurations
 void Init_LEDs(void);
