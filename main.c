@@ -17,7 +17,6 @@
 
 // Function Prototypes
 void main(void);
-void set_drive(void);
 
 // Global Variables
 volatile char slow_input_down;
@@ -32,6 +31,11 @@ extern volatile char one_time;
 unsigned int test_value;
 char chosen_direction;
 char change;
+
+unsigned int Last_Time_Sequence;
+unsigned int cycle_time;
+unsigned int normal_time;
+unsigned int time_change;
 
 void main(void) {
   //------------------------------------------------------------------------------
@@ -48,30 +52,42 @@ void main(void) {
   Init_Conditions();  // Initialize Variables and Initial Conditions
   Init_Timers();      // Initialize Timers
   Init_LCD();         // Initialize LCD
-  // set_drive();
+  set_switch_states();
+  default_shape_setup();
   __delay_cycles(DELAY_TIME);  // Dely LCD
   // Place the contents of what you want on the display, in between the quotes
   // Limited to 10 characters per line
 
-  strcpy(display_line[DISP_0], "   NCSU   ");
-  update_string(display_line[DISP_0], UPDATE_0);
-  strcpy(display_line[DISP_1], " WOLFPACK ");
-  update_string(display_line[DISP_1], UPDATE_1);
-  strcpy(display_line[DISP_2], "  ECE306  ");
-  update_string(display_line[DISP_3], UPDATE_3);
+  reset_display();
   enable_display_update();
+  display_changed = DISP_CHANGED;
   //  Display_Update(3,1,0,0);
+
+  Last_Time_Sequence = INIT;
+  cycle_time = INIT;
+  time_change = INIT;
+  normal_time = INIT;
 
   //------------------------------------------------------------------------------
   // Begining of the "While" Operating System
   //------------------------------------------------------------------------------
   while (ALWAYS) {  // Can the Operating system run
+    if (Last_Time_Sequence != Time_Sequence) {
+      Last_Time_Sequence = Time_Sequence;
+      cycle_time++;
+      normal_time++;
+      time_change = 1;
+    }
+    process_shapes();
+
     switch (Time_Sequence) {
       case TIME_250:
         if (one_time) {
           Init_LEDs();
-          lcd_BIG_mid();
+          // lcd_BIG_mid();
+          // clear_display();
           display_changed = DISP_CHANGED;
+
           one_time = INIT;
         }
         Time_Sequence = INIT;
@@ -91,8 +107,9 @@ void main(void) {
         break;
       case TIME_100:
         if (one_time) {
-          lcd_4line();
+          // lcd_4line();
           GREEN_LED_ON;  // Change State of LED 5
+          // show_shapes_menu(CIRCLE);
           display_changed = DISP_CHANGED;
           one_time = INIT;
         }
@@ -107,13 +124,8 @@ void main(void) {
       default:
         break;
     }
-    Switches_Process();  // Check for switch state change
     Display_Process();
+    Switches_Process();  // Check for switch state change
     //    Wheels();
   }
-}
-
-void set_drive(void) {
-  R_DRIVE;
-  L_DRIVE;
 }

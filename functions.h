@@ -124,3 +124,28 @@ void usleep10(unsigned int usec);
 void five_msec_sleep(unsigned int msec);
 void measure_delay(void);
 void out_control_words(void);
+
+// Display
+void clear_display(void);
+void reset_display(void);
+void show_shapes_menu(char c);
+void set_clear_lines(void);
+void update_lines(void);
+
+// Custom Switches
+void cycle_shapes(void);
+void set_switch_states(void);
+void default_shape_setup(void);
+void process_shapes(void);
+void run_straight(void);
+void run_figure_eight(void);
+void run_triangle(void);
+void run_circle(void);
+void wait_case(void);
+void start_case(void);
+void run_case(void);
+void run_case_params(int travel_distance, int left_count_time,
+                     int right_count_time, int wheel_count_time);
+void end_case(void);
+void forward_on(void);
+void forward_off(void);

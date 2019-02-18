@@ -98,8 +98,10 @@
 #define ELEVEN (11)
 
 // Drive
-#define R_DRIVE (P6OUT |= R_FORWARD)
-#define L_DRIVE (P6OUT |= L_FORWARD)
+#define R_DRIVE_ON (P6OUT |= R_FORWARD)
+#define L_DRIVE_ON (P6OUT |= L_FORWARD)
+#define R_DRIVE_OFF (P6OUT &= ~R_FORWARD)
+#define L_DRIVE_OFF (P6OUT &= ~L_FORWARD)
 
 // Change clocks
 #define MCLK4MHz (CSCTL5 |= DIVM__2)
@@ -108,8 +110,33 @@
 #define SMCLKReset (CSCTL5 |= DIVS__1)
 
 // Switches
-#define UNLATCH (1)
-#define LATCH_TIME_DELTA (20)
+#define DEBOUNCE_DELAY (1)
+
+// Shapes
+#define NONE ('N')
+#define STRAIGHT ('S')
+#define STRAIGHT_ENUM (1)
+#define FIGURE_EIGHT ('E')
+#define FIGURE_EIGHT_ENUM (2)
+#define LOOP_2 (2)
+#define LOOP_3 (3)
+#define TRIANGLE ('T')
+#define TRIANGLE_ENUM (3)
+#define CIRCLE ('C')
+#define CIRCLE_ENUM (0)
+#define SHAPE_COUNT (4)
+
+#define WAIT ('W')
+#define START ('S')
+#define RUN ('R')
+#define END ('E')
+
+#define RUN_TRUE (1)
+#define WHEEL_COUNT_TIME (10)
+#define LEFT_COUNT_TIME (2)
+#define RIGHT_COUNT_TIME (9)
+#define TRAVEL_DISTANCE (100)
+#define WAITING2START (50)
 
 // Main macros
 #define DELAY_TIME (1000000)
@@ -119,6 +146,7 @@
 #define DISP_3 (3)
 #define UPDATE_0 (0)
 #define UPDATE_1 (1)
+#define UPDATE_2 (2)
 #define UPDATE_3 (3)
 #define TIME_250 (250)
 #define TIME_200 (200)
