@@ -59,19 +59,19 @@ void main(void) {
   // Limited to 10 characters per line
 
   reset_display();
-  enable_display_update();
-  display_changed = DISP_CHANGED;
+  // enable_display_update();
+  display_changed = BOOLEAN_TRUE;
   //  Display_Update(3,1,0,0);
 
-  Last_Time_Sequence = INIT;
-  cycle_time = INIT;
-  time_change = INIT;
-  normal_time = INIT;
+  Last_Time_Sequence = INIT_STATE_ZERO;
+  cycle_time = INIT_STATE_ZERO;
+  time_change = INIT_STATE_ZERO;
+  normal_time = INIT_STATE_ZERO;
 
   //------------------------------------------------------------------------------
   // Begining of the "While" Operating System
   //------------------------------------------------------------------------------
-  while (ALWAYS) {  // Can the Operating system run
+  while (BOOLEAN_TRUE) {  // Can the Operating system run
     if (Last_Time_Sequence != Time_Sequence) {
       Last_Time_Sequence = Time_Sequence;
       cycle_time++;
@@ -86,23 +86,23 @@ void main(void) {
           Init_LEDs();
           // lcd_BIG_mid();
           // clear_display();
-          display_changed = DISP_CHANGED;
+          display_changed = BOOLEAN_TRUE;
 
-          one_time = INIT;
+          one_time = INIT_STATE_ZERO;
         }
-        Time_Sequence = INIT;
+        Time_Sequence = INIT_STATE_ZERO;
         break;
       case TIME_200:
         if (one_time) {
           GREEN_LED_ON;  // Change State of LED 5
-          one_time = INIT;
+          one_time = INIT_STATE_ZERO;
         }
         break;
       case TIME_150:
         if (one_time) {
           RED_LED_ON;     // Change State of LED 4
           GREEN_LED_OFF;  // Change State of LED 5
-          one_time = INIT;
+          one_time = INIT_STATE_ZERO;
         }
         break;
       case TIME_100:
@@ -110,15 +110,15 @@ void main(void) {
           // lcd_4line();
           GREEN_LED_ON;  // Change State of LED 5
           // show_shapes_menu(CIRCLE);
-          display_changed = DISP_CHANGED;
-          one_time = INIT;
+          display_changed = BOOLEAN_TRUE;
+          one_time = INIT_STATE_ZERO;
         }
         break;
       case TIME_50:
         if (one_time) {
           RED_LED_OFF;    // Change State of LED 4
           GREEN_LED_OFF;  // Change State of LED 5
-          one_time = INIT;
+          one_time = INIT_STATE_ZERO;
         }
         break;
       default:

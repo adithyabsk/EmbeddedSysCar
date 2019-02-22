@@ -24,22 +24,18 @@ void Init_Conditions(void) {
   int i;
 
   for (i = 0; i < 11; i++) {
-    display_line[ZERO][i] = RESET_STATE;
-    display_line[ONE][i] = RESET_STATE;
-    display_line[TWO][i] = RESET_STATE;
-    display_line[THREE][i] = RESET_STATE;
+    display_line[DISPL_0][i] = INIT_STATE_ZERO;
+    display_line[DISPL_1][i] = INIT_STATE_ZERO;
+    display_line[DISPL_2][i] = INIT_STATE_ZERO;
+    display_line[DISPL_3][i] = INIT_STATE_ZERO;
   }
-  display_line[ZERO][TEN] = RESET_STATE;
-  display_line[ONE][TEN] = RESET_STATE;
-  display_line[TWO][TEN] = RESET_STATE;
-  display_line[THREE][TEN] = RESET_STATE;
+  display[DISP_0] = &display_line[DISPL_0][DISPL_START];
+  display[DISP_1] = &display_line[DISPL_1][DISPL_START];
+  display[DISP_2] = &display_line[DISPL_2][DISPL_START];
+  display[DISP_3] = &display_line[DISPL_3][DISPL_START];
 
-  display[ZERO] = &display_line[ZERO][ZERO];
-  display[ONE] = &display_line[ONE][ZERO];
-  display[TWO] = &display_line[TWO][ZERO];
-  display[THREE] = &display_line[THREE][ZERO];
-  update_display = RESET_STATE;
-  update_display_count = RESET_COUNT;
+  update_display = INIT_STATE_ZERO;
+  update_display_count = INIT_STATE_ZERO;
 
   // Interrupts are disabled by default, enable them.
   enable_interrupts();

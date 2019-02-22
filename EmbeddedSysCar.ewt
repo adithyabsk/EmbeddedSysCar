@@ -2162,9 +2162,6 @@
         <file>
             <name>$PROJ_DIR$\Compiled\LCD.r43</name>
         </file>
-        <file>
-            <name>$PROJ_DIR$\Compiled\timersB0.r43</name>
-        </file>
     </group>
     <file>
         <name>$PROJ_DIR$\clocks.c</name>
@@ -2173,16 +2170,16 @@
         <name>$PROJ_DIR$\display.c</name>
     </file>
     <file>
-        <name>$PROJ_DIR$\functions.h</name>
-    </file>
-    <file>
         <name>$PROJ_DIR$\init.c</name>
     </file>
     <file>
-        <name>$PROJ_DIR$\led.c</name>
+        <name>$PROJ_DIR$\interrupt_ports.c</name>
     </file>
     <file>
-        <name>$PROJ_DIR$\macros.h</name>
+        <name>$PROJ_DIR$\interrupt_timers.c</name>
+    </file>
+    <file>
+        <name>$PROJ_DIR$\led.c</name>
     </file>
     <file>
         <name>$PROJ_DIR$\main.c</name>
@@ -2195,5 +2192,8 @@
     </file>
     <file>
         <name>$PROJ_DIR$\system.c</name>
+    </file>
+    <file>
+        <name>$PROJ_DIR$\timers.c</name>
     </file>
 </project>

@@ -41,16 +41,16 @@ unsigned int left_motor_count;
 unsigned int segment_count;
 
 void set_switch_states(void) {
-  sw1_curr_state = INIT;
-  sw1_prev_state = INIT;
-  sw2_curr_state = INIT;
-  sw2_prev_state = INIT;
+  sw1_curr_state = INIT_STATE_ZERO;
+  sw1_prev_state = INIT_STATE_ZERO;
+  sw2_curr_state = INIT_STATE_ZERO;
+  sw2_prev_state = INIT_STATE_ZERO;
 }
 
 void default_shape_setup(void) {
   selected_shape = CIRCLE;
   run_state = NONE;
-  f_eight_loop = INIT;
+  f_eight_loop = INIT_STATE_ZERO;
 }
 
 void Switches_Process(void) {
@@ -92,7 +92,7 @@ void Switches_Process(void) {
 }
 
 void cycle_shapes(void) {
-  static unsigned int state = INIT;
+  static unsigned int state = INIT_STATE_ZERO;
   if (state % SHAPE_COUNT == STRAIGHT_ENUM) {
     selected_shape = STRAIGHT;
   } else if (state % SHAPE_COUNT == FIGURE_EIGHT_ENUM) {
@@ -247,27 +247,27 @@ void run_circle(void) {
 
 void wait_case(void) {
   if (time_change) {
-    time_change = INIT;
+    time_change = INIT_STATE_ZERO;
     if (delay_start++ >= WAITING2START) {
-      delay_start = INIT;
+      delay_start = INIT_STATE_ZERO;
       run_state = START;
     }
   }
 }
 
 void start_case(void) {
-  cycle_time = INIT;
-  right_motor_count = INIT;
-  left_motor_count = INIT;
+  cycle_time = INIT_STATE_ZERO;
+  right_motor_count = INIT_STATE_ZERO;
+  left_motor_count = INIT_STATE_ZERO;
   forward_on();
-  segment_count = INIT;
+  segment_count = INIT_STATE_ZERO;
   run_state = RUN;
 }
 
 void run_case_params(int travel_distance, int left_count_time,
                      int right_count_time, int wheel_count_time) {
   if (time_change) {
-    time_change = INIT;
+    time_change = INIT_STATE_ZERO;
     if (segment_count <= travel_distance) {
       if (left_motor_count++ >= left_count_time) {
         L_DRIVE_OFF;
@@ -276,9 +276,9 @@ void run_case_params(int travel_distance, int left_count_time,
         R_DRIVE_OFF;
       }
       if (cycle_time >= wheel_count_time) {
-        cycle_time = INIT;
-        right_motor_count = INIT;
-        left_motor_count = INIT;
+        cycle_time = INIT_STATE_ZERO;
+        right_motor_count = INIT_STATE_ZERO;
+        left_motor_count = INIT_STATE_ZERO;
         segment_count++;
         forward_on();
       }
@@ -290,8 +290,8 @@ void run_case_params(int travel_distance, int left_count_time,
         run_state = START;
         triangle_loop++;
       } else {
-        triangle_loop = INIT;
-        f_eight_loop = INIT;
+        triangle_loop = INIT_STATE_ZERO;
+        f_eight_loop = INIT_STATE_ZERO;
         run_state = END;
       }
     }

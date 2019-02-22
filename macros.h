@@ -9,11 +9,9 @@
 //******************************************************************************
 
 // General Macros
-#define ALWAYS (1)
-#define RESET_STATE (0)
-#define RESET_COUNT (0)
+#define BOOLEAN_TRUE (1)
+#define INIT_STATE_ZERO (0)
 #define LOW (0x00)
-#define INIT (0x00)
 #define OUTPUT (0xFF)
 
 // Port 1 Definitions
@@ -138,19 +136,43 @@
 #define TRAVEL_DISTANCE (100)
 #define WAITING2START (50)
 
-// Main macros
-#define DELAY_TIME (1000000)
+// Display macros
+#define DISPL_0 (0)
+#define DISPL_1 (1)
+#define DISPL_2 (2)
+#define DISPL_3 (3)
+#define DISPL_START (0)
 #define DISP_0 (0)
 #define DISP_1 (1)
 #define DISP_2 (2)
 #define DISP_3 (3)
-#define UPDATE_0 (0)
-#define UPDATE_1 (1)
-#define UPDATE_2 (2)
-#define UPDATE_3 (3)
+
+// Main macros
+#define DELAY_TIME (1000000)
 #define TIME_250 (250)
 #define TIME_200 (200)
 #define TIME_150 (150)
 #define TIME_100 (100)
 #define TIME_50 (50)
-#define DISP_CHANGED (1)
+
+// Timers general macros
+#define ID__2 (0x0040)  // /2
+#define ID__4 (0x0080)  // /4
+#define ID__8 (0x00c0)  // /8
+
+#define TAIDEX__1 (0x0000)  // Divide by 1
+#define TAIDEX__2 (0x0001)  // Divide by 2
+#define TAIDEX__3 (0x0002)  // Divide by 3
+#define TAIDEX__4 (0x0003)  // Divide by 4
+#define TAIDEX__5 (0x0004)  // Divide by 5
+#define TAIDEX__6 (0x0005)  // Divide by 6
+#define TAIDEX__7 (0x0006)  // Divide by 7
+#define TAIDEX__8 (0x0007)  // Divide by 8
+
+#define DISPLAY_FLICKER_MAX (10)
+#define UPDATE_DISPLAY_MAX (4)
+
+// Timer B0
+// Calculation SMCLK / 2 / 8 / (1/x in seconds) --> rate
+#define TB0CCR0_INTERVAL (7500)   // 8,000,000/2/8/[1/15msec] --> 15msec
+#define TB0CCR1_INTERVAL (25000)  // 8,000,000/2/8/[1/50msec] --> 50msec

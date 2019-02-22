@@ -31,11 +31,11 @@ void Init_Ports(void) {
 
 void Init_Ports_1(void) {
   // Clear P1
-  P1SEL1 = INIT;
-  P1SEL0 = INIT;
+  P1SEL1 = INIT_STATE_ZERO;
+  P1SEL0 = INIT_STATE_ZERO;
   P1DIR = OUTPUT;  // Default OUT
   P1OUT = LOW;
-  P1REN = INIT;
+  P1REN = INIT_STATE_ZERO;
 
   // PIN 0 GPIO (00)
   P1SEL1 &= ~RED_LED;
@@ -78,11 +78,11 @@ void Init_Ports_1(void) {
 
 void Init_Ports_2(void) {
   // Clear P2
-  P2SEL1 = INIT;
-  P2SEL0 = INIT;
+  P2SEL1 = INIT_STATE_ZERO;
+  P2SEL0 = INIT_STATE_ZERO;
   P2DIR = OUTPUT;
   P2OUT = LOW;
-  P2REN = INIT;
+  P2REN = INIT_STATE_ZERO;
 
   // PIN 0 GPIO (00)
   P2SEL1 &= ~P2_0;
@@ -122,11 +122,11 @@ void Init_Ports_2(void) {
 
 void Init_Ports_3(int is_p34_gpio) {
   // Clear P3
-  P3SEL1 = INIT;
-  P3SEL0 = INIT;
+  P3SEL1 = INIT_STATE_ZERO;
+  P3SEL0 = INIT_STATE_ZERO;
   P3DIR = OUTPUT;
   P3OUT = LOW;
-  P3REN = INIT;
+  P3REN = INIT_STATE_ZERO;
 
   // PIN 0 GPIO (00)
   P3SEL1 &= ~TEST_PROBE;
@@ -145,7 +145,7 @@ void Init_Ports_3(int is_p34_gpio) {
   P3SEL0 |= OA2P;
 
   // PIN 4 SMCLK (01)
-  if (is_p34_gpio == INIT) {
+  if (is_p34_gpio == INIT_STATE_ZERO) {
     P3SEL1 &= ~SMCLK_OUT;
     P3SEL0 &= ~SMCLK_OUT;
   } else {
@@ -168,11 +168,11 @@ void Init_Ports_3(int is_p34_gpio) {
 
 void Init_Ports_4(void) {
   // Clear P4
-  P4SEL1 = INIT;
-  P4SEL0 = INIT;
+  P4SEL1 = INIT_STATE_ZERO;
+  P4SEL0 = INIT_STATE_ZERO;
   P4DIR = OUTPUT;
   P4OUT = LOW;
-  P4REN = INIT;
+  P4REN = INIT_STATE_ZERO;
 
   // PIN 0 GPIO (00)
   P4SEL1 &= ~RESET_LCD;
@@ -216,11 +216,11 @@ void Init_Ports_4(void) {
 
 void Init_Ports_5(void) {
   // Clear P5
-  P5SEL1 = INIT;
-  P5SEL0 = INIT;
+  P5SEL1 = INIT_STATE_ZERO;
+  P5SEL0 = INIT_STATE_ZERO;
   P5DIR = OUTPUT;
   P5OUT = LOW;
-  P5REN = INIT;
+  P5REN = INIT_STATE_ZERO;
 
   // PIN 0 ADC (11)
   P5SEL1 |= IOT_RESET;
@@ -246,11 +246,11 @@ void Init_Ports_5(void) {
 
 void Init_Ports_6(void) {
   // Clear P6
-  P6SEL1 = INIT;
-  P6SEL0 = INIT;
+  P6SEL1 = INIT_STATE_ZERO;
+  P6SEL0 = INIT_STATE_ZERO;
   P6DIR = OUTPUT;
   P6OUT = LOW;
-  P6REN = INIT;
+  P6REN = INIT_STATE_ZERO;
 
   // PIN 0 TB3.1 (01)
   P6SEL1 &= ~R_FORWARD;
