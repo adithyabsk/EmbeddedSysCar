@@ -81,40 +81,35 @@ void main(void) {
     process_shapes();
 
     switch (Time_Sequence) {
-      case TIME_250:
+      case S1250:
         if (one_time) {
           Init_LEDs();
           // lcd_BIG_mid();
-          // clear_display();
-          display_changed = BOOLEAN_TRUE;
-
           one_time = INIT_STATE_ZERO;
         }
         Time_Sequence = INIT_STATE_ZERO;
         break;
-      case TIME_200:
+      case S1000:
         if (one_time) {
           GREEN_LED_ON;  // Change State of LED 5
           one_time = INIT_STATE_ZERO;
         }
         break;
-      case TIME_150:
+      case S750:
         if (one_time) {
           RED_LED_ON;     // Change State of LED 4
           GREEN_LED_OFF;  // Change State of LED 5
           one_time = INIT_STATE_ZERO;
         }
         break;
-      case TIME_100:
+      case S500:
         if (one_time) {
           // lcd_4line();
           GREEN_LED_ON;  // Change State of LED 5
-          // show_shapes_menu(CIRCLE);
-          display_changed = BOOLEAN_TRUE;
           one_time = INIT_STATE_ZERO;
         }
         break;
-      case TIME_50:
+      case S250:
         if (one_time) {
           RED_LED_OFF;    // Change State of LED 4
           GREEN_LED_OFF;  // Change State of LED 5

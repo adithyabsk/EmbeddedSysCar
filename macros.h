@@ -155,24 +155,19 @@
 #define TIME_100 (100)
 #define TIME_50 (50)
 
-// Timers general macros
-#define ID__2 (0x0040)  // /2
-#define ID__4 (0x0080)  // /4
-#define ID__8 (0x00c0)  // /8
-
-#define TAIDEX__1 (0x0000)  // Divide by 1
-#define TAIDEX__2 (0x0001)  // Divide by 2
-#define TAIDEX__3 (0x0002)  // Divide by 3
-#define TAIDEX__4 (0x0003)  // Divide by 4
-#define TAIDEX__5 (0x0004)  // Divide by 5
-#define TAIDEX__6 (0x0005)  // Divide by 6
-#define TAIDEX__7 (0x0006)  // Divide by 7
-#define TAIDEX__8 (0x0007)  // Divide by 8
-
 #define DISPLAY_FLICKER_MAX (10)
 #define UPDATE_DISPLAY_MAX (4)
 
 // Timer B0
 // Calculation SMCLK / 2 / 8 / (1/x in seconds) --> rate
-#define TB0CCR0_INTERVAL (7500)   // 8,000,000/2/8/[1/15msec] --> 15msec
-#define TB0CCR1_INTERVAL (25000)  // 8,000,000/2/8/[1/50msec] --> 50msec
+#define TB0CCR0_INTERVAL (25000)   // 8,000,000/2/8/[1/15msec] --> 15msec
+// #define TB0CCR2_INTERVAL (25000)  // 8,000,000/2/8/[1/50msec] --> 50msec
+
+// Main While loop switch cases
+#define Time_Sequence_Rate (50) // 50 millisecods
+#define S1250 (1250/Time_Sequence_Rate) // 1.25 seconds
+#define S1000 (1000/Time_Sequence_Rate) // 1 second
+#define S750 (750/Time_Sequence_Rate) // 0.75 seconds
+#define S500 (500/Time_Sequence_Rate) // 0.50 seconds
+#define S250 (250/Time_Sequence_Rate) // 0.25 seconds
+

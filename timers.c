@@ -28,6 +28,7 @@ void Init_Timer_B0(void) {
 
   TB0CCR0 = TB0CCR0_INTERVAL;  // CCR0
   TB0CCTL0 |= CCIE;            // CCR0 enable interrupt
+
   // TB0CCR1 = TB0CCR1_INTERVAL;    // CCR1
   // TB0CCTL1 |= CCIE;              // CCR1 enable interrupt
   // TB0CCR2 = TB0CCR2_INTERVAL;    // CCR2

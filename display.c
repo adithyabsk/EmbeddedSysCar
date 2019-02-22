@@ -36,17 +36,16 @@ void update_lines(void) {
 void clear_display(void) {
   set_clear_lines();
   update_lines();
+  display_changed = BOOLEAN_TRUE;
 }
 
 void reset_display(void) {
   strcpy(display_line[DISPL_0], "   NCSU   ");
-  update_string(display_line[DISPL_0], DISP_0);
   strcpy(display_line[DISPL_1], " WOLFPACK ");
-  update_string(display_line[DISPL_1], DISP_1);
   strcpy(display_line[DISPL_2], "  ECE306  ");
-  update_string(display_line[DISPL_2], DISP_2);
   strcpy(display_line[DISPL_3], "          ");
-  update_string(display_line[DISPL_3], DISP_3);
+  update_lines();
+  display_changed = BOOLEAN_TRUE;
 }
 
 void show_shapes_menu(char shape) {
@@ -66,4 +65,5 @@ void show_shapes_menu(char shape) {
       strcpy(display_line[DISPL_2], "circle     ");
   }
   update_lines();
+  display_changed = BOOLEAN_TRUE;
 }
