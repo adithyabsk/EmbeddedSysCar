@@ -19,6 +19,8 @@ extern char display_line[FOUR][ELEVEN];
 extern char *display[FOUR];
 extern volatile unsigned char display_changed;
 
+volatile extern char active_switch;
+
 void set_clear_lines(void) {
   strcpy(display_line[DISPL_0], "          ");
   strcpy(display_line[DISPL_1], "          ");
@@ -66,4 +68,34 @@ void show_shapes_menu(char shape) {
   }
   update_lines();
   display_changed = BOOLEAN_TRUE;
+}
+
+void show_switch(char sw_status) {
+  clear_display();
+  strcpy(display_line[DISPL_0], "Selected  ");
+  switch (sw_status) {
+    case SWITCH_ONE_PRESSED:
+      strcpy(display_line[DISPL_3], "Switch 1  ");
+      break;
+    case SWITCH_TWO_PRESSED:
+      strcpy(display_line[DISPL_3], "Switch 2  ");
+      break;
+    default:
+      break;
+  }
+  update_lines();
+  display_changed = BOOLEAN_TRUE;
+}
+
+void show_button_status(void) {
+  switch (active_switch) {
+    case SWITCH_ONE_PRESSED:
+      show_switch(SWITCH_ONE_PRESSED);
+      break;
+    case SWITCH_TWO_PRESSED:
+      show_switch(SWITCH_TWO_PRESSED);
+      break;
+    default:
+      break;
+  }
 }

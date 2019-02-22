@@ -131,6 +131,8 @@ void reset_display(void);
 void show_shapes_menu(char c);
 void set_clear_lines(void);
 void update_lines(void);
+void show_button_status(void);
+void show_switch(char sw_status);
 
 // Custom Switches
 void cycle_shapes(void);

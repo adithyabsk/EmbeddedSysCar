@@ -52,7 +52,6 @@ void main(void) {
   Init_Conditions();  // Initialize Variables and Initial Conditions
   Init_Timers();      // Initialize Timers
   Init_LCD();         // Initialize LCD
-  set_switch_states();
   default_shape_setup();
   __delay_cycles(DELAY_TIME);  // Dely LCD
   // Place the contents of what you want on the display, in between the quotes
@@ -60,7 +59,6 @@ void main(void) {
 
   reset_display();
   // enable_display_update();
-  display_changed = BOOLEAN_TRUE;
   //  Display_Update(3,1,0,0);
 
   Last_Time_Sequence = INIT_STATE_ZERO;
@@ -78,7 +76,7 @@ void main(void) {
       normal_time++;
       time_change = 1;
     }
-    process_shapes();
+    // process_shapes();
 
     switch (Time_Sequence) {
       case S1250:
@@ -119,8 +117,8 @@ void main(void) {
       default:
         break;
     }
+    show_button_status();
     Display_Process();
-    Switches_Process();  // Check for switch state change
     //    Wheels();
   }
 }

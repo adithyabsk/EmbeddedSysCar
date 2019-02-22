@@ -103,6 +103,11 @@ void Init_Ports_2(void) {
   P2OUT |= SW2;
   P2REN |= SW2;
 
+  // Configure SW1 interrupt
+  P2IFG &= ~SW2;
+  P2IE |= SW2;
+  P2IES |= SW2;
+
   // PIN 4 GPIO (00)
   P2SEL1 &= ~P2_4;
   P2SEL0 &= ~P2_4;
@@ -166,7 +171,7 @@ void Init_Ports_3(int is_p34_gpio) {
   P3SEL0 &= ~P3_7;
 }
 
-void Init_Ports_4(void) {
+void Init_Ports_4() {
   // Clear P4
   P4SEL1 = INIT_STATE_ZERO;
   P4SEL0 = INIT_STATE_ZERO;
@@ -186,6 +191,11 @@ void Init_Ports_4(void) {
   P4DIR &= ~SW1;
   P4OUT |= SW1;
   P4REN |= SW1;
+
+  // Configure SW1 interrupt
+  P4IES |= SW1;
+  P4IFG &= ~SW1;
+  P4IE |= SW1;
 
   // PIN 2 UCA1RXD (01)
   P4SEL1 &= ~UCA1RXD;

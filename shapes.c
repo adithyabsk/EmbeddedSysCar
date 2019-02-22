@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-//  Description: This file controls the switches on the board
+//  Description: This file controls the car driving different 
 //
 //
 //  Adithya Balaji
@@ -12,25 +12,15 @@
 #include "macros.h"
 #include "msp430.h"
 
-void Switches_Process(void);
-
 // Main time vars
 extern unsigned int Last_Time_Sequence;
 extern unsigned int cycle_time;
 extern unsigned int time_change;
 extern unsigned int normal_time;
 
-// Button variables
-unsigned int sw1_curr_state;
-unsigned int sw1_prev_state;
-unsigned int last_sw1_debounce_time;
-unsigned int sw2_curr_state;
-unsigned int sw2_prev_state;
-unsigned int last_sw2_debounce_time;
-
 // Shape selection
 unsigned char selected_shape;
-unsigned char run_state;
+volatile unsigned char run_state;
 unsigned int f_eight_loop;
 unsigned int triangle_loop;
 
@@ -40,55 +30,10 @@ unsigned int right_motor_count;
 unsigned int left_motor_count;
 unsigned int segment_count;
 
-void set_switch_states(void) {
-  sw1_curr_state = INIT_STATE_ZERO;
-  sw1_prev_state = INIT_STATE_ZERO;
-  sw2_curr_state = INIT_STATE_ZERO;
-  sw2_prev_state = INIT_STATE_ZERO;
-}
-
 void default_shape_setup(void) {
   selected_shape = CIRCLE;
   run_state = NONE;
   f_eight_loop = INIT_STATE_ZERO;
-}
-
-void Switches_Process(void) {
-  // Process Switch values
-  // sw1_curr_state = !(P4IN & SW1);
-  // sw2_curr_state = !(P2IN & SW2);
-  //
-  // if(sw1_curr_state != sw1_prev_state) {
-  //   last_sw1_debounce_time = normal_time;
-  // }
-  // if(sw2_curr_state != sw2_prev_state) {
-  //   last_sw2_debounce_time = normal_time;
-  // }
-  //
-  // if (((normal_time - last_sw1_debounce_time) > DEBOUNCE_DELAY) &&
-  // sw1_curr_state) {
-  //   cycle_shapes();
-  // }
-  //
-  // if (((normal_time - last_sw2_debounce_time) > DEBOUNCE_DELAY) &&
-  // sw2_curr_state) {
-  //   run_state = WAIT;
-  // }
-  //
-  // sw1_prev_state = sw1_curr_state;
-  // sw2_prev_state = sw2_curr_state;
-
-  if (!(P4IN & SW1)) {
-    cycle_shapes();
-    while (!(P4IN & SW1))
-      ;
-  }
-
-  if (!(P2IN & SW2)) {
-    run_state = WAIT;
-    while (!(P2IN & SW2))
-      ;
-  }
 }
 
 void cycle_shapes(void) {

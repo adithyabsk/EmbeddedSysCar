@@ -2316,6 +2316,9 @@
         <name>$PROJ_DIR$\interrupt_ports.c</name>
     </file>
     <file>
+        <name>$PROJ_DIR$\interrupt_switches.c</name>
+    </file>
+    <file>
         <name>$PROJ_DIR$\interrupt_timers.c</name>
     </file>
     <file>
@@ -2328,7 +2331,7 @@
         <name>$PROJ_DIR$\ports.c</name>
     </file>
     <file>
-        <name>$PROJ_DIR$\switches.c</name>
+        <name>$PROJ_DIR$\shapes.c</name>
     </file>
     <file>
         <name>$PROJ_DIR$\system.c</name>
