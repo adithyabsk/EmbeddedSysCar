@@ -86,7 +86,7 @@ void Switches_Process(void) {
 
   if (!(P2IN & SW2)) {
     run_state = WAIT;
-    while (!!(P2IN & SW2))
+    while (!(P2IN & SW2))
       ;
   }
 }
