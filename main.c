@@ -76,7 +76,6 @@ void main(void) {
       normal_time++;
       time_change = 1;
     }
-    // process_shapes();
 
     switch (Time_Sequence) {
       case S1250:
@@ -117,7 +116,7 @@ void main(void) {
       default:
         break;
     }
-    show_button_status();
+    show_fr_run_status();
     Display_Process();
     //    Wheels();
   }

@@ -46,8 +46,8 @@ void Init_Timer_B1(void) {
   TB1CTL |= ID__2;          // Divide clock by 2
   TB1EX0 = TBIDEX__8;        // Divide clock by an additional 8
 
-  // TB1CCR0 = TB1CCR0_INTERVAL;    // CCR0
-  // TB1CCTL0 |= CCIE;              // CCR0 enable interrupt
+  TB1CCR0 = TB1CCR0_INTERVAL;    // CCR0
+  TB1CCTL0 &= ~CCIE;              // CCR0 disable by default interrupt
   // TB1CCR1 = TB1CCR1_INTERVAL;    // CCR1
   // TB1CCTL1 |= CCIE;              // CCR1 enable interrupt
   // TB1CCR2 = TB1CCR2_INTERVAL;    // CCR2

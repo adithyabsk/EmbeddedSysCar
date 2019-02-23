@@ -133,21 +133,31 @@ void set_clear_lines(void);
 void update_lines(void);
 void show_button_status(void);
 void show_switch(char sw_status);
+void show_fr_run_status(void);
 
 // Custom Switches
 void cycle_shapes(void);
 void set_switch_states(void);
 void default_shape_setup(void);
 void process_shapes(void);
+void run_for_rev(void);
 void run_straight(void);
 void run_figure_eight(void);
 void run_triangle(void);
 void run_circle(void);
 void wait_case(void);
 void start_case(void);
+void set_run(void);
 void run_case(void);
 void run_case_params(int travel_distance, int left_count_time,
                      int right_count_time, int wheel_count_time);
 void end_case(void);
 void forward_on(void);
 void forward_off(void);
+
+// Drive
+void stop_drive(void);
+void drive_forward(void);
+void drive_reverse(void);
+void drive_cw(void);
+void drive_ccw(void);

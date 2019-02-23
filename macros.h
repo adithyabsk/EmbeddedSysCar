@@ -101,6 +101,11 @@
 #define R_DRIVE_OFF (P6OUT &= ~R_FORWARD)
 #define L_DRIVE_OFF (P6OUT &= ~L_FORWARD)
 
+#define R_REVERSE_ON (P6OUT |= R_REVERSE)
+#define L_REVERSE_ON (P6OUT |= L_REVERSE)
+#define R_REVERSE_OFF (P6OUT &= ~R_REVERSE)
+#define L_REVERSE_OFF (P6OUT &= ~L_REVERSE)
+
 // Change clocks
 #define MCLK4MHz (CSCTL5 |= DIVM__2)
 #define SMCLK500kHz (CSCTL5 |= DIVS__8)
@@ -120,14 +125,23 @@
 #define LOOP_3 (3)
 #define TRIANGLE ('T')
 #define TRIANGLE_ENUM (3)
+#define FOR_REV ('R')
+#define FOR_REV_ENUM (4)
 #define CIRCLE ('C')
 #define CIRCLE_ENUM (0)
-#define SHAPE_COUNT (4)
+#define SHAPE_COUNT (5)
 
 #define WAIT ('W')
 #define START ('S')
 #define RUN ('R')
 #define END ('E')
+
+// forward rev state
+#define FORWARD ('a')
+#define REVERSE ('b')
+// WAIT already defined
+#define CW ('d')
+#define CCW ('e')
 
 #define RUN_TRUE (1)
 #define WHEEL_COUNT_TIME (10)
@@ -164,6 +178,9 @@
 #define TB0CCR0_INTERVAL (25000)   // 8,000,000/2/8/[1/50msec] --> 50msec
 #define TB0CCR1_INTERVAL (25000)  // 8,000,000/2/8/[1/50msec] --> 50msec
 #define TB0CCR2_INTERVAL (25000)  // 8,000,000/2/8/[1/50msec] --> 50msec
+
+// Timer B1
+#define TB1CCR0_INTERVAL (25000)  // 8,000,000/2/8/[1/50msec] --> 50msec
 
 // Main While loop switch cases
 #define Time_Sequence_Rate (50) // 50 millisecods

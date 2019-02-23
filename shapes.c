@@ -18,9 +18,13 @@ extern unsigned int cycle_time;
 extern unsigned int time_change;
 extern unsigned int normal_time;
 
+// Switch shape control
+extern volatile unsigned int should_cycle_shapes;
+extern volatile unsigned int should_set_run;
+
 // Shape selection
 unsigned char selected_shape;
-volatile unsigned char run_state;
+unsigned char run_state;
 unsigned int f_eight_loop;
 unsigned int triangle_loop;
 
@@ -38,17 +42,29 @@ void default_shape_setup(void) {
 
 void cycle_shapes(void) {
   static unsigned int state = INIT_STATE_ZERO;
-  if (state % SHAPE_COUNT == STRAIGHT_ENUM) {
-    selected_shape = STRAIGHT;
-  } else if (state % SHAPE_COUNT == FIGURE_EIGHT_ENUM) {
-    selected_shape = FIGURE_EIGHT;
-  } else if (state % SHAPE_COUNT == TRIANGLE_ENUM) {
-    selected_shape = TRIANGLE;
-  } else {
-    selected_shape = CIRCLE;
+  if (should_cycle_shapes) {
+    should_cycle_shapes = INIT_STATE_ZERO;
+    if (state % SHAPE_COUNT == STRAIGHT_ENUM) {
+      selected_shape = STRAIGHT;
+    } else if (state % SHAPE_COUNT == FIGURE_EIGHT_ENUM) {
+      selected_shape = FIGURE_EIGHT;
+    } else if (state % SHAPE_COUNT == TRIANGLE_ENUM) {
+      selected_shape = TRIANGLE;
+    } else if (state % SHAPE_COUNT == FOR_REV_ENUM) {
+      selected_shape = FOR_REV;
+    } else {
+      selected_shape = CIRCLE;
+    }
+    state++;
+    show_shapes_menu(selected_shape);
   }
-  state++;
-  show_shapes_menu(selected_shape);
+}
+
+void set_run(void) {
+  if (should_set_run) {
+    should_set_run = INIT_STATE_ZERO;
+    run_state = WAIT;
+  }
 }
 
 void process_shapes(void) {
@@ -65,9 +81,16 @@ void process_shapes(void) {
     case CIRCLE:
       run_circle();
       break;
-    default:
+    case FOR_REV:
+      run_for_rev();
+      break;
+    default: // NONE
       break;
   }
+}
+
+void run_for_rev(void) {
+  // Enable interrupt
 }
 
 void run_straight(void) {
@@ -176,7 +199,7 @@ void run_circle(void) {
       start_case();
       break;
     case RUN:
-      run_case_params(27,  // segment_count
+      run_case_params(2,  // segment_count
                       50,  // left_count_time 2 straight
                       2,   // right_count_time 9 straight
                       50   // period

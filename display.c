@@ -21,6 +21,9 @@ extern volatile unsigned char display_changed;
 
 volatile extern char active_switch;
 
+volatile extern char fr_run_status;
+volatile extern unsigned int changed_fr_run_status;
+
 void set_clear_lines(void) {
   strcpy(display_line[DISPL_0], "          ");
   strcpy(display_line[DISPL_1], "          ");
@@ -63,11 +66,44 @@ void show_shapes_menu(char shape) {
     case FIGURE_EIGHT:
       strcpy(display_line[DISPL_2], "eight     ");
       break;
+    case FOR_REV:
+      strcpy(display_line[DISPL_2], "for/rev   ");
+      break;
     default:
       strcpy(display_line[DISPL_2], "circle     ");
   }
   update_lines();
   display_changed = BOOLEAN_TRUE;
+}
+
+void show_fr_run_status(void) {
+  if (changed_fr_run_status) {
+    changed_fr_run_status = 0;
+
+    clear_display();
+    strcpy(display_line[DISPL_0], "Run Status");
+    switch (fr_run_status) {
+      case FORWARD:
+        strcpy(display_line[DISPL_3], "forward   ");
+        break;
+      case REVERSE:
+        strcpy(display_line[DISPL_3], "reverse   ");
+        break;
+      case WAIT:
+        strcpy(display_line[DISPL_3], "wait      ");
+        break;
+      case CW:
+        strcpy(display_line[DISPL_3], "cw          ");
+        break;
+      case CCW:
+        strcpy(display_line[DISPL_3], "ccw         ");
+        break;
+      default:
+        break;
+    }
+    update_lines();
+    display_changed = BOOLEAN_TRUE;
+  }
 }
 
 void show_switch(char sw_status) {
