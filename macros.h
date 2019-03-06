@@ -83,6 +83,7 @@
 #define RED_LED_OFF (P1OUT &= ~RED_LED)
 #define GREEN_LED_ON (P6OUT |= GRN_LED)
 #define GREEN_LED_OFF (P6OUT &= ~GRN_LED)
+#define IR_LED_TOGGLE (P5OUT ^= IR_LED)
 
 // Indicies
 #define ZERO (0)
@@ -175,22 +176,27 @@
 
 // Timer B0
 // Calculation SMCLK / 2 / 8 / (1/x in seconds) --> rate
-#define TB0CCR0_INTERVAL (25000)   // 8,000,000/2/8/[1/50msec] --> 50msec
-#define TB0CCR1_INTERVAL (25000)  // 8,000,000/2/8/[1/50msec] --> 50msec
-#define TB0CCR2_INTERVAL (25000)  // 8,000,000/2/8/[1/50msec] --> 50msec
+#define TB0CCR0_INTERVAL (25000)  // 8,000,000/2/8/[1/50msec] --> 50ms
+#define TB0CCR1_INTERVAL (25000)  // 8,000,000/2/8/[1/50msec] --> 50ms
+#define TB0CCR2_INTERVAL (25000)  // 8,000,000/2/8/[1/50msec] --> 50ms
 
 // Timer B1
-#define TB1CCR0_INTERVAL (25000)  // 8,000,000/2/8/[1/50msec] --> 50msec
+#define TB1CCR0_INTERVAL (62500)  // 8,000,000/8/8/[1/50msec] --> 50ms
+// #define TB1CCR1_INTERVAL (12500)  // 8,000,000/8/8/[1/100msec] --> 100ms
 
 // Main While loop switch cases
-#define Time_Sequence_Rate (50) // 50 millisecods
-#define S1250 (1250/Time_Sequence_Rate) // 1.25 seconds
-#define S1000 (1000/Time_Sequence_Rate) // 1 second
-#define S750 (750/Time_Sequence_Rate) // 0.75 seconds
-#define S500 (500/Time_Sequence_Rate) // 0.50 seconds
-#define S250 (250/Time_Sequence_Rate) // 0.25 seconds
-
+#define Time_Sequence_Rate (50)            // 50 millisecods
+#define S1250 (1250 / Time_Sequence_Rate)  // 1.25 seconds
+#define S1000 (1000 / Time_Sequence_Rate)  // 1 second
+#define S750 (750 / Time_Sequence_Rate)    // 0.75 seconds
+#define S500 (500 / Time_Sequence_Rate)    // 0.50 seconds
+#define S250 (250 / Time_Sequence_Rate)    // 0.25 seconds
 
 #define SWITCH_ONE_PRESSED ('A')
 #define SWITCH_TWO_PRESSED ('B')
 
+#define THUMB_CHANNEL (1)
+#define LDET_CHANNEL  (2)
+#define RDET_CHANNEL  (3)
+
+#define IR_TOLERANCE (100)

@@ -47,17 +47,13 @@ void Init_Ports_1(void) {
   P1SEL1 |= A1_SEEED;
   P1SEL0 |= A1_SEEED;
 
-  // PIN 2 UCB0SDA (01)
-  P1SEL1 &= ~V_DETECT_L;
+  // PIN 2 ADC (11)
+  P1SEL1 |= V_DETECT_L;
   P1SEL0 |= V_DETECT_L;
 
-  // PIN 3 UCB0SCL (01)
-  P1SEL1 &= ~V_DETECT_R;
+  // PIN 3 ADC (11)
+  P1SEL1 |= V_DETECT_R;
   P1SEL0 |= V_DETECT_R;
-
-  // PIN 4 ADC (11)
-  P1SEL1 |= A4_SEEED;
-  P1SEL0 |= A4_SEEED;
 
   // PIN 4 ADC (11)
   P1SEL1 |= A4_SEEED;
@@ -251,7 +247,7 @@ void Init_Ports_5(void) {
   // PIN 4 GPIO (00)
   P5SEL1 &= ~IR_LED;  // IR is a feedback loop (input)
   P5SEL0 &= ~IR_LED;
-  P1DIR &= ~IR_LED;  // Input (check on this)
+  P1DIR |= IR_LED;  // Input (check on this)
 }
 
 void Init_Ports_6(void) {

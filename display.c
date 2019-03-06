@@ -24,6 +24,11 @@ volatile extern char active_switch;
 volatile extern char fr_run_status;
 volatile extern unsigned int changed_fr_run_status;
 
+extern volatile unsigned int adc_thmb;
+extern volatile unsigned int adc_ldet;
+extern volatile unsigned int adc_rdet;
+extern volatile unsigned int ir_status;
+
 void set_clear_lines(void) {
   strcpy(display_line[DISPL_0], "          ");
   strcpy(display_line[DISPL_1], "          ");
@@ -77,33 +82,33 @@ void show_shapes_menu(char shape) {
 }
 
 void show_fr_run_status(void) {
-  if (changed_fr_run_status) {
-    changed_fr_run_status = 0;
-
-    clear_display();
-    strcpy(display_line[DISPL_0], "Run Status");
-    switch (fr_run_status) {
-      case FORWARD:
-        strcpy(display_line[DISPL_3], "forward   ");
-        break;
-      case REVERSE:
-        strcpy(display_line[DISPL_3], "reverse   ");
-        break;
-      case WAIT:
-        strcpy(display_line[DISPL_3], "wait      ");
-        break;
-      case CW:
-        strcpy(display_line[DISPL_3], "cw          ");
-        break;
-      case CCW:
-        strcpy(display_line[DISPL_3], "ccw         ");
-        break;
-      default:
-        break;
-    }
-    update_lines();
-    display_changed = BOOLEAN_TRUE;
-  }
+  // if (changed_fr_run_status) {
+  //   changed_fr_run_status = 0;
+  //   
+  //   clear_display();
+  //   strcpy(display_line[DISPL_0], "Run Status");
+  //   switch (fr_run_status) {
+  //     case FORWARD:
+  //       strcpy(display_line[DISPL_3], "forward   ");
+  //       break;
+  //     case REVERSE:
+  //       strcpy(display_line[DISPL_3], "reverse   ");
+  //       break;
+  //     case WAIT:
+  //       strcpy(display_line[DISPL_3], "wait      ");
+  //       break;
+  //     case CW:
+  //       strcpy(display_line[DISPL_3], "cw          ");
+  //       break;
+  //     case CCW:
+  //       strcpy(display_line[DISPL_3], "ccw         ");
+  //       break;
+  //     default:
+  //       break;
+  //   }
+  //   update_lines();
+  //   display_changed = BOOLEAN_TRUE;
+  // }
 }
 
 void show_switch(char sw_status) {
@@ -135,3 +140,97 @@ void show_button_status(void) {
       break;
   }
 }
+
+char dec2hex(int c) {
+  switch (c) {
+    case 10:
+      return 'A';
+    case 11:
+      return 'B';
+    case 12:
+      return 'C';
+    case 13:
+      return 'D';
+    case 14:
+      return 'E';
+    case 15:
+      return 'F';
+    default:
+      return c+48;
+  }
+}
+
+void int2hex4bit(int input, char* data) {
+  char hex[5];
+  int i;
+  int temp_input = input;
+  for(i = 3; i >= 0; i--) {
+    hex[i] =  dec2hex(temp_input % 16);
+    temp_input /= 16;
+  }
+  hex[4] = '\0';
+  strcpy(data, hex);
+}
+
+char move_status(void) {
+  int left = adc_ldet;
+  int right = adc_rdet;
+  if((left - right) > IR_TOLERANCE) {
+    return 'R';
+  } else if ((right - left) > IR_TOLERANCE) {
+    return 'L';
+  } else {
+    return 'N';
+  }
+}
+
+void show_adc_status(void) {
+  set_clear_lines();
+
+  char thmb_disp[11]; 
+  char ldet_disp[11];
+  char rdet_disp[11];
+  
+  char thmb_str[5];
+  char ldet_str[5];
+  char rdet_str[5];
+  
+  int2hex4bit(adc_thmb, thmb_str);
+  int2hex4bit(adc_ldet, ldet_str);
+  int2hex4bit(adc_rdet, rdet_str);
+  
+  strcpy(thmb_disp, "THMB: ");
+  strcpy(ldet_disp, "LDET: ");
+  strcpy(rdet_disp, "RDET: ");
+  strcat(thmb_disp, thmb_str);
+  strcat(ldet_disp, ldet_str);
+  strcat(rdet_disp, rdet_str);
+  
+  strcpy(display_line[DISPL_0], thmb_disp);
+  strcpy(display_line[DISPL_1], ldet_disp);
+  strcpy(display_line[DISPL_2], rdet_disp);
+
+  char ir_mov_status[11];
+  if(ir_status) {
+    strcpy(ir_mov_status, "IR 1: ");
+  } else {
+    strcpy(ir_mov_status, "IR 0: ");
+  }
+  switch(move_status()) {
+    case 'L':
+      strcat(ir_mov_status, "(L) ");
+      break;
+    case 'R':
+      strcat(ir_mov_status, "(R) ");
+      break;
+    default:
+      strcat(ir_mov_status, "    ");
+      break;
+  }
+  strcpy(display_line[DISPL_3], ir_mov_status);
+
+  update_lines();
+  display_changed = BOOLEAN_TRUE;
+}
+
+// TODO: add vars and update detect

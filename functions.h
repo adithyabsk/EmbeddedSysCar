@@ -134,6 +134,7 @@ void update_lines(void);
 void show_button_status(void);
 void show_switch(char sw_status);
 void show_fr_run_status(void);
+void show_adc_status(void);
 
 // Custom Switches
 void cycle_shapes(void);
@@ -161,3 +162,6 @@ void drive_forward(void);
 void drive_reverse(void);
 void drive_cw(void);
 void drive_ccw(void);
+
+// Init_adc
+void init_adc(void);

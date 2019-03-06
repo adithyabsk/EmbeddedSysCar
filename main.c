@@ -37,6 +37,10 @@ unsigned int cycle_time;
 unsigned int normal_time;
 unsigned int time_change;
 
+extern volatile unsigned int adc_thumb;
+extern volatile unsigned int adc_ldet;
+extern volatile unsigned int adc_rdet;
+
 void main(void) {
   //------------------------------------------------------------------------------
   // Main Program
@@ -52,6 +56,7 @@ void main(void) {
   Init_Conditions();  // Initialize Variables and Initial Conditions
   Init_Timers();      // Initialize Timers
   Init_LCD();         // Initialize LCD
+  init_adc();         // Initialize the ADC
   default_shape_setup();
   __delay_cycles(DELAY_TIME);  // Dely LCD
   // Place the contents of what you want on the display, in between the quotes
@@ -116,7 +121,8 @@ void main(void) {
       default:
         break;
     }
-    show_fr_run_status();
+    // show_fr_run_status();
+    show_adc_status();
     Display_Process();
     //    Wheels();
   }

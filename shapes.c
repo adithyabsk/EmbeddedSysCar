@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-//  Description: This file controls the car driving different 
+//  Description: This file controls the car driving different
 //
 //
 //  Adithya Balaji
@@ -84,7 +84,7 @@ void process_shapes(void) {
     case FOR_REV:
       run_for_rev();
       break;
-    default: // NONE
+    default:  // NONE
       break;
   }
 }
@@ -199,7 +199,7 @@ void run_circle(void) {
       start_case();
       break;
     case RUN:
-      run_case_params(2,  // segment_count
+      run_case_params(2,   // segment_count
                       50,  // left_count_time 2 straight
                       2,   // right_count_time 9 straight
                       50   // period

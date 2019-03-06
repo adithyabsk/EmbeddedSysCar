@@ -8,7 +8,7 @@
 //  Built with IAR Embedded Workbench Version: V4.10A/W32 (7.12.1)
 //------------------------------------------------------------------------------
 
-#include  "functions.h"
+#include "functions.h"
 #include "macros.h"
 #include "msp430.h"
 
@@ -24,6 +24,8 @@ unsigned int switch_debounce_count;
 unsigned int for_rev_count;
 volatile char fr_run_status;
 volatile unsigned int changed_fr_run_status;
+
+unsigned int analog_swap_val = 0;
 
 #pragma vector = TIMER0_B0_VECTOR
 __interrupt void TIMER0_B0_ISR(void) {
@@ -43,26 +45,22 @@ __interrupt void TIMER0_B1_ISR(void) {
   switch (__even_in_range(TB0IV, 14)) {
     case 0:  // just break
       break;
-    case 2:  // Display backlite flicker interrupt
-      TB0CCR1 += TB0CCR1_INTERVAL;  // Add Offset to TBCCR1
-      if (blink_count++ > DISPLAY_FLICKER_MAX) {
-        blink_count = INIT_STATE_ZERO;
-        P6OUT ^= LCD_BACKLITE;
-      }
+    case 2:                         // Display backlite flicker interrupt
+      // TB0CCR1 += TB0CCR1_INTERVAL;  // Add Offset to TBCCR1
       break;
-    case 4: // CCR2 fired
-      TB0CCR2 += TB0CCR2_INTERVAL; // Add Offset to TBCCR2
+    case 4:                         // CCR2 fired
+      TB0CCR2 += TB0CCR2_INTERVAL;  // Add Offset to TBCCR2
       if (switch_debounce_count++ > SWITCH_DEBOUNCE_MAX) {
         switch_debounce_count = INIT_STATE_ZERO;
         P4IE |= SW1;
         P2IE |= SW2;
-        TB0CCTL1 |= CCIE; // Turn on flicker timer
-        TB0CCTL2 &= ~CCIE; // Turn off debounce timer
+        TB0CCTL1 |= CCIE;   // Turn on flicker timer
+        TB0CCTL2 &= ~CCIE;  // Turn off debounce timer
       }
       break;
-    // case 14: // Disabled
-    //   // overflow
-    //   break;
+    case 14: // Disabled
+      // overflow
+      break;
     default:
       break;
   }
@@ -126,9 +124,76 @@ __interrupt void TIMER1_B0_ISR(void) {
     changed_fr_run_status = 1;
     fr_run_status = WAIT;
     stop_drive();
-  } else if (for_rev_count > 380){
+  } else if (for_rev_count > 380) {
     // Turn off interrupt
-    TB1CCTL0 &= ~CCIE; // Turn off fr_rev timer
+    TB1CCTL0 &= ~CCIE;  // Turn off fr_rev timer
   }
   for_rev_count++;
+}
+
+#pragma vector = TIMER1_B1_VECTOR
+__interrupt void TIMER1_B1_ISR(void) {
+  switch (__even_in_range(TB1IV, 14)) {
+    case 0:
+      break;
+    case 2:
+      // TB1CCR1 += TB1CCR1_INTERVAL;  // Add Offset
+      break;
+    case 4:
+      // TB1CCR2 += TB1CCR2_INTERVAL;  // Add Offset
+      break;
+    case 14:
+      // overflow
+      break;
+    default:
+      break;
+  }
+}
+
+#pragma vector = TIMER2_B0_VECTOR
+__interrupt void TIMER2_B0_ISR(void) {
+  // TB2CCR0 += TB2CCR0_INTERVAL;  // Add Offset
+}
+
+#pragma vector = TIMER2_B1_VECTOR
+__interrupt void TIMER2_B1_ISR(void) {
+  switch (__even_in_range(TB2IV, 14)) {
+    case 0:
+      break;
+    case 2:
+      // TB2CCR1 += TB2CCR1_INTERVAL;  // Add Offset
+      break;
+    case 4:
+      // TB2CCR2 += TB2CCR2_INTERVAL;  // Add Offset
+      break;
+    case 14:
+      // overflow
+      break;
+    default:
+      break;
+  }
+}
+
+#pragma vector = TIMER3_B0_VECTOR
+__interrupt void TIMER3_B0_ISR(void) {
+  // TB3CCR0 += TB3CCR0_INTERVAL;  // Add Offset
+}
+
+#pragma vector = TIMER3_B1_VECTOR
+__interrupt void TIMER3_B1_ISR(void) {
+  switch (__even_in_range(TB3IV, 14)) {
+    case 0:
+      break;
+    case 2:
+      // TB3CCR1 += TB3CCR1_INTERVAL;  // Add Offset
+      break;
+    case 4:
+      // TB3CCR2 += TB3CCR2_INTERVAL;  // Add Offset
+      break;
+    case 14:
+      // overflow
+      break;
+    default:
+      break;
+  }
 }
