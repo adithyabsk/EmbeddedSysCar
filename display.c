@@ -143,32 +143,32 @@ void show_button_status(void) {
 
 char dec2hex(int c) {
   switch (c) {
-    case 10:
-      return 'A';
-    case 11:
-      return 'B';
-    case 12:
-      return 'C';
-    case 13:
-      return 'D';
-    case 14:
-      return 'E';
-    case 15:
-      return 'F';
+    case HEX_TEN:
+      return HEX_A;
+    case HEX_ELEVEN:
+      return HEX_B;
+    case HEX_TWELVE:
+      return HEX_C;
+    case HEX_THIRTEEN:
+      return HEX_D;
+    case HEX_FOURTEEN:
+      return HEX_E;
+    case HEX_FIFTEEN:
+      return HEX_F;
     default:
-      return c+48;
+      return c+HEX_OFFSET;
   }
 }
 
 void int2hex4bit(int input, char* data) {
-  char hex[5];
+  char hex[HEX_MAX_STR_LEN];
   int i;
   int temp_input = input;
-  for(i = 3; i >= 0; i--) {
-    hex[i] =  dec2hex(temp_input % 16);
-    temp_input /= 16;
+  for(i = HEX_MAX_STR_LEN-2; i >= INIT_STATE_ZERO; i--) {
+    hex[i] =  dec2hex(temp_input % HEX_BASE);
+    temp_input /= HEX_BASE;
   }
-  hex[4] = '\0';
+  hex[HEX_MAX_STR_LEN-1] = '\0';
   strcpy(data, hex);
 }
 
@@ -176,24 +176,24 @@ char move_status(void) {
   int left = adc_ldet;
   int right = adc_rdet;
   if((left - right) > IR_TOLERANCE) {
-    return 'R';
+    return STATE_RIGHT;
   } else if ((right - left) > IR_TOLERANCE) {
-    return 'L';
+    return STATE_LEFT;
   } else {
-    return 'N';
+    return STATE_NONE;
   }
 }
 
 void show_adc_status(void) {
   set_clear_lines();
 
-  char thmb_disp[11]; 
-  char ldet_disp[11];
-  char rdet_disp[11];
+  char thmb_disp[DISP_MAX_LEN]; 
+  char ldet_disp[DISP_MAX_LEN];
+  char rdet_disp[DISP_MAX_LEN];
   
-  char thmb_str[5];
-  char ldet_str[5];
-  char rdet_str[5];
+  char thmb_str[HEX_MAX_STR_LEN];
+  char ldet_str[HEX_MAX_STR_LEN];
+  char rdet_str[HEX_MAX_STR_LEN];
   
   int2hex4bit(adc_thmb, thmb_str);
   int2hex4bit(adc_ldet, ldet_str);
@@ -210,7 +210,7 @@ void show_adc_status(void) {
   strcpy(display_line[DISPL_1], ldet_disp);
   strcpy(display_line[DISPL_2], rdet_disp);
 
-  char ir_mov_status[11];
+  char ir_mov_status[DISP_MAX_LEN];
   if(ir_status) {
     strcpy(ir_mov_status, "IR 1: ");
   } else {

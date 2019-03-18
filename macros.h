@@ -96,17 +96,6 @@
 #define TEN (10)
 #define ELEVEN (11)
 
-// Drive
-#define R_DRIVE_ON (P6OUT |= R_FORWARD)
-#define L_DRIVE_ON (P6OUT |= L_FORWARD)
-#define R_DRIVE_OFF (P6OUT &= ~R_FORWARD)
-#define L_DRIVE_OFF (P6OUT &= ~L_FORWARD)
-
-#define R_REVERSE_ON (P6OUT |= R_REVERSE)
-#define L_REVERSE_ON (P6OUT |= L_REVERSE)
-#define R_REVERSE_OFF (P6OUT &= ~R_REVERSE)
-#define L_REVERSE_OFF (P6OUT &= ~L_REVERSE)
-
 // Change clocks
 #define MCLK4MHz (CSCTL5 |= DIVM__2)
 #define SMCLK500kHz (CSCTL5 |= DIVS__8)
@@ -161,6 +150,7 @@
 #define DISP_1 (1)
 #define DISP_2 (2)
 #define DISP_3 (3)
+#define DISP_MAX_LEN (11)
 
 // Main macros
 #define DELAY_TIME (1000000)
@@ -200,3 +190,33 @@
 #define RDET_CHANNEL  (3)
 
 #define IR_TOLERANCE (100)
+
+#define RIGHT_FORWARD_SPEED (TB3CCR1)
+#define LEFT_FORWARD_SPEED (TB3CCR2)
+#define RIGHT_REVERSE_SPEED (TB3CCR3)
+#define LEFT_REVERSE_SPEED (TB3CCR4)
+
+#define WHEEL_PERIOD (40000)
+#define WHEEL_OFF (0)
+
+#define HEX_TEN (10)
+#define HEX_ELEVEN (11)
+#define HEX_TWELVE (12)
+#define HEX_THIRTEEN (13)
+#define HEX_FOURTEEN (14)
+#define HEX_FIFTEEN (15)
+#define HEX_OFFSET (48)
+
+#define HEX_A ('A')
+#define HEX_B ('B')
+#define HEX_C ('C')
+#define HEX_D ('D')
+#define HEX_E ('E')
+#define HEX_F ('F')
+
+#define HEX_MAX_STR_LEN (5)
+#define HEX_BASE (16)
+
+#define STATE_RIGHT ('R')
+#define STATE_LEFT ('L')
+#define STATE_NONE ('N')

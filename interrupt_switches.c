@@ -28,7 +28,6 @@ __interrupt void switchP4_ISR(void) {
     active_switch = SWITCH_ONE_PRESSED;
     switch_debounce_count = INIT_STATE_ZERO;
     TB0CCTL2 |= CCIE;   // Turn on debounce timer
-    // TB1CCTL0 |= CCIE;   // Run for_rev interrupt (runs forward reverse process)
 
     // Toggle on emitter
     IR_LED_TOGGLE;
@@ -45,5 +44,6 @@ __interrupt void switchP2_ISR(void) {
     switch_debounce_count = INIT_STATE_ZERO;
     TB0CCTL2 |= CCIE;   // Turn on debounce timer
 
+    TB1CCTL0 |= CCIE;   // Run for_rev interrupt (runs forward reverse process)
   }
 }

@@ -77,18 +77,25 @@ void Init_Timer_B2(void) {
 
 void Init_Timer_B3(void) {
   TB3CTL = TBSSEL__SMCLK;   // SMCLK source
-  TB3CTL |= TBCLR;          // Resets TB0R, clock divider, count direction
-  TB3CTL |= MC__CONTINOUS;  // Continuous up
-  TB3CTL |= ID__2;          // Divide clock by 2
-  TB3EX0 = TBIDEX__8;       // Divide clock by an additional 8
+  // TB3CTL |= TBCLR;          // Resets TB0R, clock divider, count direction
+  // TB3CTL |= MC__CONTINOUS;  // Continuous up
+  // TB3CTL |= ID__2;          // Divide clock by 2
+  // TB3EX0 = TBIDEX__8;       // Divide clock by an additional 8
 
-  // TB3CCR0 = TB3CCR0_INTERVAL;    // CCR0
-  // TB3CCTL0 |= CCIE;              // CCR0 enable interrupt
-  // TB3CCR1 = TB3CCR1_INTERVAL;    // CCR1
-  // TB3CCTL1 |= CCIE;              // CCR1 enable interrupt
-  // TB3CCR2 = TB3CCR2_INTERVAL;    // CCR2
-  // TB3CCTL2 |= CCIE;              // CCR2 enable interrupt
+  TB3CTL |= MC__UP;   // Up Mode
+  TB3CTL |= TBCLR;   // Clear TAR
 
-  TB3CTL &= ~TBIE;   // Disable Overflow Interrupt
-  TB3CTL &= ~TBIFG;  // Clear overflow interrupt flag
+  TB3CCR0 = WHEEL_PERIOD;
+
+  TB3CCTL1 = OUTMOD_7;
+  RIGHT_FORWARD_SPEED = WHEEL_OFF;
+
+  TB3CCTL2 = OUTMOD_7;
+  LEFT_FORWARD_SPEED = WHEEL_OFF;
+
+  TB3CCTL3 = OUTMOD_7;
+  RIGHT_REVERSE_SPEED = WHEEL_OFF;
+
+  TB3CCTL4 = OUTMOD_7;
+  LEFT_REVERSE_SPEED = WHEEL_OFF;
 }

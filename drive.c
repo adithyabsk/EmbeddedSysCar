@@ -14,42 +14,42 @@
 
 void stop_drive(void) {
   // Turn off forward and reverse
-  R_DRIVE_OFF;
-  L_DRIVE_OFF;
-  R_REVERSE_OFF;
-  L_REVERSE_OFF;
+  RIGHT_FORWARD_SPEED = WHEEL_OFF;
+  LEFT_FORWARD_SPEED = WHEEL_OFF;
+  RIGHT_REVERSE_SPEED = WHEEL_OFF;
+  LEFT_REVERSE_SPEED = WHEEL_OFF;
 }
 
 void drive_forward(void) {
   // Turn off reverse
-  R_REVERSE_OFF;
-  L_REVERSE_OFF;
+  RIGHT_REVERSE_SPEED = WHEEL_OFF;
+  LEFT_REVERSE_SPEED = WHEEL_OFF;
   // Turn on forward
-  R_DRIVE_ON;
-  L_DRIVE_ON;
+  RIGHT_FORWARD_SPEED = 20000;
+  LEFT_FORWARD_SPEED = 20000;
 }
 
 void drive_reverse(void) {
   // Turn off forward
-  R_DRIVE_OFF;
-  L_DRIVE_OFF;
+  RIGHT_FORWARD_SPEED = WHEEL_OFF;
+  LEFT_FORWARD_SPEED = WHEEL_OFF;
   // Turn on reverse
-  R_REVERSE_ON;
-  L_REVERSE_ON;
+  RIGHT_REVERSE_SPEED = 20000;
+  LEFT_REVERSE_SPEED = 20000;
 }
 
 void drive_cw(void) {
   stop_drive();
   // Turn on forward left
-  L_DRIVE_ON;
+  LEFT_FORWARD_SPEED = 20000;
   // Turn on reverse right
-  R_REVERSE_ON;
+  RIGHT_REVERSE_SPEED = 20000;
 }
 
 void drive_ccw(void) {
   stop_drive();
   // Turn on forward right
-  R_DRIVE_ON;
+  RIGHT_FORWARD_SPEED = 20000;
   // Turn on reverse left
-  L_REVERSE_ON;
+  LEFT_REVERSE_SPEED = 20000;
 }

@@ -260,22 +260,22 @@ void Init_Ports_6(void) {
 
   // PIN 0 TB3.1 (01)
   P6SEL1 &= ~R_FORWARD;
-  P6SEL0 &= ~R_FORWARD;
+  P6SEL0 |= R_FORWARD;
   P6DIR |= R_FORWARD;  // Output
 
   // PIN 1 TB3.2 (01)
   P6SEL1 &= ~L_FORWARD;
-  P6SEL0 &= ~L_FORWARD;
+  P6SEL0 |= L_FORWARD;
   P6DIR |= L_FORWARD;  // Output
 
   // PIN 2 TB3.3 (01)
   P6SEL1 &= ~R_REVERSE;
-  P6SEL0 &= ~R_REVERSE;
+  P6SEL0 |= R_REVERSE;
   P6DIR |= R_REVERSE;  // Output
 
   // PIN 3 TB3.4 (01)
   P6SEL1 &= ~L_REVERSE;
-  P6SEL0 &= ~L_REVERSE;
+  P6SEL0 |= L_REVERSE;
   P6DIR |= L_REVERSE;  // Output
 
   // PIN 4 TB3.5 (01)

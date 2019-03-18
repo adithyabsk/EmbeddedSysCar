@@ -2340,9 +2340,6 @@
         <name>$PROJ_DIR$\ports.c</name>
     </file>
     <file>
-        <name>$PROJ_DIR$\shapes.c</name>
-    </file>
-    <file>
         <name>$PROJ_DIR$\system.c</name>
     </file>
     <file>

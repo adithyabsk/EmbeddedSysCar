@@ -57,7 +57,7 @@ void main(void) {
   Init_Timers();      // Initialize Timers
   Init_LCD();         // Initialize LCD
   init_adc();         // Initialize the ADC
-  default_shape_setup();
+  // default_shape_setup();
   __delay_cycles(DELAY_TIME);  // Dely LCD
   // Place the contents of what you want on the display, in between the quotes
   // Limited to 10 characters per line
