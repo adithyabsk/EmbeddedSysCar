@@ -1,16 +1,14 @@
-//------------------------------------------------------------------------------
-//
-//  Description: This file defines drive functions
-//
-//
-//  Adithya Balaji
-//  Jan 2019
-//  Built with IAR Embedded Workbench Version: V4.10A/W32 (7.12.1)
-//------------------------------------------------------------------------------
+/** @file drive.c
+ *  @brief Implementation for motor drive functions
+ *
+ *  @author Adithya Balaji (adithyabsk)
+ */
 
-#include "functions.h"
-#include "macros.h"
+#include "drive.h"
+
 #include "msp430.h"
+
+#define WHEEL_SPEED (20000)
 
 void stop_drive(void) {
   // Turn off forward and reverse
@@ -25,8 +23,8 @@ void drive_forward(void) {
   RIGHT_REVERSE_SPEED = WHEEL_OFF;
   LEFT_REVERSE_SPEED = WHEEL_OFF;
   // Turn on forward
-  RIGHT_FORWARD_SPEED = 20000;
-  LEFT_FORWARD_SPEED = 20000;
+  RIGHT_FORWARD_SPEED = WHEEL_SPEED;
+  LEFT_FORWARD_SPEED = WHEEL_SPEED;
 }
 
 void drive_reverse(void) {
@@ -34,22 +32,22 @@ void drive_reverse(void) {
   RIGHT_FORWARD_SPEED = WHEEL_OFF;
   LEFT_FORWARD_SPEED = WHEEL_OFF;
   // Turn on reverse
-  RIGHT_REVERSE_SPEED = 20000;
-  LEFT_REVERSE_SPEED = 20000;
+  RIGHT_REVERSE_SPEED = WHEEL_SPEED;
+  LEFT_REVERSE_SPEED = WHEEL_SPEED;
 }
 
 void drive_cw(void) {
   stop_drive();
   // Turn on forward left
-  LEFT_FORWARD_SPEED = 20000;
+  LEFT_FORWARD_SPEED = WHEEL_SPEED;
   // Turn on reverse right
-  RIGHT_REVERSE_SPEED = 20000;
+  RIGHT_REVERSE_SPEED = WHEEL_SPEED;
 }
 
 void drive_ccw(void) {
   stop_drive();
   // Turn on forward right
-  RIGHT_FORWARD_SPEED = 20000;
+  RIGHT_FORWARD_SPEED = WHEEL_SPEED;
   // Turn on reverse left
-  LEFT_REVERSE_SPEED = 20000;
+  LEFT_REVERSE_SPEED = WHEEL_SPEED;
 }

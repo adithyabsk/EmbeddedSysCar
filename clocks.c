@@ -1,20 +1,21 @@
-// ------------------------------------------------------------------------------
-//
-//  Description: This file contains the Clock Initialization
-//
-//  Adithya Balaji
-//  Jan 2016
-//  Built with IAR Embedded Workbench Version: V7.12.1
-//  Initial version by Jim Carlson
-// ------------------------------------------------------------------------------
-#include "functions.h"
-#include "macros.h"
+/** @file clocks.h
+ *  @brief Function prototypes for clocks
+ *
+ *  @author Adithya Balaji (adithyabsk)
+ *  @author Jim Carlson
+ */
+
+#include "clocks.h"
+
 #include "msp430.h"
 
-void Init_Clocks(void);
-void Software_Trim(void);
+#include "ports.h"
 
-void Init_Clocks(void) {
+#define MCLK_FREQ_MHZ (8)  // MCLK = 8MHz
+
+void software_trim(void);
+
+void init_clocks(void) {
   // -----------------------------------------------------------------------------
   // Clock Configurtaions
   // This is the clock initialization for the program.
@@ -47,7 +48,7 @@ void Init_Clocks(void) {
   CSCTL3 |= SELREF__XT1CLK;  // Set XT1CLK as FLL reference source
   __delay_cycles(3);
   __bic_SR_register(SCG0);  // enable FLL
-  Software_Trim();          // Software Trim to get the best DCOFTRIM value
+  software_trim();          // Software Trim to get the best DCOFTRIM value
 
   CSCTL4 = SELA__XT1CLK;       // Set ACLK = XT1CLK = 32768Hz
   CSCTL4 |= SELMS__DCOCLKDIV;  // DCOCLK = MCLK and SMCLK source
@@ -59,7 +60,7 @@ void Init_Clocks(void) {
                          // mode to activate previously configured port settings
 }
 
-void Software_Trim(void) {
+void software_trim(void) {
   // --COPYRIGHT--,BSD_EX
   // Copyright (c) 2014, Texas Instruments Incorporated
   // All rights reserved.
@@ -122,16 +123,16 @@ void Software_Trim(void) {
     ;  // Poll until FLL is locked
 }
 
-void Reset_SMClock8MHz(void) {
+void reset_smclk8hz(void) {
   CSCTL5 &= ~DIVM__2;
   CSCTL5 &= ~DIVS__8;
-  Init_Ports_3(USE_GPIO);
+  set_smclk_mode(GPIO);
   CSCTL5 |= DIVM__1;
   CSCTL5 |= DIVS__1;
 }
 
-void Set_SMClock500kHz(void) {
-  Init_Ports_3(USE_SMCLK);
+void set_smclk500mhz(void) {
+  set_smclk_mode(FUNCTION);
   CSCTL5 |= DIVM__2;
   CSCTL5 |= DIVS__8;
 }

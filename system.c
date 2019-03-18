@@ -1,17 +1,12 @@
-//------------------------------------------------------------------------------
-//
-//  Description: This file contains the System Configurations
-//
-//  Jim Carlson
-//  Jan 2016
-//  Built with IAR Embedded Workbench Version: V7.3.1.3987 (6.40.1)
-//------------------------------------------------------------------------------
+/** @file system.c
+ *  @brief Overall system level configurations
+ *
+ *  @author Jim Carlson
+ */
 
-//------------------------------------------------------------------------------
-#include "functions.h"
+#include "system.h"
+
 #include "msp430.h"
-
-void enable_interrupts(void);
 
 //------------------------------------------------------------------------------
 // System Configurations

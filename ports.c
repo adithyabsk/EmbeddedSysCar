@@ -1,47 +1,44 @@
-//------------------------------------------------------------------------------
-//
-//  Description: This file initializes the ports for the board pins
-//
-//
-//  Adithya Balaji
-//  Jan 2019
-//  Built with IAR Embedded Workbench Version: V4.10A/W32 (7.12.1)
-//------------------------------------------------------------------------------
+/** @file ports.c
+ *  @brief Implementation for each of the port initializations
+ *
+ *  @author Adithya Balaji (adithyabsk)
+ */
 
-#include "functions.h"
-#include "macros.h"
+#include "ports.h"
+
 #include "msp430.h"
 
-void Init_Ports(void);    // Inits the rest of the functions
-void Init_Ports_1(void);  // Inits Port 1
-void Init_Ports_2(void);  // Inits Port 2
-void Init_Ports_3(int);   // Inits Port 3
-void Init_Ports_4(void);  // Inits Port 4
-void Init_Ports_5(void);  // Inits Port 5
-void Init_Ports_6(void);  // Inits Port 6
+#include "common.h"
 
-void Init_Ports(void) {
-  Init_Ports_1();
-  Init_Ports_2();
-  Init_Ports_3(USE_GPIO);
-  Init_Ports_4();
-  Init_Ports_5();
-  Init_Ports_6();
+static void init_port_1();
+static void init_port_2();
+static void init_port_3();
+static void init_port_4();
+static void init_port_5();
+static void init_port_6();
+
+void init_ports(void) {
+  init_port_1();
+  init_port_2();
+  init_port_3();
+  init_port_4();
+  init_port_5();
+  init_port_6();
 }
 
-void Init_Ports_1(void) {
+static void init_port_1(void) {
   // Clear P1
-  P1SEL1 = INIT_STATE_ZERO;
-  P1SEL0 = INIT_STATE_ZERO;
-  P1DIR = OUTPUT;  // Default OUT
-  P1OUT = LOW;
-  P1REN = INIT_STATE_ZERO;
+  P1SEL1 = INIT_CLEAR;
+  P1SEL0 = INIT_CLEAR;
+  P1DIR = INIT_OUTPUT;  // Default OUT
+  P1OUT = INIT_LOW;
+  P1REN = INIT_CLEAR;
 
   // PIN 0 GPIO (00)
   P1SEL1 &= ~RED_LED;
   P1SEL0 &= ~RED_LED;
-  P1OUT |= RED_LED;  // High On
   P1DIR |= RED_LED;  // Output
+  P1OUT |= RED_LED;  // High
 
   // PIN 1 ADC (11)
   P1SEL1 |= A1_SEEED;
@@ -72,13 +69,13 @@ void Init_Ports_1(void) {
   P1SEL0 |= UCA0TXD;
 }
 
-void Init_Ports_2(void) {
+static void init_port_2(void) {
   // Clear P2
-  P2SEL1 = INIT_STATE_ZERO;
-  P2SEL0 = INIT_STATE_ZERO;
-  P2DIR = OUTPUT;
-  P2OUT = LOW;
-  P2REN = INIT_STATE_ZERO;
+  P2SEL1 = INIT_CLEAR;
+  P2SEL0 = INIT_CLEAR;
+  P2DIR = INIT_OUTPUT;
+  P2OUT = INIT_LOW;
+  P2REN = INIT_CLEAR;
 
   // PIN 0 GPIO (00)
   P2SEL1 &= ~P2_0;
@@ -121,13 +118,13 @@ void Init_Ports_2(void) {
   P2SEL0 &= ~LFXIN;
 }
 
-void Init_Ports_3(int is_p34_gpio) {
+static void init_port_3() {
   // Clear P3
-  P3SEL1 = INIT_STATE_ZERO;
-  P3SEL0 = INIT_STATE_ZERO;
-  P3DIR = OUTPUT;
-  P3OUT = LOW;
-  P3REN = INIT_STATE_ZERO;
+  P3SEL1 = INIT_CLEAR;
+  P3SEL0 = INIT_CLEAR;
+  P3DIR = INIT_OUTPUT;
+  P3OUT = INIT_LOW;
+  P3REN = INIT_CLEAR;
 
   // PIN 0 GPIO (00)
   P3SEL1 &= ~TEST_PROBE;
@@ -146,13 +143,8 @@ void Init_Ports_3(int is_p34_gpio) {
   P3SEL0 |= OA2P;
 
   // PIN 4 SMCLK (01)
-  if (is_p34_gpio == INIT_STATE_ZERO) {
-    P3SEL1 &= ~SMCLK_OUT;
-    P3SEL0 &= ~SMCLK_OUT;
-  } else {
-    P3SEL1 &= ~SMCLK_OUT;
-    P3SEL0 |= SMCLK_OUT;
-  }
+  P3SEL1 &= ~SMCLK_OUT;
+  P3SEL0 |= SMCLK_OUT;
 
   // PIN 5 OA3O (11)
   P3SEL1 |= OA3O;
@@ -167,13 +159,13 @@ void Init_Ports_3(int is_p34_gpio) {
   P3SEL0 &= ~P3_7;
 }
 
-void Init_Ports_4() {
+static void init_port_4() {
   // Clear P4
-  P4SEL1 = INIT_STATE_ZERO;
-  P4SEL0 = INIT_STATE_ZERO;
-  P4DIR = OUTPUT;
-  P4OUT = LOW;
-  P4REN = INIT_STATE_ZERO;
+  P4SEL1 = INIT_CLEAR;
+  P4SEL0 = INIT_CLEAR;
+  P4DIR = INIT_OUTPUT;
+  P4OUT = INIT_LOW;
+  P4REN = INIT_CLEAR;
 
   // PIN 0 GPIO (00)
   P4SEL1 &= ~RESET_LCD;
@@ -201,7 +193,7 @@ void Init_Ports_4() {
   P4SEL1 &= ~UCA1TXD;
   P4SEL0 |= UCA1TXD;
 
-  // PIN 4 UCB1STE (01)
+  // PIN 4 UCB1_CS_LCD (00)
   P4SEL1 &= ~UCB1_CS_LCD;
   P4SEL0 &= ~UCB1_CS_LCD;
   P4OUT |= UCB1_CS_LCD;
@@ -220,43 +212,43 @@ void Init_Ports_4() {
   P4SEL0 |= UCB1SOMI;
 }
 
-void Init_Ports_5(void) {
+static void init_port_5(void) {
   // Clear P5
-  P5SEL1 = INIT_STATE_ZERO;
-  P5SEL0 = INIT_STATE_ZERO;
-  P5DIR = OUTPUT;
-  P5OUT = LOW;
-  P5REN = INIT_STATE_ZERO;
+  P5SEL1 = INIT_CLEAR;
+  P5SEL0 = INIT_CLEAR;
+  P5DIR = INIT_OUTPUT;
+  P5OUT = INIT_LOW;
+  P5REN = INIT_CLEAR;
 
-  // PIN 0 ADC (11)
+  // PIN 0 FUNCTION (11)
   P5SEL1 |= IOT_RESET;
   P5SEL0 |= IOT_RESET;
 
-  // PIN 1 ADC (11)
+  // PIN 1 FUNCTION (11)
   P5SEL1 |= IOT_LINK;
   P5SEL0 |= IOT_LINK;
 
-  // PIN 2 ADC (11)
+  // PIN 2 FUNCTION (11)
   P5SEL1 |= IOT_PROG_SEL;
   P5SEL0 |= IOT_PROG_SEL;
 
-  // PIN 3 ADC (11)
+  // PIN 3 FUNCTION (11)
   P5SEL1 |= IOT_PROG_MODE;
   P5SEL0 |= IOT_PROG_MODE;
 
   // PIN 4 GPIO (00)
-  P5SEL1 &= ~IR_LED;  // IR is a feedback loop (input)
+  P5SEL1 &= ~IR_LED;
   P5SEL0 &= ~IR_LED;
-  P1DIR |= IR_LED;  // Input (check on this)
+  P1DIR |= IR_LED;
 }
 
-void Init_Ports_6(void) {
+static void init_port_6(void) {
   // Clear P6
-  P6SEL1 = INIT_STATE_ZERO;
-  P6SEL0 = INIT_STATE_ZERO;
-  P6DIR = OUTPUT;
-  P6OUT = LOW;
-  P6REN = INIT_STATE_ZERO;
+  P6SEL1 = INIT_CLEAR;
+  P6SEL0 = INIT_CLEAR;
+  P6DIR = INIT_OUTPUT;
+  P6OUT = INIT_LOW;
+  P6REN = INIT_CLEAR;
 
   // PIN 0 TB3.1 (01)
   P6SEL1 &= ~R_FORWARD;
@@ -287,15 +279,20 @@ void Init_Ports_6(void) {
   // PIN 5 GPIO (00)
   P6SEL1 &= ~P6_5;
   P6SEL0 &= ~P6_5;
-  P6DIR |= P6_5;  // Output
 
   // PIN 6 GPIO (00)
   P6SEL1 &= ~GRN_LED;
   P6SEL0 &= ~GRN_LED;
   P6DIR |= GRN_LED;  // Output
+}
 
-  P6SEL1 &= ~GRN_LED;
-  P6SEL0 &= ~GRN_LED;
-  P6DIR |= GRN_LED;  // High On
-  P6DIR |= GRN_LED;  // Output
+void set_smclk_mode(int smclk_mode) {
+  // PIN 4 SMCLK (01)
+  if (smclk_mode == GPIO) {
+    P3SEL1 &= ~SMCLK_OUT;
+    P3SEL0 &= ~SMCLK_OUT;
+  } else {
+    P3SEL1 &= ~SMCLK_OUT;
+    P3SEL0 |= SMCLK_OUT;
+  }
 }

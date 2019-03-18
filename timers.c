@@ -1,27 +1,31 @@
-//------------------------------------------------------------------------------
-//
-//  Description: This file initializes the system timers
-//
-//
-//  Adithya Balaji
-//  Jan 2019
-//  Built with IAR Embedded Workbench Version: V4.10A/W32 (7.12.1)
-//------------------------------------------------------------------------------
+/** @file timers.c
+ *  @brief Initialize system timers
+ *
+ *  @author Adithya Balaji (adithyabsk)
+ */
 
-#include "functions.h"
-#include "macros.h"
+#include "timers.h"
+
 #include "msp430.h"
 
-void Init_Timers(void) {
-  Init_Timer_B0();
-  Init_Timer_B1();
-  Init_Timer_B2();
-  Init_Timer_B3();
+#include "common.h"
+#include "drive.h"
+
+void init_timer_B0(void);
+void init_timer_B1(void);
+void init_timer_B2(void);
+void init_timer_B3(void);
+
+void init_timers(void) {
+  init_timer_B0();
+  init_timer_B1();
+  init_timer_B2();
+  init_timer_B3();
 }
 
-void Init_Timer_B0(void) {
-  TB0CTL = INIT_STATE_ZERO;
-  TB0EX0 = INIT_STATE_ZERO;
+void init_timer_B0(void) {
+  TB0CTL = INIT_CLEAR;
+  TB0EX0 = INIT_CLEAR;
   TB0CTL = TBSSEL__SMCLK;   // SMCLK source
   TB0CTL |= MC__CONTINOUS;  // Continuous up
   TB0CTL |= ID__2;          // Divide clock by 2
@@ -39,7 +43,7 @@ void Init_Timer_B0(void) {
   TB0CTL &= ~TBIFG;  // Clear overflow interrupt flag
 }
 
-void Init_Timer_B1(void) {
+void init_timer_B1(void) {
   TB1CTL = TBSSEL__SMCLK;   // SMCLK source
   TB1CTL |= TBCLR;          // Resets TB0R, clock divider, count direction
   TB1CTL |= MC__CONTINOUS;  // Continuous up
@@ -57,7 +61,7 @@ void Init_Timer_B1(void) {
   TB1CTL &= ~TBIFG;  // Clear overflow interrupt flag
 }
 
-void Init_Timer_B2(void) {
+void init_timer_B2(void) {
   TB2CTL = TBSSEL__SMCLK;   // SMCLK source
   TB2CTL |= TBCLR;          // Resets TB0R, clock divider, count direction
   TB2CTL |= MC__CONTINOUS;  // Continuous up
@@ -75,14 +79,14 @@ void Init_Timer_B2(void) {
   TB2CTL &= ~TBIFG;  // Clear overflow interrupt flag
 }
 
-void Init_Timer_B3(void) {
-  TB3CTL = TBSSEL__SMCLK;   // SMCLK source
+void init_timer_B3(void) {
+  TB3CTL = TBSSEL__SMCLK;  // SMCLK source
   // TB3CTL |= TBCLR;          // Resets TB0R, clock divider, count direction
   // TB3CTL |= MC__CONTINOUS;  // Continuous up
   // TB3CTL |= ID__2;          // Divide clock by 2
   // TB3EX0 = TBIDEX__8;       // Divide clock by an additional 8
 
-  TB3CTL |= MC__UP;   // Up Mode
+  TB3CTL |= MC__UP;  // Up Mode
   TB3CTL |= TBCLR;   // Clear TAR
 
   TB3CCR0 = WHEEL_PERIOD;

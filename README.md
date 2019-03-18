@@ -1,5 +1,5 @@
 # EmbeddedSysCar
 
 ```bash
-$ clang-format -i *.c *.h # reformat the code
+$ clang-format -i -style=Google *.c *.h # reformat the code
 ```

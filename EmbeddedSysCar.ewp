@@ -2313,22 +2313,10 @@
         <name>$PROJ_DIR$\clocks.c</name>
     </file>
     <file>
-        <name>$PROJ_DIR$\display.c</name>
+        <name>$PROJ_DIR$\display_text.c</name>
     </file>
     <file>
         <name>$PROJ_DIR$\drive.c</name>
-    </file>
-    <file>
-        <name>$PROJ_DIR$\init.c</name>
-    </file>
-    <file>
-        <name>$PROJ_DIR$\interrupt_ports.c</name>
-    </file>
-    <file>
-        <name>$PROJ_DIR$\interrupt_switches.c</name>
-    </file>
-    <file>
-        <name>$PROJ_DIR$\interrupt_timers.c</name>
     </file>
     <file>
         <name>$PROJ_DIR$\led.c</name>
@@ -2340,12 +2328,15 @@
         <name>$PROJ_DIR$\ports.c</name>
     </file>
     <file>
+        <name>$PROJ_DIR$\switches_interrupt.c</name>
+    </file>
+    <file>
         <name>$PROJ_DIR$\system.c</name>
     </file>
     <file>
-        <name>$PROJ_DIR$\thumbwheel.c</name>
+        <name>$PROJ_DIR$\timers.c</name>
     </file>
     <file>
-        <name>$PROJ_DIR$\timers.c</name>
+        <name>$PROJ_DIR$\timers_interrupt.c</name>
     </file>
 </project>
