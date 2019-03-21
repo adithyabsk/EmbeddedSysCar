@@ -54,6 +54,7 @@ dkms.conf
 # Mac OS
 .DS_Store
 .cquery_cache/*
+.python-version
 
 # IAR ignore
 /settings

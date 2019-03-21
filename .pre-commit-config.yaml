@@ -1,0 +1,4 @@
+-   repo: git://github.com/doublify/pre-commit-clang-format
+    sha: master
+    hooks:
+    -   id: clang-format

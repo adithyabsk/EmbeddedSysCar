@@ -1,5 +1,9 @@
 # EmbeddedSysCar
 
+Install pre-commit
+
 ```bash
-$ clang-format -i -style=Google *.c *.h # reformat the code
+$ pre-commit install # Installs clang-format pre-commit
 ```
+
+Manually run the clang hook `$ clang-format -i *.c *.h`
