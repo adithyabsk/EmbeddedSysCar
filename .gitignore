@@ -71,3 +71,4 @@ dkms.conf
 
 # More IAR
 *.dep
+path.txt

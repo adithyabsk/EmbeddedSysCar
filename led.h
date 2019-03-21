@@ -10,20 +10,12 @@
 #ifndef LED_H
 #define LED_H
 
-#include "msp430.h"
-
-#include "ports.h"
+#define IR_LED_TOGGLE (P5OUT ^= IR_LED)
 
 /**
- * @brief Sets all LEDs to off
+ * @brief Cyclical blinking pattern for Red Green LEDs
  *
  */
-void init_leds(void);
-
-#define RED_LED_ON (P1OUT |= RED_LED)
-#define RED_LED_OFF (P1OUT &= ~RED_LED)
-#define GREEN_LED_ON (P6OUT |= GRN_LED)
-#define GREEN_LED_OFF (P6OUT &= ~GRN_LED)
-#define IR_LED_TOGGLE (P5OUT ^= IR_LED)
+void process_leds(void);
 
 #endif /* LED_H */
