@@ -52,10 +52,14 @@ void init_timer_B1(void) {
 
   TB1CCR0 = TB1CCR0_INTERVAL;  // CCR0
   TB1CCTL0 &= ~CCIE;           // CCR0 disable by default interrupt
-  // TB1CCR1 = TB1CCR1_INTERVAL;  // CCR1
-  // TB1CCTL1 |= CCIE;            // CCR1 enable interrupt
-  // TB1CCR2 = TB1CCR2_INTERVAL;  // CCR2
-  // TB1CCTL2 |= CCIE;            // CCR2 enable interrupt
+
+  // Line follow interrupt (10 msec)
+  TB1CCR1 = TB1CCR1_INTERVAL;  // CCR1
+  TB1CCTL1 &= ~CCIE;           // CCR1 disable interrupt
+
+  // Wall clock
+  TB1CCR2 = TB1CCR2_INTERVAL;  // CCR2
+  TB1CCTL2 |= CCIE;            // CCR2 enable interrupt
 
   TB1CTL &= ~TBIE;   // Disable Overflow Interrupt
   TB1CTL &= ~TBIFG;  // Clear overflow interrupt flag
@@ -89,7 +93,7 @@ void init_timer_B3(void) {
   TB3CTL |= MC__UP;  // Up Mode
   TB3CTL |= TBCLR;   // Clear TAR
 
-  TB3CCR0 = WHEEL_PERIOD;
+  TB3CCR0 = (unsigned int)WHEEL_PERIOD;
 
   TB3CCTL1 = OUTMOD_7;
   RIGHT_FORWARD_SPEED = WHEEL_OFF;

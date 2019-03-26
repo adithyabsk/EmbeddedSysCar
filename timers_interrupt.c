@@ -16,12 +16,22 @@
 
 #define UPDATE_DISPLAY_MAX (4)
 #define SWITCH_DEBOUNCE_MAX (24)
+#define LINE_FOLLOW_MAX (1750)
+#define TURN_MAX (250)
+#define WAIT_MAX (250)
 
 // External LCD driver variable
 extern volatile unsigned char update_display;
 
 unsigned int displayer_count;
 unsigned int for_rev_count;
+
+unsigned int turn_time_count;
+unsigned int line_follow_count;
+unsigned int wait_time_count;
+volatile unsigned int wall_clock_time_count;
+
+volatile unsigned int lf_routine_state;
 
 #pragma vector = TIMER0_B0_VECTOR
 __interrupt void TIMER0_B0_ISR(void) {
@@ -64,45 +74,7 @@ __interrupt void TIMER0_B1_ISR(void) {
 
 #pragma vector = TIMER1_B0_VECTOR
 __interrupt void TIMER1_B0_ISR(void) {
-  TB1CCR0 += TB1CCR0_INTERVAL;  // Add Offset to TBCCR1
-  if (for_rev_count == 0) {
-    drive_forward();
-    // drive forward one second
-  } else if (for_rev_count == 20) {
-    // wait one second
-    stop_drive();
-  } else if (for_rev_count == 40) {
-    // drive backwards two second
-    drive_reverse();
-  } else if (for_rev_count == 80) {
-    // wait one second
-    stop_drive();
-  } else if (for_rev_count == 100) {
-    // drive forward one second
-    drive_forward();
-  } else if (for_rev_count == 120) {
-    // wait one second
-    stop_drive();
-  } else if (for_rev_count == 180) {
-    // spin cw 3 seconds
-    drive_cw();
-  } else if (for_rev_count == 240) {
-    // wait two seconds
-    stop_drive();
-  } else if (for_rev_count == 300) {
-    // spin ccw 3 seconds
-    drive_ccw();
-  } else if (for_rev_count == 340) {
-    // wait two seconds
-    stop_drive();
-  } else if (for_rev_count == 380) {
-    // end run
-    stop_drive();
-  } else if (for_rev_count > 380) {
-    // Turn off interrupt
-    TB1CCTL0 &= ~CCIE;  // Turn off fr_rev timer
-  }
-  for_rev_count++;
+  // TB1CCR0 += TB1CCR0_INTERVAL;  // Add Offset to TBCCR1
 }
 
 #pragma vector = TIMER1_B1_VECTOR
@@ -111,10 +83,48 @@ __interrupt void TIMER1_B1_ISR(void) {
     case 0:
       break;
     case 2:
-      // TB1CCR1 += TB1CCR1_INTERVAL;  // Add Offset
+      TB1CCR1 += TB1CCR1_INTERVAL;  // Add Offset
+      switch (lf_routine_state) {
+        case INTERCEPTING:
+          drive_forward();
+          if (fl_state == SIDEWAYS) lf_routine_state = INTERCEPTED;
+          break;
+        case INTERCEPTED:
+          stop_drive();
+          if (wait_time_count++ > WAIT_MAX) lf_routine_state = TURNING;
+          break;
+        case TURNING:
+          drive_ccw();
+          if (turn_time_count++ > TURN_MAX) lf_routine_state = TURNED;
+          break;
+        case TURNED:
+          stop_drive();
+          lf_routine_state = FOLLOWING_LINE;
+          break;
+        case FOLLOWING_LINE:
+          update_speeds();
+          if (line_follow_count++ > LINE_FOLLOW_MAX) {
+            lf_routine_state = TURNINTOCIRCLE;
+            stop_drive();
+            line_follow_count = 0;
+            turn_time_count = 0;
+          }
+          break;
+        case TURNINTOCIRCLE:
+          drive_ccw();
+          if (turn_time_count++ > (unsigned int)(TURN_MAX - 100U)) {
+            stop_drive();
+            TB1CCTL1 &= ~CCIE;
+            lf_routine_state = WAITING;
+          }
+          break;
+        default:
+          break;
+      }
       break;
     case 4:
-      // TB1CCR2 += TB1CCR2_INTERVAL;  // Add Offset
+      TB1CCR2 += TB1CCR2_INTERVAL;
+      wall_clock_time_count++;
       break;
     case 14:
       // overflow

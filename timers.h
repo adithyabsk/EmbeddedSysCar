@@ -14,7 +14,9 @@
 #define TB0CCR2_INTERVAL (25000)  // 8,000,000/2/8/[1/50msec] --> 50ms
 
 // Timer B1
-#define TB1CCR0_INTERVAL (62500)  // 8,000,000/8/8/[1/50msec] --> 50ms
+#define TB1CCR0_INTERVAL (6250)   // 8,000,000/8/8/[1/50msec] --> 50ms
+#define TB1CCR1_INTERVAL (1250)   // 8,000,000/8/8/[1/10msec] --> 10ms
+#define TB1CCR2_INTERVAL (25000)  // 8,000,000/8/8/[1/200msec] --> 200ms
 
 /**
  * @brief Initializes all of the system timers

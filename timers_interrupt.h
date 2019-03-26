@@ -11,6 +11,19 @@
 #define TIMERS_ISR_LOCAL_DEF extern
 #endif
 
+typedef enum lf_routine_state_t {
+  LF_STATE_MIN,
+  INTERCEPTING = LF_STATE_MIN,
+  INTERCEPTED,
+  WAITING,
+  TURNING,
+  TURNED,
+  FOLLOWING_LINE,
+  TURNINTOCIRCLE,
+  LF_STATE_MAX = TURNINTOCIRCLE,
+  INVALID_LF_STATE
+} lf_routine;
+
 /*
  * One time
  */

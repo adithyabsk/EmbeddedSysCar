@@ -53,14 +53,4 @@ typedef enum adc_state_t {
   INVALID_ADC_STATE
 } adc_state;
 
-/**
- * @brief ADC interrupt definition
- *
- * This ISR sets the ADC to capture the value
- * at each of the ports configured to work with
- * the ADC.
- *
- */
-__interrupt void ADC_ISR(void);
-
 #endif /* ADC_INTERRUPT_HEADER_H */

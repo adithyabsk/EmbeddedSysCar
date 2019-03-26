@@ -12,6 +12,7 @@
 #include "clocks.h"
 #include "common.h"
 #include "display_text.h"
+#include "drive.h"
 #include "led.h"
 #include "ports.h"
 #include "system.h"
@@ -29,6 +30,9 @@ void main(void) {
   // Disable the GPIO power-on default high-impedance mode to activate
   // previously configured port settings
   PM5CTL0 &= ~LOCKLPM5;
+
+  fl_timer_counter = 1;
+
   init_ports();                // Initialize Ports
   init_clocks();               // Initialize Clock System
   enable_interrupts();         // Allow interrupts
@@ -36,12 +40,14 @@ void main(void) {
   init_timers();               // Initialize Timers
   Init_LCD();                  // Initialize LCD
   init_adc();                  // Initialize the ADC
-  __delay_cycles(DELAY_TIME);  // Dely LCD
+  __delay_cycles(DELAY_TIME);  // Delay LCD
   reset_display();             // Set default display
 
   while (BOOLEAN_TRUE) {  // Operational loop
     process_leds();
-    show_adc_status();
+    update_follow_line_state();
+    // show_adc_status();
+    show_line_follow_status();
     Display_Process();  // Dispaly update
   }
 }

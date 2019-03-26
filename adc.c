@@ -4,11 +4,16 @@
  *  @author Adithya Balaji (adithyabsk)
  */
 
+#define ADC_LOCAL_DEF
 #include "adc.h"
 
 #include "msp430.h"
 
+#include "adc_interrupt.h"
 #include "common.h"
+
+#define IR_TOLERANCE (0x100)
+#define BLACK (0x500)
 
 void init_adc(void) {
   // V_DETECT_L Port 1 Pin 2 (0x04)
@@ -50,4 +55,18 @@ void init_adc(void) {
   ADCIE |= ADCIE0;    // Enable ADC conv complete interrupt
   ADCCTL0 |= ADCENC;  // ADC enable conversion.
   ADCCTL0 |= ADCSC;   // ADC start conversion.
+}
+
+void update_follow_line_state(void) {
+  int left = adc_ldet;
+  int right = adc_rdet;
+  if ((right > BLACK) && (left > BLACK)) {
+    fl_state = SIDEWAYS;
+  } else if ((right > BLACK) && (left <= BLACK)) {
+    fl_state = LEFT_OF_LINE;
+  } else if ((right <= BLACK) && (left > BLACK)) {
+    fl_state = RIGHT_OF_LINE;
+  } else {
+    fl_state = NO_LINE;
+  }
 }

@@ -10,9 +10,11 @@
 
 #include "msp430.h"
 
+#include "adc.h"
 #include "adc_interrupt.h"
 #include "common.h"
 #include "switches_interrupt.h"
+#include "timers_interrupt.h"
 
 #define DISP_MAX_ROWS (4)
 #define DISP_TEXT_MAX (11)
@@ -44,11 +46,9 @@
 #define HEX_STR_LCHAR (HEX_MAX_STR_LEN - 2)
 #define HEX_BASE (16)
 
-#define IR_TOLERANCE (100)
-
-#define STATE_RIGHT ('R')
-#define STATE_LEFT ('L')
-#define STATE_NONE ('N')
+extern volatile unsigned int wall_clock_time_count;
+extern volatile unsigned int lf_routine_state;
+void walltime2dec(char* data);
 
 // Library LCD variable access
 extern char display_line[DISP_MAX_ROWS][DISP_TEXT_MAX];
@@ -143,18 +143,6 @@ void int2hex4bit(int input, char* data) {
   strcpy(data, hex);
 }
 
-char move_status(void) {
-  int left = adc_ldet;
-  int right = adc_rdet;
-  if ((left - right) > IR_TOLERANCE) {
-    return STATE_RIGHT;
-  } else if ((right - left) > IR_TOLERANCE) {
-    return STATE_LEFT;
-  } else {
-    return STATE_NONE;
-  }
-}
-
 void show_adc_status(void) {
   set_clear_lines();
 
@@ -187,16 +175,71 @@ void show_adc_status(void) {
   } else {
     strcpy(ir_mov_status, "IR 0: ");
   }
-  switch (move_status()) {
-    case 'L':
+  switch (fl_state) {
+    case LEFT_OF_LINE:
       strcat(ir_mov_status, "(L) ");
       break;
-    case 'R':
+    case RIGHT_OF_LINE:
       strcat(ir_mov_status, "(R) ");
       break;
     default:
       strcat(ir_mov_status, "    ");
       break;
+  }
+  strcpy(display_line[DISP_3], ir_mov_status);
+
+  update_lines();
+  display_changed = BOOLEAN_TRUE;
+}
+
+void walltime2dec(char* data) {
+  char dec_data[11] = "   .      ";
+
+  unsigned int curr_time = wall_clock_time_count;
+
+  dec_data[4] = ((curr_time % 5) * 2) + 48;
+  curr_time /= 5;
+
+  for (int i = 2; i >= 0; i--) {
+    dec_data[i] = (curr_time % 10) + 48;
+    curr_time /= 10;
+    ;
+  }
+  strcpy(data, dec_data);
+}
+
+void show_line_follow_status(void) {
+  set_clear_lines();
+
+  char status_disp[DISP_TEXT_MAX];
+  char time_disp[DISP_TEXT_MAX];
+
+  switch (lf_routine_state) {
+    case INTERCEPTING:
+      strcpy(status_disp, "Intercept ");
+      break;
+    case WAITING:
+      strcpy(status_disp, "Waiting   ");
+      break;
+    case TURNING:
+      strcpy(status_disp, "Turning   ");
+      break;
+    case FOLLOWING_LINE:
+      strcpy(status_disp, "Circling  ");
+      break;
+    case 4:
+      strcpy(status_disp, "Stopped   ");
+      break;
+  }
+  strcpy(display_line[DISP_0], status_disp);
+  walltime2dec(time_disp);
+  strcpy(display_line[DISP_1], time_disp);
+
+  char ir_mov_status[DISP_TEXT_MAX];
+  if (ir_status) {
+    strcpy(ir_mov_status, "IR 1      ");
+  } else {
+    strcpy(ir_mov_status, "IR 0      ");
   }
   strcpy(display_line[DISP_3], ir_mov_status);
 
