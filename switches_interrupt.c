@@ -4,6 +4,8 @@
  *  @author Adithya Balaji (adithyabsk)
  */
 
+#include <string.h>
+
 #define SWITCHES_ISR_LOCAL_DEF
 #include "switches_interrupt.h"
 
@@ -13,10 +15,15 @@
 #include "drive.h"
 #include "led.h"
 #include "ports.h"
+#include "serial.h"
 
 extern unsigned int switch_debounce_count;
 
-volatile extern unsigned int drive_state_holder;
+extern volatile unsigned int drive_state_holder;
+extern volatile unsigned int wall_clock_time_count;
+
+volatile unsigned int baud_rate = 1;
+volatile unsigned int switch_press_time = 0;
 
 #pragma vector = PORT4_VECTOR
 __interrupt void switchP4_ISR(void) {
@@ -43,14 +50,31 @@ __interrupt void switchP2_ISR(void) {
     // TB1CCTL0 |= CCIE;  // Run for_rev interrupt (runs forward reverse
     // process)
 
-    if (TB1CCTL1 & CCIE) {  // line follow interrupt is on
-      TB1CCTL1 &= ~CCIE;
-      stop_drive();
-      fl_timer_counter = 1;
-      prev_fl_state = NO_LINE;
+    // if (TB1CCTL1 & CCIE) {  // line follow interrupt is on
+    //   TB1CCTL1 &= ~CCIE;
+    //   stop_drive();
+    //   fl_timer_counter = 1;
+    //   prev_fl_state = NO_LINE;
+    // } else {
+    //   TB1CCTL1 |= CCIE;
+    // }
+
+    // toggle baud rates
+    if (baud_rate) {
+      baud_rate_setup_a0_115200();
+      baud_rate_setup_a1_115200();
     } else {
-      TB1CCTL1 |= CCIE;
+      baud_rate_setup_a0_460800();
+      baud_rate_setup_a1_460800();
     }
+    baud_rate = !baud_rate;
+    switch_press_time = wall_clock_time_count;
+
+    int i;
+    for (i = 0; i < 10; i++) {
+      usb_char_rx[i] = ' ';
+    }
+    usb_char_rx[10] = '\0';
 
     // drive_forward();
   }

@@ -13,6 +13,7 @@
 #include "adc.h"
 #include "adc_interrupt.h"
 #include "common.h"
+#include "serial.h"
 #include "switches_interrupt.h"
 #include "timers_interrupt.h"
 
@@ -46,6 +47,9 @@
 #define HEX_STR_LCHAR (HEX_MAX_STR_LEN - 2)
 #define HEX_BASE (16)
 
+extern volatile unsigned int baud_rate;  // defined in switch
+
+extern volatile unsigned int switch_press_time;
 extern volatile unsigned int wall_clock_time_count;
 extern volatile unsigned int lf_routine_state;
 void walltime2dec(char* data);
@@ -77,12 +81,12 @@ void update_lines(void) {
   update_string(display_line[DISP_1], DISP_1);
   update_string(display_line[DISP_2], DISP_2);
   update_string(display_line[DISP_3], DISP_3);
+  display_changed = BOOLEAN_TRUE;
 }
 
 void clear_display(void) {
   set_clear_lines();
   update_lines();
-  display_changed = BOOLEAN_TRUE;
 }
 
 void init_display(void) {
@@ -109,7 +113,6 @@ void reset_display(void) {
   strcpy(display_line[DISP_2], "  ECE306  ");
   strcpy(display_line[DISP_3], "          ");
   update_lines();
-  display_changed = BOOLEAN_TRUE;
 }
 
 char dec2hex(int c) {
@@ -189,7 +192,6 @@ void show_adc_status(void) {
   strcpy(display_line[DISP_3], ir_mov_status);
 
   update_lines();
-  display_changed = BOOLEAN_TRUE;
 }
 
 void walltime2dec(char* data) {
@@ -244,5 +246,52 @@ void show_line_follow_status(void) {
   strcpy(display_line[DISP_3], ir_mov_status);
 
   update_lines();
-  display_changed = BOOLEAN_TRUE;
+}
+
+void init_baud_rate_display(void) {
+  set_clear_lines();
+  strcpy(display_line[DISP_0], "Starting  ");
+  strcpy(display_line[DISP_1], "Baud      ");
+  strcpy(display_line[DISP_2], "Process   ");
+  update_lines();
+}
+
+void show_baud_status(void) {
+  set_clear_lines();
+  strcpy(display_line[DISP_0], "Starting  ");
+  strcpy(display_line[DISP_1], "Baud      ");
+  strcpy(display_line[DISP_2], "Process   ");
+  update_lines();
+}
+
+void display_baud(void) {
+  unsigned int _swt = switch_press_time;
+  unsigned int _wctc = wall_clock_time_count;
+
+  set_clear_lines();
+
+  if (wall_clock_time_count < 25) {
+    strcpy(display_line[DISP_0], "Starting  ");
+    strcpy(display_line[DISP_1], "Baud      ");
+    strcpy(display_line[DISP_2], "Process   ");
+  } else {
+    if ((_wctc > _swt + 10) && (_wctc > 25)) {
+      strcpy(display_line[DISP_0], (char*)usb_char_rx);
+      strcpy(display_line[DISP_1], "          ");
+    } else {
+      strcpy(display_line[DISP_0], "          ");
+      strcpy(display_line[DISP_1], "          ");
+    }
+
+    strcpy(display_line[DISP_2], "   baud   ");
+    if (baud_rate) {
+      strcpy(display_line[DISP_3], "  115200  ");
+    } else {
+      strcpy(display_line[DISP_3], "  460800  ");
+    }
+  }
+
+  // strcpy(display_line[DISP_0], (char*) usb_char_rx);
+
+  update_lines();
 }

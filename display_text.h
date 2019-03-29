@@ -81,4 +81,6 @@ void show_adc_status(void);
 
 void show_line_follow_status(void);
 
+void display_baud(void);
+
 #endif /* DISPLAY_TEXT_H */

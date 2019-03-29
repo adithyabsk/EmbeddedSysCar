@@ -15,6 +15,7 @@
 #include "drive.h"
 #include "led.h"
 #include "ports.h"
+#include "serial.h"
 #include "system.h"
 #include "timers.h"
 
@@ -40,14 +41,23 @@ void main(void) {
   init_timers();               // Initialize Timers
   Init_LCD();                  // Initialize LCD
   init_adc();                  // Initialize the ADC
+  init_serial();               // Initialize serial ports
   __delay_cycles(DELAY_TIME);  // Delay LCD
-  reset_display();             // Set default display
+
+  // reset_display();             // Set default display
+
+  // init_baud_rate_display();
 
   while (BOOLEAN_TRUE) {  // Operational loop
     process_leds();
-    update_follow_line_state();
+    // update_follow_line_state();
     // show_adc_status();
-    show_line_follow_status();
+
+    // out_character('a');
+    display_baud();
+    transmit_character();
+
+    // show_line_follow_status();
     Display_Process();  // Dispaly update
   }
 }
