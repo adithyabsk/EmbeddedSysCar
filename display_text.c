@@ -46,10 +46,6 @@
 #define HEX_STR_LCHAR (HEX_MAX_STR_LEN - 2)
 #define HEX_BASE (16)
 
-extern volatile unsigned int baud_rate;  // defined in switch
-
-extern volatile unsigned int switch_press_time;
-extern volatile unsigned int wall_clock_time_count;
 void walltime2dec(char* data);
 
 // Library LCD variable access
@@ -282,7 +278,7 @@ void display_baud(void) {
     }
 
     strcpy(display_line[DISP_2], "   baud   ");
-    if (baud_rate) {
+    if (baud_mode) {
       strcpy(display_line[DISP_3], "  115200  ");
     } else {
       strcpy(display_line[DISP_3], "  460800  ");

@@ -11,9 +11,7 @@
 #define SWITCHES_LOCAL_DEF extern
 #endif
 
-/*
- * Boolean state variable for the ir led.
- */
 SWITCHES_LOCAL_DEF volatile unsigned int ir_status;
+SWITCHES_LOCAL_DEF volatile unsigned int switch_press_time;
 
 #endif /* SWITCHES_INTERRUPT_H */

@@ -69,6 +69,8 @@ void schedule_transmit(void) {
 }
 
 void init_serial(void) {
+  baud_mode = BOOLEAN_TRUE;
+
   usb_rx_ring_wr = BEGINNING;
   usb_rx_ring_rd = BEGINNING;
   usb_tx_ring_wr = BEGINNING;

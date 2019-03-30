@@ -16,14 +16,11 @@
 #include "led.h"
 #include "ports.h"
 #include "serial.h"
+#include "timers.h"
 
 extern unsigned int switch_debounce_count;
 
 extern volatile unsigned int drive_state_holder;
-extern volatile unsigned int wall_clock_time_count;
-
-volatile unsigned int baud_rate = 1;
-volatile unsigned int switch_press_time = 0;
 
 #pragma vector = PORT4_VECTOR
 __interrupt void switchP4_ISR(void) {
@@ -60,14 +57,14 @@ __interrupt void switchP2_ISR(void) {
     // }
 
     // toggle baud rates
-    if (baud_rate) {
+    if (baud_mode) {
       baud_rate_setup_a0_115200();
       baud_rate_setup_a1_115200();
     } else {
       baud_rate_setup_a0_460800();
       baud_rate_setup_a1_460800();
     }
-    baud_rate = !baud_rate;
+    baud_mode = !baud_mode;
     switch_press_time = wall_clock_time_count;
 
     int i;

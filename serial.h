@@ -14,6 +14,8 @@
 #define BEGINNING (0)
 #define SMALL_RING_SIZE (11)
 
+SERIAL_LOCAL_DEF volatile unsigned int baud_mode;
+
 SERIAL_LOCAL_DEF volatile unsigned int usb_rx_ring_wr;
 SERIAL_LOCAL_DEF volatile unsigned int usb_rx_ring_rd;
 SERIAL_LOCAL_DEF volatile unsigned int usb_tx_ring_wr;
