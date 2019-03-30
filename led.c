@@ -10,7 +10,7 @@
 
 #include "common.h"
 #include "ports.h"
-#include "timers_interrupt.h"
+#include "timers.h"
 
 #define Time_Sequence_Rate (50)            // 50 millisecods
 #define S1250 (1250 / Time_Sequence_Rate)  // 1.25 seconds

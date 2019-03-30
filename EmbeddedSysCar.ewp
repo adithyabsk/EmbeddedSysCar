@@ -2339,7 +2339,4 @@
     <file>
         <name>$PROJ_DIR$\timers.c</name>
     </file>
-    <file>
-        <name>$PROJ_DIR$\timers_interrupt.c</name>
-    </file>
 </project>

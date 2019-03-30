@@ -9,7 +9,7 @@
 #include <string.h>
 
 #include "common.h"
-#include "timers_interrupt.h"
+#include "timers.h"
 
 #define SCHED_SIZE (10)
 

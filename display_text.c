@@ -14,7 +14,7 @@
 #include "common.h"
 #include "serial.h"
 #include "switches.h"
-#include "timers_interrupt.h"
+#include "timers.h"
 
 #define DISP_MAX_ROWS (4)
 #define DISP_TEXT_MAX (11)
@@ -50,7 +50,6 @@ extern volatile unsigned int baud_rate;  // defined in switch
 
 extern volatile unsigned int switch_press_time;
 extern volatile unsigned int wall_clock_time_count;
-extern volatile unsigned int lf_routine_state;
 void walltime2dec(char* data);
 
 // Library LCD variable access
