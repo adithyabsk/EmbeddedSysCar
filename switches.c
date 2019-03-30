@@ -67,11 +67,7 @@ __interrupt void switchP2_ISR(void) {
     baud_mode = !baud_mode;
     switch_press_time = wall_clock_time_count;
 
-    int i;
-    for (i = 0; i < 10; i++) {
-      usb_char_rx[i] = ' ';
-    }
-    usb_char_rx[10] = '\0';
+    clear_ring_buffer((char*)usb_char_rx);
     schedule_transmit();  // schedule a transmission
 
     // drive_forward();

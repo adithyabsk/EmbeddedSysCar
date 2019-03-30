@@ -65,7 +65,7 @@ void transmit_string(void) {
 
 void schedule_transmit(void) {
   VOID_FUNC_PTR ts_func = &transmit_string;  // define function pointer
-  schedule_func_call(ts_func, 20);           // wait 2 seconds
+  schedule_func_call(ts_func, 10);           // wait 2 seconds
 }
 
 void init_serial(void) {
@@ -81,19 +81,13 @@ void init_serial(void) {
 }
 
 void init_serial_uca0(void) {
-  int i;
-
   iot_rx_ring_wr = BEGINNING;
   iot_rx_ring_rd = BEGINNING;
-  for (i = INIT_CLEAR; i < SMALL_RING_SIZE; i++) {  // Init IOT Rx Buffer
-    iot_char_rx[i] = INIT_CLEAR;
-  }
+  clear_ring_buffer((char*)iot_char_rx);  // Init IOT Rx Buffer
 
   iot_tx_ring_wr = BEGINNING;
   iot_tx_ring_rd = BEGINNING;
-  for (i = INIT_CLEAR; i < SMALL_RING_SIZE; i++) {  // Iinit IOT Tx Buffer
-    iot_char_tx[i] = INIT_CLEAR;
-  }
+  clear_ring_buffer((char*)iot_char_tx);  // Init IOT Tx Buffer
 
   // Configure UART0
   UCA0CTLW0 = INIT_CLEAR;      // Use word register
@@ -107,21 +101,13 @@ void init_serial_uca0(void) {
 }
 
 void init_serial_uca1(void) {
-  int i;
-
-  for (i = INIT_CLEAR; i < SMALL_RING_SIZE; i++) {  // Init USB Rx Buffer
-    usb_char_rx[i] = INIT_CLEAR;
-  }
-
   usb_rx_ring_wr = BEGINNING;
   usb_rx_ring_rd = BEGINNING;
-
-  for (i = INIT_CLEAR; i < SMALL_RING_SIZE; i++) {  // Iinit USB Tx Buffer
-    usb_char_tx[i] = INIT_CLEAR;
-  }
+  clear_ring_buffer((char*)usb_char_rx);  // Init USB Rx Buffer
 
   usb_tx_ring_wr = BEGINNING;
   usb_tx_ring_rd = BEGINNING;
+  clear_ring_buffer((char*)usb_char_tx);  // Init USB Tx Buffer
 
   // Configure UART0
   UCA1CTLW0 = INIT_CLEAR;      // Use word register
@@ -132,6 +118,13 @@ void init_serial_uca1(void) {
   UCA1CTLW0 &= ~UCSWRST;  // Set software reset enable
   UCA1IE |= UCRXIE;       // Enable Rx interrupt
   UCA1IE &= ~UCTXIE;      // Disable Tx interrupt
+}
+
+void clear_ring_buffer(char buf[]) {
+  int i;
+  for (i = INIT_CLEAR; i < SMALL_RING_SIZE; i++) {  // Init USB Rx Buffer
+    buf[i] = INIT_CLEAR;
+  }
 }
 
 void baud_rate_setup_a0_115200(void) {

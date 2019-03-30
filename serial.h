@@ -63,4 +63,6 @@ void baud_rate_setup_a1_115200(void);
 void baud_rate_setup_a0_460800(void);
 void baud_rate_setup_a1_460800(void);
 
+void clear_ring_buffer(char[]);
+
 #endif /* SERIAL_H */

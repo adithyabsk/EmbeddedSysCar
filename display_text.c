@@ -25,6 +25,9 @@
 #define DISPL_START (0)
 #define NULL_CHAR ('\0')
 
+#define EMPTY_STR ("          ")
+#define NULL_STR ("")
+
 #define HEX_LOW (0)
 #define HEX_TEN (10)
 #define HEX_ELEVEN (11)
@@ -46,8 +49,6 @@
 #define HEX_STR_LCHAR (HEX_MAX_STR_LEN - 2)
 #define HEX_BASE (16)
 
-void walltime2dec(char* data);
-
 // Library LCD variable access
 extern char display_line[DISP_MAX_ROWS][DISP_TEXT_MAX];
 extern char* display[DISP_MAX_ROWS];
@@ -62,6 +63,9 @@ void show_switch(char sw_status);
 char dec2hex(int c);
 void int2hex4bit(int input, char* data);
 char move_status(void);
+void display_screen(char*, char*, char*, char*, int);
+void walltime2dec(char* data);
+void set_line(char*, int, int);
 
 void set_clear_lines(void) {
   strcpy(display_line[DISP_0], "          ");
@@ -264,28 +268,37 @@ void display_baud(void) {
 
   set_clear_lines();
 
-  if (wall_clock_time_count < 25) {
-    strcpy(display_line[DISP_0], "Starting  ");
-    strcpy(display_line[DISP_1], "Baud      ");
-    strcpy(display_line[DISP_2], "Process   ");
+  // if (wall_clock_time_count < 25) {
+  //   display_screen("Starting  ", "Baud      ", "Process   ", "",
+  //   BOOLEAN_TRUE);
+  // } else {
+  set_line((char*)usb_char_rx, DISP_0, BOOLEAN_TRUE);
+  display_screen("", EMPTY_STR, "   baud   ", NULL_STR, BOOLEAN_FALSE);
+  if (baud_mode) {
+    display_screen(NULL_STR, NULL_STR, NULL_STR, "  115200  ", BOOLEAN_FALSE);
   } else {
-    if ((_wctc > _swt + 10) && (_wctc > 25)) {
-      strcpy(display_line[DISP_0], (char*)usb_char_rx);
-      strcpy(display_line[DISP_1], "          ");
-    } else {
-      strcpy(display_line[DISP_0], "          ");
-      strcpy(display_line[DISP_1], "          ");
-    }
-
-    strcpy(display_line[DISP_2], "   baud   ");
-    if (baud_mode) {
-      strcpy(display_line[DISP_3], "  115200  ");
-    } else {
-      strcpy(display_line[DISP_3], "  460800  ");
-    }
+    display_screen(NULL_STR, NULL_STR, NULL_STR, "  460800  ", BOOLEAN_FALSE);
   }
+  // }
 
-  // strcpy(display_line[DISP_0], (char*) usb_char_rx);
+  update_lines();
+}
 
+void set_line(char* line_str, int line_number, int should_clear_if_bad) {
+  if ((line_str[0] != '\0') || (line_str[0] != 0))
+    strcpy(display_line[line_number], line_str);
+  else if (should_clear_if_bad) {
+    strcpy(display_line[line_number], EMPTY_STR);
+  }
+}
+
+void display_screen(char* l0, char* l1, char* l2, char* l3, int should_clear) {
+  if (should_clear) {
+    set_clear_lines();
+  }
+  set_line(l0, DISP_0, BOOLEAN_FALSE);
+  set_line(l1, DISP_1, BOOLEAN_FALSE);
+  set_line(l2, DISP_2, BOOLEAN_FALSE);
+  set_line(l3, DISP_3, BOOLEAN_FALSE);
   update_lines();
 }
