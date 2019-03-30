@@ -13,7 +13,7 @@
 #include "adc.h"
 #include "common.h"
 #include "serial.h"
-#include "switches_interrupt.h"
+#include "switches.h"
 #include "timers_interrupt.h"
 
 #define DISP_MAX_ROWS (4)

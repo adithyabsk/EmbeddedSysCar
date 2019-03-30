@@ -1,13 +1,13 @@
-/** @file switches_interrupt.c
+/** @file switches.c
  *  @brief Implementation for switch interrupt capabilities
  *
  *  @author Adithya Balaji (adithyabsk)
  */
 
-#include <string.h>
+#define SWITCHES_LOCAL_DEF
+#include "switches.h"
 
-#define SWITCHES_ISR_LOCAL_DEF
-#include "switches_interrupt.h"
+#include <string.h>
 
 #include "msp430.h"
 

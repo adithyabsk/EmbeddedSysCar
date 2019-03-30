@@ -59,7 +59,7 @@ void main(void) {
     // display_baud();
 
     // show_line_follow_status();
-    run_scheduler();
+    // run_scheduler();
     Display_Process();  // Dispaly update
   }
 }

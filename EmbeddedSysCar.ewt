@@ -2191,7 +2191,7 @@
         <name>$PROJ_DIR$\serial.c</name>
     </file>
     <file>
-        <name>$PROJ_DIR$\switches_interrupt.c</name>
+        <name>$PROJ_DIR$\switches.c</name>
     </file>
     <file>
         <name>$PROJ_DIR$\system.c</name>
