@@ -20,7 +20,7 @@
  * 3. IMBALANCE_RIGHT: car should drive left
  * 4. INVALID_FLS: invalid car drive state
  */
-typedef enum follow_line_state_t {
+typedef enum follow_line_state_type {
   FLS_MIN,
   NO_LINE = FLS_MIN,
   LEFT_OF_LINE,

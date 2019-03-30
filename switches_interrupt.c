@@ -75,6 +75,7 @@ __interrupt void switchP2_ISR(void) {
       usb_char_rx[i] = ' ';
     }
     usb_char_rx[10] = '\0';
+    schedule_transmit();  // schedule a transmission
 
     // drive_forward();
   }

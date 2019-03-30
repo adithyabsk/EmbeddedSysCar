@@ -15,6 +15,7 @@
 #include "drive.h"
 #include "led.h"
 #include "ports.h"
+#include "scheduler.h"
 #include "serial.h"
 #include "system.h"
 #include "timers.h"
@@ -42,6 +43,7 @@ void main(void) {
   Init_LCD();                  // Initialize LCD
   init_adc();                  // Initialize the ADC
   init_serial();               // Initialize serial ports
+  init_scheduler();            // Initialize time based system scheduler
   __delay_cycles(DELAY_TIME);  // Delay LCD
 
   // reset_display();             // Set default display
@@ -55,9 +57,9 @@ void main(void) {
 
     // out_character('a');
     display_baud();
-    transmit_character();
 
     // show_line_follow_status();
+    run_scheduler();
     Display_Process();  // Dispaly update
   }
 }

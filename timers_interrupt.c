@@ -29,7 +29,6 @@ unsigned int for_rev_count;
 unsigned int turn_time_count;
 unsigned int line_follow_count;
 unsigned int wait_time_count;
-volatile unsigned int wall_clock_time_count;
 
 volatile unsigned int lf_routine_state;
 

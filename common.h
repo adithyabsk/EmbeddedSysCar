@@ -9,5 +9,7 @@
 
 #define INIT_CLEAR (0)
 #define BOOLEAN_TRUE (1)
+#define BOOLEAN_FALSE (0)
+#define ZERO_NULL (0)
 
 #endif /* COMMON_H */

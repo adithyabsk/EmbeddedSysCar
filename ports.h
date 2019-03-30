@@ -88,7 +88,7 @@ void set_smclk_mode(int smclk_mode);
  * 2. FUNCTION: represents an initialization of 01
  * 3. INVALID_PIN_STATE: invalid pin select bit state
  */
-typedef enum smclk_state_t { GPIO, FUNCTION, INVALID_PIN_STATE } smclk_state;
+typedef enum smclk_state_type { GPIO, FUNCTION, INVALID_PIN_STATE } smclk_state;
 
 // Register initializaiton macros
 #define INIT_OUTPUT (0xFF)

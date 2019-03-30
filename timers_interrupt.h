@@ -11,7 +11,7 @@
 #define TIMERS_ISR_LOCAL_DEF extern
 #endif
 
-typedef enum lf_routine_state_t {
+typedef enum lf_routine_state_type {
   LF_STATE_MIN,
   INTERCEPTING = LF_STATE_MIN,
   INTERCEPTED,
@@ -24,19 +24,9 @@ typedef enum lf_routine_state_t {
   INVALID_LF_STATE
 } lf_routine;
 
-/*
- * One time
- */
 TIMERS_ISR_LOCAL_DEF volatile char one_time;
-
-/*
- * Count variable for a main loop timer
- */
 TIMERS_ISR_LOCAL_DEF volatile unsigned int Time_Sequence;
-
-/*
- * Switch debounce count
- */
 TIMERS_ISR_LOCAL_DEF unsigned int switch_debounce_count;
+TIMERS_ISR_LOCAL_DEF volatile unsigned int wall_clock_time_count;
 
 #endif /* TIMERS_INTERRUPT_H */

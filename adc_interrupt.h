@@ -44,7 +44,7 @@ ADC_ISR_LOCAL_DEF volatile unsigned int adc_rdet;
  * 3. RDET_CHANNEL: right detector
  * 4. INVALID_ADC_STATE: invalid adc state
  */
-typedef enum adc_state_t {
+typedef enum adc_state_type {
   ADC_STATE_MIN,
   THUMB_CHANNEL = ADC_STATE_MIN,
   LDET_CHANNEL,
