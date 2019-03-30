@@ -22,7 +22,7 @@
 #define WHEEL_PERIOD (40000U)
 #define WHEEL_OFF (0)
 
-DRIVE_LOCAL_DEF volatile follow_line_state prev_fl_state;
+DRIVE_LOCAL_DEF volatile enum follow_line_state prev_fl_state;
 DRIVE_LOCAL_DEF volatile unsigned int fl_timer_counter;
 
 /**

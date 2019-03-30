@@ -9,11 +9,12 @@
 
 #include "msp430.h"
 
-#include "adc_interrupt.h"
 #include "common.h"
 
 #define IR_TOLERANCE (0x100)
 #define BLACK (0x500)
+
+enum adc_state adc_channel = ADC_STATE_MIN;
 
 void init_adc(void) {
   // V_DETECT_L Port 1 Pin 2 (0x04)
@@ -68,5 +69,52 @@ void update_follow_line_state(void) {
     fl_state = RIGHT_OF_LINE;
   } else {
     fl_state = NO_LINE;
+  }
+}
+
+#pragma vector = ADC_VECTOR
+__interrupt void ADC_ISR(void) {
+  switch (__even_in_range(ADCIV, ADCIV_ADCIFG)) {
+    case ADCIV_NONE:  // When a conversion result is written to the ADCMEM0
+                      // before its previous conversion result was read.
+      break;
+    case ADCIV_ADCOVIFG:  // ADC conversion-time overflow
+      break;
+    case ADCIV_ADCTOVIFG:  // Window comparator interrupt flags
+      break;
+    case ADCIV_ADCHIIFG:  // Window comparator interrupt flag
+      break;
+    case ADCIV_ADCLOIFG:  // Window comparator interrupt flag
+      break;
+    case ADCIV_ADCINIFG:
+      break;
+    case ADCIV_ADCIFG:     // ADCMEM0 memory register with the conversion result
+      ADCCTL0 &= ~ADCENC;  // Start next sample
+      switch (adc_channel++) {
+        case THUMB_CHANNEL:
+          adc_thmb = ADCMEM0;
+          ADCMCTL0 &= ~ADCINCH_5;  // V_THUMB (0x20) Pin 5
+          ADCMCTL0 |= ADCINCH_2;   // Turn on ldet (0x20) Pin 5
+          break;
+        case LDET_CHANNEL:
+          adc_ldet = ADCMEM0;
+          ADCMCTL0 &= ~ADCINCH_2;  // V_THUMB (0x20) Pin 5
+          ADCMCTL0 |= ADCINCH_3;   // Turn on rdet (0x20) Pin 5
+          break;
+        case RDET_CHANNEL:
+          adc_rdet = ADCMEM0;
+          ADCMCTL0 &= ~ADCINCH_3;  // V_THUMB (0x20) Pin 5
+          ADCMCTL0 |= ADCINCH_5;   // Turn on thumb (0x20) Pin 5
+          break;
+        default:
+          adc_channel = ADC_STATE_MIN;
+          break;
+      }
+
+      ADCCTL0 |= ADCENC;  // ADC enable conversion.
+      ADCCTL0 |= ADCSC;   // Start next sample
+      break;
+    default:
+      break;
   }
 }

@@ -53,10 +53,10 @@ void main(void) {
   while (BOOLEAN_TRUE) {  // Operational loop
     process_leds();
     // update_follow_line_state();
-    // show_adc_status();
+    show_adc_status();
 
     // out_character('a');
-    display_baud();
+    // display_baud();
 
     // show_line_follow_status();
     run_scheduler();

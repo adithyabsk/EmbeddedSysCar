@@ -10,7 +10,6 @@
 #include "msp430.h"
 
 #include "adc.h"
-#include "adc_interrupt.h"
 
 #define BASE_WHEEL_CYCLES (30000U)
 #define ALIGNMENT (1000)
@@ -155,8 +154,8 @@ void update_speeds(void) {
   fl_timer_counter++;
 
   // Define volatile access order
-  follow_line_state _fl_state = fl_state;
-  follow_line_state _prev_fl_state = prev_fl_state;
+  enum follow_line_state _fl_state = fl_state;
+  enum follow_line_state _prev_fl_state = prev_fl_state;
 
   if (_fl_state != _prev_fl_state) {
     fl_timer_counter = 1;

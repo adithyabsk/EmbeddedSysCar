@@ -20,7 +20,7 @@
  * 3. IMBALANCE_RIGHT: car should drive left
  * 4. INVALID_FLS: invalid car drive state
  */
-typedef enum follow_line_state_type {
+enum follow_line_state {
   FLS_MIN,
   NO_LINE = FLS_MIN,
   LEFT_OF_LINE,
@@ -28,9 +28,42 @@ typedef enum follow_line_state_type {
   SIDEWAYS,
   FLS_MAX = SIDEWAYS,
   INVALID_FLS
-} follow_line_state;
+};
 
-ADC_LOCAL_DEF volatile follow_line_state fl_state;
+ADC_LOCAL_DEF volatile enum follow_line_state fl_state;
+
+/*
+ * State variable for thumb wheel.
+ */
+ADC_LOCAL_DEF volatile unsigned int adc_thmb;
+
+/*
+ * State variable for left detector.
+ */
+ADC_LOCAL_DEF volatile unsigned int adc_ldet;
+
+/*
+ * State variable for right detector.
+ */
+ADC_LOCAL_DEF volatile unsigned int adc_rdet;
+
+/**
+ * @brief All possible states for the ADC variable
+ *
+ * Three channels are defined:
+ * 1. THUMB_CHANNEL: represents the thumb wheel
+ * 2. LDET_CHANNEL: left detector
+ * 3. RDET_CHANNEL: right detector
+ * 4. INVALID_ADC_STATE: invalid adc state
+ */
+enum adc_state {
+  ADC_STATE_MIN,
+  THUMB_CHANNEL = ADC_STATE_MIN,
+  LDET_CHANNEL,
+  RDET_CHANNEL,
+  ADC_STATE_MAX = RDET_CHANNEL,
+  INVALID_ADC_STATE
+};
 
 /**
  * @brief Initializes the ADC parameters

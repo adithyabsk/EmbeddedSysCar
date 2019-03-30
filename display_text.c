@@ -11,7 +11,6 @@
 #include "msp430.h"
 
 #include "adc.h"
-#include "adc_interrupt.h"
 #include "common.h"
 #include "serial.h"
 #include "switches_interrupt.h"
