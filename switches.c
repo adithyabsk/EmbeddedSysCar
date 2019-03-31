@@ -33,9 +33,7 @@ __interrupt void switchP4_ISR(void) {
     // Toggle on emitter
     // IR_LED_TOGGLE;
     // ir_status = !ir_status;
-    if (iot_state == CMD_RECEIVED) {
-      iot_transmit(iot_cmd);
-    }
+    iot_transmit();
   }
 }
 

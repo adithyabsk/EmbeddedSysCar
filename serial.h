@@ -96,14 +96,14 @@ void schedule_test_transmit(void);
 void set_iot_baud_rate(enum baud_state);
 void set_usb_baud_rate(enum baud_state);
 
-void serial_cmd_poll(void);
+void update_serial_states(void);
 
 void clear_char_arr(char[], int);
 
 void clear_iot_state(void);
 void clear_usb_state(void);
 
-void usb_transmit(char[]);
-void iot_transmit(char[]);
+void usb_transmit(void);
+void iot_transmit(void);
 
 #endif /* SERIAL_H */

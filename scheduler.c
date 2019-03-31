@@ -20,7 +20,7 @@ struct sched_entry {
   unsigned int completed;
 };
 
-unsigned int sched_pos = 0;
+unsigned int sched_pos = INIT_CLEAR;
 static struct sched_entry scheduler[SCHED_SIZE];
 
 void assign_schedule_item(VOID_FUNC_PTR f, int wt, int pos) {

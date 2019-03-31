@@ -247,21 +247,18 @@ void show_line_follow_status(void) {
 }
 
 void display_baud(void) {
-  set_clear_lines();
   switch (iot_state) {
     case CMD_RECEIVED:
-      set_line(" Recieved ", DISP_0, BOOLEAN_FALSE);
-      set_line(iot_cmd, DISP_3, BOOLEAN_TRUE);
+      display_screen(" Recieved ", NULL_STR, NULL_STR, iot_cmd, BOOLEAN_TRUE);
       break;
     case CMD_TRANSMITING:
-      set_line(" Transmit ", DISP_0, BOOLEAN_FALSE);
-      set_line(iot_cmd, DISP_3, BOOLEAN_TRUE);
+      display_screen(" Transmit ", iot_cmd, NULL_STR, NULL_STR, BOOLEAN_TRUE);
       break;
     default:
-      set_line(" Waiting  ", DISP_0, BOOLEAN_FALSE);
+      display_screen(" Waiting  ", EMPTY_STR, NULL_STR, EMPTY_STR,
+                     BOOLEAN_TRUE);
       break;
   }
-
   switch (system_baud) {
     case BAUD_115200:
       set_line("  115200  ", DISP_2, BOOLEAN_FALSE);

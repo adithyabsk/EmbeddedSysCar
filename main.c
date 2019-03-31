@@ -60,7 +60,7 @@ void main(void) {
 
     // show_line_follow_status();
     run_scheduler();
-    serial_cmd_poll();
+    update_serial_states();
 
     Display_Process();  // Dispaly update
   }
