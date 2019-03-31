@@ -31,8 +31,11 @@ __interrupt void switchP4_ISR(void) {
     TB0CCTL2 |= CCIE;  // Turn on debounce timer
 
     // Toggle on emitter
-    IR_LED_TOGGLE;
-    ir_status = !ir_status;
+    // IR_LED_TOGGLE;
+    // ir_status = !ir_status;
+    if (iot_state == CMD_RECEIVED) {
+      iot_transmit(iot_cmd);
+    }
   }
 }
 
@@ -66,10 +69,10 @@ __interrupt void switchP2_ISR(void) {
     set_usb_baud_rate(system_baud);
     switch_press_time = wall_clock_time_count;
 
-    clear_usb_state();
-    clear_iot_state();
-
-    schedule_transmit();  // schedule a transmission
+    // clear_usb_state();
+    // clear_iot_state();
+    //
+    // schedule_test_transmit();  // schedule a transmission
 
     // drive_forward();
   }

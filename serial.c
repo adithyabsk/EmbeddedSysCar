@@ -43,7 +43,8 @@ void init_serial_usb(void);
 void clear_char_arr(char[], int);
 void clear_volatile_char_arr(volatile char[], int);
 void update_serial_state(const char[], char[], unsigned int,
-                         volatile unsigned int*, enum cmd_state*);
+                         volatile unsigned int*, enum cmd_state*,
+                         enum selected_serial);
 void extract_buffer(const char[], volatile char[], unsigned int*,
                     const unsigned int, volatile unsigned int*);
 
@@ -59,23 +60,37 @@ void usb_const_out(char c) {
   }
 }
 
-void usb_transmit() {
-  char transmit[SMALL_RING_SIZE] = "$ABCDEF";
-  clear_char_arr((char*)usb_char_tx, SMALL_RING_SIZE);
+void usb_test_transmit() {
+  char transmit[SMALL_RING_SIZE] = "$TEST_CMD ";
+  clear_volatile_char_arr(usb_char_tx, SMALL_RING_SIZE);
   strcpy((char*)usb_char_tx, transmit);
   UCA1IE |= UCTXIE;
 }
 
-void iot_transmit() {
+void usb_transmit(char transmit[SMALL_RING_SIZE]) {
+  usb_state = CMD_TRANSMITING;
+  clear_volatile_char_arr(usb_char_tx, SMALL_RING_SIZE);
+  strcpy((char*)usb_char_tx, transmit);
+  UCA1IE |= UCTXIE;
+}
+
+void iot_test_transmit() {
   char transmit[SMALL_RING_SIZE] = "$TEST_CMD ";
-  clear_char_arr((char*)iot_char_tx, SMALL_RING_SIZE);
+  clear_volatile_char_arr(iot_char_tx, SMALL_RING_SIZE);
   strcpy((char*)iot_char_tx, transmit);
   UCA0IE |= UCTXIE;
 }
 
-void schedule_transmit(void) {
-  VOID_FUNC_PTR ts_func = &iot_transmit;  // define function pointer
-  schedule_func_call(ts_func, 10);        // wait 2 seconds
+void iot_transmit(char transmit[SMALL_RING_SIZE]) {
+  iot_state = CMD_TRANSMITING;
+  clear_volatile_char_arr(iot_char_tx, SMALL_RING_SIZE);
+  strcpy((char*)iot_char_tx, transmit);
+  UCA0IE |= UCTXIE;
+}
+
+void schedule_test_transmit(void) {
+  VOID_FUNC_PTR ts_func = &iot_test_transmit;  // define function pointer
+  schedule_func_call(ts_func, 10);             // wait 2 seconds
 }
 
 void init_serial(void) {
@@ -97,8 +112,6 @@ void clear_iot_state(void) {
 
   iot_cmd_idx = BEGINNING;
   clear_char_arr(iot_cmd, CMD_MAX_SIZE);
-
-  iot_state = CMD_NONE;
 }
 
 void clear_usb_state(void) {
@@ -112,12 +125,12 @@ void clear_usb_state(void) {
 
   usb_cmd_idx = BEGINNING;
   clear_char_arr(usb_cmd, CMD_MAX_SIZE);
-
-  usb_state = CMD_NONE;
 }
 
 void init_serial_iot(void) {
   clear_iot_state();
+
+  iot_state = CMD_NONE;
 
   // Configure UART0
   UCA0CTLW0 = INIT_CLEAR;      // Use word register
@@ -132,6 +145,8 @@ void init_serial_iot(void) {
 
 void init_serial_usb(void) {
   clear_usb_state();
+
+  usb_state = CMD_NONE;
 
   // Configure UART0
   UCA1CTLW0 = INIT_CLEAR;      // Use word register
@@ -188,9 +203,9 @@ void set_usb_baud_rate(enum baud_state b) {
 
 void serial_cmd_poll(void) {
   update_serial_state((const char*)usb_char_rx, usb_cmd, usb_cmd_idx,
-                      &usb_rx_ring_rd, &usb_state);
+                      &usb_rx_ring_rd, &usb_state, SER_USB);
   update_serial_state((const char*)iot_char_rx, iot_cmd, iot_cmd_idx,
-                      &iot_rx_ring_rd, &iot_state);
+                      &iot_rx_ring_rd, &iot_state, SER_IOT);
 
   switch (usb_state) {
     case CMD_RECEIVING:
@@ -199,6 +214,12 @@ void serial_cmd_poll(void) {
       break;
     case CMD_RECEIVED:
       // set transmit interrupt enable
+      // usb_transmit(usb_cmd);
+      break;
+    case CMD_TRANSMITING:
+      if (UCA1IFG & UCTXIFG) {
+        clear_iot_state();
+      }
       break;
     default:
       break;
@@ -209,7 +230,13 @@ void serial_cmd_poll(void) {
                      iot_rx_ring_wr, &iot_rx_ring_rd);
       break;
     case CMD_RECEIVED:
+      // iot_transmit(iot_cmd);
       // set transmit interrupt enable
+      break;
+    case CMD_TRANSMITING:
+      if (UCA0IFG & UCTXIFG) {
+        clear_iot_state();
+      }
       break;
     default:
       break;
@@ -218,15 +245,20 @@ void serial_cmd_poll(void) {
 
 void update_serial_state(const char char_rx[SMALL_RING_SIZE],
                          char cmd[CMD_MAX_SIZE], unsigned int cmd_idx,
-                         volatile unsigned int* ring_rd,
-                         enum cmd_state* state) {
+                         volatile unsigned int* ring_rd, enum cmd_state* state,
+                         enum selected_serial ss) {
   char* end_ptr;
   char* start_ptr;
   switch (*state) {
+    case CMD_TRANSMITING:
     case CMD_NONE:
       start_ptr = strchr(char_rx, '$');
-      int a = 10;
       if (start_ptr) {
+        if (ss == SER_USB) {
+          clear_usb_state();
+        } else {
+          clear_iot_state();
+        }
         *ring_rd = (int)(start_ptr - char_rx);
         *state = CMD_RECEIVING;
       }
@@ -265,7 +297,7 @@ __interrupt void eUSCI_A0_ISR(void) {
     case SERIAL_ISR_RX:  // Vector 2 - RxIFG
       _irx = iot_rx_ring_wr++;
       buf_in = UCA0RXBUF;
-      if (buf_in == '\0') {
+      if ((buf_in == '\0') || (buf_in == '\n')) {
         iot_char_rx[_irx] = (char)(4);  // End of Transmission (EOT)
       } else {
         iot_char_rx[_irx] = buf_in;
@@ -301,7 +333,7 @@ __interrupt void eUSCI_A1_ISR(void) {
     case SERIAL_ISR_RX:  // Vector 2 - RxIFG
       _irx = usb_rx_ring_wr++;
       buf_in = UCA1RXBUF;
-      if (buf_in == '\0') {
+      if ((buf_in == '\0') || (buf_in == '\n')) {
         usb_char_rx[_irx] = (char)(4);  // End of Transmission (EOT)
       } else {
         usb_char_rx[_irx] = buf_in;

@@ -15,6 +15,14 @@
 #define SMALL_RING_SIZE (20)
 #define CMD_MAX_SIZE (30)
 
+enum selected_serial {
+  SER_MIN,
+  SER_USB = SER_MIN,
+  SER_IOT,
+  SER_MAX = SER_IOT,
+  SER_INVALID
+};
+
 enum cmd_state {
   CMD_MIN,
   CMD_NONE = CMD_MIN,
@@ -83,7 +91,7 @@ void iot_const_out(char);
  */
 void usb_const_out(char c);
 
-void schedule_transmit(void);
+void schedule_test_transmit(void);
 
 void set_iot_baud_rate(enum baud_state);
 void set_usb_baud_rate(enum baud_state);
@@ -95,7 +103,7 @@ void clear_char_arr(char[], int);
 void clear_iot_state(void);
 void clear_usb_state(void);
 
-void usb_transmit(void);
-void iot_transmit(void);
+void usb_transmit(char[]);
+void iot_transmit(char[]);
 
 #endif /* SERIAL_H */
