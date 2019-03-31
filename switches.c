@@ -56,18 +56,19 @@ __interrupt void switchP2_ISR(void) {
     //   TB1CCTL1 |= CCIE;
     // }
 
-    // toggle baud rates
-    if (baud_mode) {
-      baud_rate_setup_a0_115200();
-      baud_rate_setup_a1_115200();
+    // cycle baud rates
+    if (system_baud < BAUD_MAX) {
+      system_baud++;
     } else {
-      baud_rate_setup_a0_460800();
-      baud_rate_setup_a1_460800();
+      system_baud = BAUD_MIN;
     }
-    baud_mode = !baud_mode;
+    set_iot_baud_rate(system_baud);
+    set_usb_baud_rate(system_baud);
     switch_press_time = wall_clock_time_count;
 
-    clear_ring_buffer((char*)usb_char_rx);
+    clear_usb_state();
+    clear_iot_state();
+
     schedule_transmit();  // schedule a transmission
 
     // drive_forward();

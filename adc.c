@@ -93,18 +93,18 @@ __interrupt void ADC_ISR(void) {
       switch (adc_channel++) {
         case THUMB_CHANNEL:
           adc_thmb = ADCMEM0;
-          ADCMCTL0 &= ~ADCINCH_5;  // V_THUMB (0x20) Pin 5
-          ADCMCTL0 |= ADCINCH_2;   // Turn on ldet (0x20) Pin 5
+          ADCMCTL0 &= ~ADCINCH_5;  // Turn off V_THUMB (0x20) Pin 5
+          ADCMCTL0 |= ADCINCH_2;   // Turn on LDET (0x04) Pin 2
           break;
         case LDET_CHANNEL:
           adc_ldet = ADCMEM0;
-          ADCMCTL0 &= ~ADCINCH_2;  // V_THUMB (0x20) Pin 5
-          ADCMCTL0 |= ADCINCH_3;   // Turn on rdet (0x20) Pin 5
+          ADCMCTL0 &= ~ADCINCH_2;  // Turn off LDET (0x04) Pin 2
+          ADCMCTL0 |= ADCINCH_3;   // Turn on RDET (0x08) Pin 3
           break;
         case RDET_CHANNEL:
           adc_rdet = ADCMEM0;
-          ADCMCTL0 &= ~ADCINCH_3;  // V_THUMB (0x20) Pin 5
-          ADCMCTL0 |= ADCINCH_5;   // Turn on thumb (0x20) Pin 5
+          ADCMCTL0 &= ~ADCINCH_3;  // Turn off RDET (0x08) Pin 3
+          ADCMCTL0 |= ADCINCH_5;   // Turn on V_THUMB (0x20) Pin 5
           break;
         default:
           adc_channel = ADC_STATE_MIN;

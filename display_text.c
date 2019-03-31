@@ -246,40 +246,33 @@ void show_line_follow_status(void) {
   update_lines();
 }
 
-void init_baud_rate_display(void) {
-  set_clear_lines();
-  strcpy(display_line[DISP_0], "Starting  ");
-  strcpy(display_line[DISP_1], "Baud      ");
-  strcpy(display_line[DISP_2], "Process   ");
-  update_lines();
-}
-
-void show_baud_status(void) {
-  set_clear_lines();
-  strcpy(display_line[DISP_0], "Starting  ");
-  strcpy(display_line[DISP_1], "Baud      ");
-  strcpy(display_line[DISP_2], "Process   ");
-  update_lines();
-}
-
 void display_baud(void) {
-  unsigned int _swt = switch_press_time;
-  unsigned int _wctc = wall_clock_time_count;
-
   set_clear_lines();
-
-  // if (wall_clock_time_count < 25) {
-  //   display_screen("Starting  ", "Baud      ", "Process   ", "",
-  //   BOOLEAN_TRUE);
-  // } else {
-  set_line((char*)usb_char_rx, DISP_0, BOOLEAN_TRUE);
-  display_screen("", EMPTY_STR, "   baud   ", NULL_STR, BOOLEAN_FALSE);
-  if (baud_mode) {
-    display_screen(NULL_STR, NULL_STR, NULL_STR, "  115200  ", BOOLEAN_FALSE);
-  } else {
-    display_screen(NULL_STR, NULL_STR, NULL_STR, "  460800  ", BOOLEAN_FALSE);
+  switch (iot_state) {
+    case CMD_RECEIVED:
+      set_line(" Recieved ", DISP_0, BOOLEAN_FALSE);
+      set_line(iot_cmd, DISP_3, BOOLEAN_TRUE);
+      break;
+    case CMD_TRANSMITING:
+      set_line(" Transmit ", DISP_0, BOOLEAN_FALSE);
+      set_line(iot_cmd, DISP_3, BOOLEAN_TRUE);
+      break;
+    default:
+      set_line(" Waiting  ", DISP_0, BOOLEAN_FALSE);
+      break;
   }
-  // }
+
+  switch (system_baud) {
+    case BAUD_115200:
+      set_line("  115200  ", DISP_2, BOOLEAN_FALSE);
+      break;
+    case BAUD_460800:
+      set_line("  460800  ", DISP_2, BOOLEAN_FALSE);
+      break;
+    default:
+      set_line("  ERROR   ", DISP_2, BOOLEAN_FALSE);
+      break;
+  }
 
   update_lines();
 }
