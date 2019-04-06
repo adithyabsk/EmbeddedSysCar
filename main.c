@@ -36,17 +36,16 @@ void main(void) {
 
   fl_timer_counter = 1;
 
-  init_ports();                // Initialize Ports
-  init_clocks();               // Initialize Clock System
-  enable_interrupts();         // Allow interrupts
-  init_display();              // Setup display
-  init_timers();               // Initialize Timers
-  Init_LCD();                  // Initialize LCD
-  init_adc();                  // Initialize the ADC
-  init_serial();               // Initialize serial ports
-  init_scheduler();            // Initialize time based system scheduler
-  init_scroll();               // Initialize the scroll of the menu system
-  __delay_cycles(DELAY_TIME);  // Delay LCD
+  init_ports();         // Initialize Ports
+  init_clocks();        // Initialize Clock System
+  enable_interrupts();  // Allow interrupts
+  init_display();       // Setup display
+  init_timers();        // Initialize Timers
+  Init_LCD();           // Initialize LCD
+  init_adc();           // Initialize the ADC
+  init_serial();        // Initialize serial ports
+  init_scheduler();     // Initialize time based system scheduler
+  init_scroll();        // Initialize the scroll of the menu system
 
   // init_baud_rate_display();
 

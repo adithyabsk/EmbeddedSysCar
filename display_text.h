@@ -43,6 +43,10 @@ void display_baud(void);
 
 void boot_display(void);
 
+void int2hex4bit(int, int, char*);
+
+void state2str(int, int, char*);
+
 void display_scroll(const char[][DISP_TEXT_MAX], int, int, int);
 
 #endif /* DISPLAY_TEXT_H */

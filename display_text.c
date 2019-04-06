@@ -13,31 +13,12 @@
 #include "display.h"
 
 #include "common.h"
-// #include "adc.h"
-// #include "serial.h"
-// #include "switches.h"
-// #include "timers.h"
 
-// #define HEX_LOW (0)
-// #define HEX_TEN (10)
-// #define HEX_ELEVEN (11)
-// #define HEX_TWELVE (12)
-// #define HEX_THIRTEEN (13)
-// #define HEX_FOURTEEN (14)
-// #define HEX_FIFTEEN (15)
-// #define HEX_OFFSET (48)
+#define HEX_MAX_STR_LEN (3)
+#define HEX_OFFSET (48)
+#define HEX_BASE (16)
 
-// #define HEX_A ('A')
-// #define HEX_B ('B')
-// #define HEX_C ('C')
-// #define HEX_D ('D')
-// #define HEX_E ('E')
-// #define HEX_F ('F')
-
-// #define HEX_MAX_STR_LEN (5)
-// #define HEX_STR_END (HEX_MAX_STR_LEN - 1)
-// #define HEX_STR_LCHAR (HEX_MAX_STR_LEN - 2)
-// #define HEX_BASE (16)
+#define offset(var, n) (var + n)
 
 void clear_display(void) {
   display_screen(NULL_STR, NULL_STR, NULL_STR, NULL_STR, BOOLEAN_TRUE);
@@ -65,47 +46,54 @@ void display_scroll(const char config_list[][DISP_TEXT_MAX], int list_len,
                    (curr_item == 2) ? sel_elem : config_list[2],
                    (curr_item == 3) ? sel_elem : config_list[3], BOOLEAN_TRUE);
   } else {  // Move display
+    unsigned int _cio3 = offset(curr_item, 3);
+    unsigned int _cio2 = offset(curr_item, 2);
+    unsigned int _cio1 = offset(curr_item, 1);
     display_screen(
-        config_list[((curr_item - 3) < list_len) ? (curr_item - 3)
-                                                 : (list_len - curr_item - 3)],
-        config_list[((curr_item - 2) < list_len) ? (curr_item - 2)
-                                                 : (list_len - curr_item - 2)],
-        config_list[((curr_item - 1) < list_len) ? (curr_item - 1)
-                                                 : (list_len - curr_item - 1)],
-        sel_elem, BOOLEAN_TRUE);
+        config_list[(_cio3 >= list_len) ? (_cio3 % list_len) : _cio3],
+        config_list[(_cio2 >= list_len) ? (_cio2 % list_len) : _cio2],
+        config_list[(_cio1 >= list_len) ? (_cio1 % list_len) : _cio1], sel_elem,
+        BOOLEAN_TRUE);
   }
 }
 
-// char dec2hex(int c) {
-//   switch (c) {
-//     case HEX_TEN:
-//       return HEX_A;
-//     case HEX_ELEVEN:
-//       return HEX_B;
-//     case HEX_TWELVE:
-//       return HEX_C;
-//     case HEX_THIRTEEN:
-//       return HEX_D;
-//     case HEX_FOURTEEN:
-//       return HEX_E;
-//     case HEX_FIFTEEN:
-//       return HEX_F;
-//     default:
-//       return c + HEX_OFFSET;
-//   }
-// }
+char dec2hex(int n) {
+  switch (n) {
+    case 10:
+      return 'A';
+    case 11:
+      return 'B';
+    case 12:
+      return 'C';
+    case 13:
+      return 'D';
+    case 14:
+      return 'E';
+    case 15:
+      return 'F';
+    default:
+      return n + HEX_OFFSET;
+  }
+}
 
-// void int2hex4bit(int input, char* data) {
-//   char hex[HEX_MAX_STR_LEN];
-//   int i;
-//   int temp_input = input;
-//   for (i = HEX_STR_LCHAR; i >= HEX_LOW; i--) {
-//     hex[i] = dec2hex(temp_input % HEX_BASE);
-//     temp_input /= HEX_BASE;
-//   }
-//   hex[HEX_STR_END] = NULL_CHAR;
-//   strcpy(data, hex);
-// }
+void int2hex4bit(int input, int offset, char* out) {
+  char hex[HEX_MAX_STR_LEN];
+  int i;
+  int temp_input = input;
+  for (i = offset(HEX_MAX_STR_LEN, -1); i >= 0; i--) {
+    hex[i] = dec2hex(temp_input % HEX_BASE);
+    temp_input /= HEX_BASE;
+  }
+  strncpy((char*)out + offset, hex, sizeof(hex));
+}
+
+void state2str(int state, int offset, char* out) {
+  if (state) {
+    strncpy((char*)out + offset, "ON ", 3);
+  } else {
+    strncpy((char*)out + offset, "OFF", 3);
+  }
+}
 
 // void show_adc_status(void) {
 //   set_clear_lines();

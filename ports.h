@@ -174,6 +174,7 @@ enum iot_rst_state { SET_RESET_IOT, SET_RELEASE_IOT, INVALID_IOT_RST_STATE };
 
 // Port 5 Control
 #define IR_LED_TOGGLE (P5OUT ^= IR_LED)
+#define IR_LED_STATE (P5IN & IR_LED)
 
 // Port 6 Definitions
 #define R_FORWARD (0x01)     // pin 0
