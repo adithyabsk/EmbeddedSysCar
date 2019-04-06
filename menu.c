@@ -23,6 +23,9 @@
 #define RPL_VAL_OFFSET (5)
 #define menu_len(MAX_VAL) (MAX_VAL + 1)
 
+#define BACK_BTN_PTR ((int*)&sw1_pressed)
+#define SEL_BTN_PTR ((int*)&sw2_pressed)
+
 unsigned int latch_thmb_value;
 
 enum menu_main_pages {
@@ -114,11 +117,11 @@ void scroll_control(int min_item, int max_item, int* curr_item) {
   }
 }
 
-void check_back_menu_press(int* curr_item, int set_value) {
-  if (sw1_pressed) {
-    sw1_pressed = INIT_CLEAR;
-    init_scroll();
+void checkset_btn_press(int* curr_item, int* btn, int set_value) {
+  if (*btn) {
+    *btn = INIT_CLEAR;
     *curr_item = set_value;
+    init_scroll();
   }
 }
 
@@ -136,7 +139,17 @@ void diag_menu_state_controller(void) {
   scroll_control(DIAG_MENU_MIN, DIAG_MENU_MAX, &hover_diag_item);
   display_scroll(menu_diag_page_strs, menu_len(DIAG_MENU_MAX), hover_diag_item,
                  BOOLEAN_FALSE);
-  check_back_menu_press((int*)&curr_main_item, MAIN_MENU_NONE);
+  checkset_btn_press(&curr_main_item, BACK_BTN_PTR, MAIN_MENU_NONE);
+}
+
+void config_menu_state_controller(void) {
+  if (curr_config_item == MAIN_MENU_NONE) {
+    scroll_control(CONFIG_MENU_MIN, CONFIG_MENU_MAX, (int*)&hover_config_item);
+    display_scroll(menu_config_page_strs, menu_len(CONFIG_MENU_MAX),
+                   hover_config_item, BOOLEAN_TRUE);
+    checkset_btn_press(&curr_main_item, SEL_BTN_PTR, hover_main_item);
+  } else {  // Item was selected
+  }
 }
 
 void menu_state_controller(void) {
@@ -153,10 +166,13 @@ void menu_state_controller(void) {
     switch (curr_main_item) {
       case MAIN_MENU_BOOT:
         boot_display();
-        check_back_menu_press((int*)&curr_main_item, MAIN_MENU_NONE);
+        checkset_btn_press(&curr_main_item, BACK_BTN_PTR, MAIN_MENU_NONE);
         break;
       case MAIN_MENU_DIAG:
         diag_menu_state_controller();
+        break;
+      case MAIN_MENU_CONFIG:
+        config_menu_state_controller();
         break;
       default:
         curr_main_item = MAIN_MENU_NONE;  // selection not implemented
