@@ -11,5 +11,6 @@
 #define BOOLEAN_TRUE (1)
 #define BOOLEAN_FALSE (0)
 #define ZERO_NULL (0)
+#define SINGLE_INCREMENT (1)
 
 #endif /* COMMON_H */

@@ -152,9 +152,8 @@ __interrupt void TIMER0_B1_ISR(void) {
       TB0CCR2 += TB0CCR2_INTERVAL;  // Add Offset to TBCCR2
       if (switch_debounce_count++ > SWITCH_DEBOUNCE_MAX) {
         switch_debounce_count = INIT_CLEAR;
-        P4IE |= SW1;
-        P2IE |= SW2;
-        TB0CCTL1 |= CCIE;   // Turn on flicker timer
+        SW1_ENABLE_IE;
+        SW2_ENABLE_IE;
         TB0CCTL2 &= ~CCIE;  // Turn off debounce timer
       }
       break;

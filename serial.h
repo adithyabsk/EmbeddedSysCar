@@ -15,24 +15,6 @@
 #define SMALL_RING_SIZE (20)
 #define CMD_MAX_SIZE (30)
 
-enum selected_serial {
-  SER_MIN,
-  SER_USB = SER_MIN,
-  SER_IOT,
-  SER_MAX = SER_IOT,
-  SER_INVALID
-};
-
-enum cmd_state {
-  CMD_MIN,
-  CMD_NONE = CMD_MIN,
-  CMD_RECEIVING,
-  CMD_RECEIVED,
-  CMD_TRANSMITING,
-  CMD_MAX = CMD_TRANSMITING,
-  CMD_INVALID
-};
-
 enum baud_state {
   BAUD_MIN,
   BAUD_115200 = BAUD_MIN,
@@ -40,6 +22,8 @@ enum baud_state {
   BAUD_MAX = BAUD_460800,
   BAUD_INVALID
 };
+
+enum transmit_state { SET_TRANSMIT_OFF, SET_TRANSMIT_ON };
 
 SERIAL_LOCAL_DEF volatile unsigned int usb_rx_ring_wr;
 SERIAL_LOCAL_DEF volatile unsigned int usb_rx_ring_rd;
@@ -64,6 +48,8 @@ SERIAL_LOCAL_DEF unsigned int usb_cmd_idx;
 SERIAL_LOCAL_DEF enum cmd_state iot_state;
 SERIAL_LOCAL_DEF char iot_cmd[CMD_MAX_SIZE];
 SERIAL_LOCAL_DEF unsigned int iot_cmd_idx;
+
+SERIAL_LOCAL_DEF enum transmit_state usb_transmit_state;
 
 /**
  * @brief Initializes the serial set for both A0 and A1
@@ -105,5 +91,7 @@ void clear_usb_state(void);
 
 void usb_transmit(void);
 void iot_transmit(void);
+
+void set_usb_transmit_state(enum transmit_state);
 
 #endif /* SERIAL_H */

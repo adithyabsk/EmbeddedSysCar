@@ -21,12 +21,10 @@
  * 4. INVALID_FLS: invalid car drive state
  */
 enum follow_line_state {
-  FLS_MIN,
-  NO_LINE = FLS_MIN,
+  NO_LINE,
   LEFT_OF_LINE,
   RIGHT_OF_LINE,
   SIDEWAYS,
-  FLS_MAX = SIDEWAYS,
   INVALID_FLS
 };
 

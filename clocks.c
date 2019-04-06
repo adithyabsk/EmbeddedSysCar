@@ -126,13 +126,13 @@ void software_trim(void) {
 void reset_smclk8hz(void) {
   CSCTL5 &= ~DIVM__2;
   CSCTL5 &= ~DIVS__8;
-  set_smclk_mode(GPIO);
+  set_smclk_mode(SET_GPIO);
   CSCTL5 |= DIVM__1;
   CSCTL5 |= DIVS__1;
 }
 
 void set_smclk500mhz(void) {
-  set_smclk_mode(FUNCTION);
+  set_smclk_mode(SET_FUNCTION);
   CSCTL5 |= DIVM__2;
   CSCTL5 |= DIVS__8;
 }

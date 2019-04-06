@@ -220,21 +220,27 @@ static void init_port_5(void) {
   P5OUT = INIT_LOW;
   P5REN = INIT_CLEAR;
 
-  // PIN 0 FUNCTION (11)
-  P5SEL1 |= IOT_RESET;
-  P5SEL0 |= IOT_RESET;
+  // PIN 0 GPIO (00)
+  P5SEL1 &= ~IOT_RESET;
+  P5SEL0 &= ~IOT_RESET;
+  P5DIR |= IOT_RESET;   // Output
+  P5OUT &= ~IOT_RESET;  // Low
 
-  // PIN 1 FUNCTION (11)
-  P5SEL1 |= IOT_LINK;
-  P5SEL0 |= IOT_LINK;
+  // PIN 1 GPIO (00)
+  P5SEL1 &= ~IOT_LINK;
+  P5SEL0 &= ~IOT_LINK;
+  P5DIR |= IOT_LINK;   // Output
+  P5OUT &= ~IOT_LINK;  // Low
 
-  // PIN 2 FUNCTION (11)
-  P5SEL1 |= IOT_PROG_SEL;
-  P5SEL0 |= IOT_PROG_SEL;
+  // PIN 2 GPIO (00)
+  P5SEL1 &= ~IOT_PROG_SEL;
+  P5SEL0 &= ~IOT_PROG_SEL;
+  P5DIR &= ~IOT_PROG_SEL;  // Input
 
-  // PIN 3 FUNCTION (11)
-  P5SEL1 |= IOT_PROG_MODE;
-  P5SEL0 |= IOT_PROG_MODE;
+  // PIN 3 GPIO (00)
+  P5SEL1 &= ~IOT_PROG_MODE;
+  P5SEL0 &= ~IOT_PROG_MODE;
+  P5DIR &= ~IOT_PROG_MODE;  // Input
 
   // PIN 4 GPIO (00)
   P5SEL1 &= ~IR_LED;
@@ -287,12 +293,22 @@ static void init_port_6(void) {
 }
 
 void set_smclk_mode(int smclk_mode) {
+  // Port 3
   // PIN 4 SMCLK (01)
-  if (smclk_mode == GPIO) {
+  if (smclk_mode == SET_GPIO) {
     P3SEL1 &= ~SMCLK_OUT;
     P3SEL0 &= ~SMCLK_OUT;
   } else {
     P3SEL1 &= ~SMCLK_OUT;
     P3SEL0 |= SMCLK_OUT;
+  }
+}
+
+void set_iot_rst_state(int iot_rst_state) {
+  // Port 5, pin 0
+  if (iot_rst_state == SET_RELEASE_IOT) {
+    P5OUT |= IOT_RESET;  // High (disable reset)
+  } else {
+    P5OUT &= ~IOT_RESET;  // Low (synchronous low reset)
   }
 }

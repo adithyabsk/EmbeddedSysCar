@@ -11,9 +11,10 @@
 #include "adc.h"
 #include "clocks.h"
 #include "common.h"
-#include "display_text.h"
+#include "display.h"
 #include "drive.h"
 #include "led.h"
+#include "menu.h"
 #include "ports.h"
 #include "scheduler.h"
 #include "serial.h"
@@ -44,23 +45,27 @@ void main(void) {
   init_adc();                  // Initialize the ADC
   init_serial();               // Initialize serial ports
   init_scheduler();            // Initialize time based system scheduler
+  init_scroll();               // Initialize the scroll of the menu system
   __delay_cycles(DELAY_TIME);  // Delay LCD
-
-  // reset_display();             // Set default display
 
   // init_baud_rate_display();
 
   while (BOOLEAN_TRUE) {  // Operational loop
     process_leds();
+
+    menu_state_controller();
+
     // update_follow_line_state();
     // show_adc_status();
 
     // out_character('a');
-    display_baud();
+
+    // display_baud();
 
     // show_line_follow_status();
-    run_scheduler();
-    update_serial_states();
+
+    // run_scheduler(); // MAKE SURE TO TURN THIS ON FOR SERIAL TO WORK
+    // update_serial_states();
 
     Display_Process();  // Dispaly update
   }

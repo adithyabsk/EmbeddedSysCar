@@ -11,6 +11,8 @@
 #ifndef ADC_INTERRUPT_HEADER_H
 #define ADC_INTERRUPT_HEADER_H
 
+#include "msp430.h"
+
 /**
  * @brief General function to call all of the port initializations
  *
@@ -55,10 +57,10 @@
  * pin 7: UCB1SOMI      (FUNCTION)
  *
  * Port 5 pins:
- * pin 0: IOT_RESET     (FUNCTION)
- * pin 1: IOT_LINK      (FUNCTION)
- * pin 2: IOT_PROG_SEL  (FUNCTION)
- * pin 3: IOT_PROG_MODE (FUNCTION)
+ * pin 0: IOT_RESET     (GPIO)
+ * pin 1: IOT_LINK      (GPIO)
+ * pin 2: IOT_PROG_SEL  (GPIO)
+ * pin 3: IOT_PROG_MODE (GPIO)
  * pin 4: IR_LED        (GPIO) (OUTPUT) (LOW)
  *
  * Port 6 pins:
@@ -81,6 +83,14 @@ void init_ports(void);
 void set_smclk_mode(int smclk_mode);
 
 /**
+ * @brief Sets the output of the IOT_RESET port
+ *
+ * @param iot_rst_mode is a boolean flag. RELASE allows IOT to operate and
+ * RESET sets the IOT back to reset
+ */
+void set_iot_rst_state(int iot_rst_mode);
+
+/**
  * @brief All possible states for the smclk input
  *
  * Three channels are defined:
@@ -88,7 +98,9 @@ void set_smclk_mode(int smclk_mode);
  * 2. FUNCTION: represents an initialization of 01
  * 3. INVALID_PIN_STATE: invalid pin select bit state
  */
-typedef enum smclk_state_type { GPIO, FUNCTION, INVALID_PIN_STATE } smclk_state;
+enum smclk_state { SET_GPIO, SET_FUNCTION, INVALID_PIN_STATE };
+
+enum iot_rst_state { SET_RESET_IOT, SET_RELEASE_IOT, INVALID_IOT_RST_STATE };
 
 // Register initializaiton macros
 #define INIT_OUTPUT (0xFF)
@@ -104,6 +116,13 @@ typedef enum smclk_state_type { GPIO, FUNCTION, INVALID_PIN_STATE } smclk_state;
 #define UCA0RXD (0x40)     // pin 6
 #define UCA0TXD (0x80)     // pin 7
 
+// Port 1 Control
+#define RED_LED_ON (P1OUT |= RED_LED)
+#define RED_LED_OFF (P1OUT &= ~RED_LED)
+#define ADC_LDET_MODE (ADCINCH_2)  // pin 2
+#define ADC_RDET_MODE (ADCINCH_3)  // pin 3
+#define ADC_THMB_MODE (ADCINCH_5)  // pin 5
+
 // Port 2 Definitions
 #define P2_0 (0x01)    // pin 0
 #define P2_1 (0x02)    // pin 1
@@ -113,6 +132,12 @@ typedef enum smclk_state_type { GPIO, FUNCTION, INVALID_PIN_STATE } smclk_state;
 #define P2_5 (0x20)    // pin 5
 #define LFXOUT (0x40)  // pin 6
 #define LFXIN (0x80)   // pin 7
+
+// Port 2 Control
+#define SW2_PRESSED (P2IFG & SW2)
+#define SW2_CLEAR_IFG (P2IFG &= ~SW2)
+#define SW2_DISABLE_IE (P2IE &= ~SW2)
+#define SW2_ENABLE_IE (P2IE |= SW2)
 
 // Port 3 Definitions
 #define TEST_PROBE (0x01)  // pin 0
@@ -134,12 +159,21 @@ typedef enum smclk_state_type { GPIO, FUNCTION, INVALID_PIN_STATE } smclk_state;
 #define UCB1SIMO (0x40)     // pin 6
 #define UCB1SOMI (0x80)     // pin 7
 
+// Port 4 Control
+#define SW1_PRESSED (P4IFG & SW1)
+#define SW1_CLEAR_IFG (P4IFG &= ~SW1)
+#define SW1_DISABLE_IE (P4IE &= ~SW1)
+#define SW1_ENABLE_IE (P4IE |= SW1)
+
 // Port 5 Definitions
 #define IOT_RESET (0x01)      // pin 0
 #define IOT_LINK (0x02)       // pin 1
 #define IOT_PROG_SEL (0x04)   // pin 2
 #define IOT_PROG_MODE (0x08)  // pin 3
 #define IR_LED (0x10)         // pin 4
+
+// Port 5 Control
+#define IR_LED_TOGGLE (P5OUT ^= IR_LED)
 
 // Port 6 Definitions
 #define R_FORWARD (0x01)     // pin 0
@@ -149,5 +183,10 @@ typedef enum smclk_state_type { GPIO, FUNCTION, INVALID_PIN_STATE } smclk_state;
 #define LCD_BACKLITE (0x10)  // pin 4
 #define P6_5 (0x20)          // pin 5
 #define GRN_LED (0x40)       // pin 6
+
+// Port 6 Control
+#define GREEN_LED_ON (P6OUT |= GRN_LED)
+#define GREEN_LED_OFF (P6OUT &= ~GRN_LED)
+#define LCD_BACKLITE_TOGGLE (P6OUT ^= LCD_BACKLITE)
 
 #endif /* ADC_INTERRUPT_HEADER_H */

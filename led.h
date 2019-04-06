@@ -10,8 +10,6 @@
 #ifndef LED_H
 #define LED_H
 
-#define IR_LED_TOGGLE (P5OUT ^= IR_LED)
-
 /**
  * @brief Cyclical blinking pattern for Red Green LEDs
  *

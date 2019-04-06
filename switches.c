@@ -7,43 +7,38 @@
 #define SWITCHES_LOCAL_DEF
 #include "switches.h"
 
-#include <string.h>
-
 #include "msp430.h"
 
 #include "common.h"
-#include "drive.h"
-#include "led.h"
 #include "ports.h"
-#include "serial.h"
 #include "timers.h"
-
-extern unsigned int switch_debounce_count;
-
-extern volatile unsigned int drive_state_holder;
 
 #pragma vector = PORT4_VECTOR
 __interrupt void switchP4_ISR(void) {
-  if (P4IFG & SW1) {
-    P4IFG &= ~SW1;  // Set IGF State
-    P4IE &= ~SW1;   // Disable interrupt
+  if (SW1_PRESSED) {
+    SW1_CLEAR_IFG;   // Set IGF State
+    SW1_DISABLE_IE;  // Disable interrupt
     switch_debounce_count = INIT_CLEAR;
     TB0CCTL2 |= CCIE;  // Turn on debounce timer
+
+    sw1_pressed = BOOLEAN_TRUE;
 
     // Toggle on emitter
     // IR_LED_TOGGLE;
     // ir_status = !ir_status;
-    iot_transmit();
+    // iot_transmit();
   }
 }
 
 #pragma vector = PORT2_VECTOR
 __interrupt void switchP2_ISR(void) {
-  if (P2IFG & SW2) {
-    P2IFG &= ~SW2;  // Set IGF State
-    P2IE &= ~SW2;   // Disable interrupt
+  if (SW2_PRESSED) {
+    SW2_CLEAR_IFG;   // Set IGF State
+    SW2_DISABLE_IE;  // Disable interrupt
     switch_debounce_count = INIT_CLEAR;
     TB0CCTL2 |= CCIE;  // Turn on debounce timer
+
+    sw2_pressed = BOOLEAN_TRUE;
 
     // TB1CCTL0 |= CCIE;  // Run for_rev interrupt (runs forward reverse
     // process)
@@ -58,14 +53,15 @@ __interrupt void switchP2_ISR(void) {
     // }
 
     // cycle baud rates
-    if (system_baud < BAUD_MAX) {
-      system_baud++;
-    } else {
-      system_baud = BAUD_MIN;
-    }
-    set_iot_baud_rate(system_baud);
-    set_usb_baud_rate(system_baud);
-    switch_press_time = wall_clock_time_count;
+
+    // if (system_baud < BAUD_MAX) {
+    //   system_baud++;
+    // } else {
+    //   system_baud = BAUD_MIN;
+    // }
+    // set_iot_baud_rate(system_baud);
+    // set_usb_baud_rate(system_baud);
+    // switch_press_time = wall_clock_time_count;
 
     // clear_usb_state();
     // clear_iot_state();

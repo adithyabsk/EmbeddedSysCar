@@ -2170,6 +2170,9 @@
         <name>$PROJ_DIR$\clocks.c</name>
     </file>
     <file>
+        <name>$PROJ_DIR$\display.c</name>
+    </file>
+    <file>
         <name>$PROJ_DIR$\display_text.c</name>
     </file>
     <file>
@@ -2180,6 +2183,9 @@
     </file>
     <file>
         <name>$PROJ_DIR$\main.c</name>
+    </file>
+    <file>
+        <name>$PROJ_DIR$\menu.c</name>
     </file>
     <file>
         <name>$PROJ_DIR$\ports.c</name>

@@ -19,11 +19,6 @@
 #define S500 (500 / Time_Sequence_Rate)    // 0.50 seconds
 #define S250 (250 / Time_Sequence_Rate)    // 0.25 seconds
 
-#define RED_LED_ON (P1OUT |= RED_LED)
-#define RED_LED_OFF (P1OUT &= ~RED_LED)
-#define GREEN_LED_ON (P6OUT |= GRN_LED)
-#define GREEN_LED_OFF (P6OUT &= ~GRN_LED)
-
 void process_leds(void) {
   switch (Time_Sequence) {
     case S1250:

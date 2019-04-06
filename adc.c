@@ -10,6 +10,7 @@
 #include "msp430.h"
 
 #include "common.h"
+#include "ports.h"
 
 #define IR_TOLERANCE (0x100)
 #define BLACK (0x500)
@@ -93,18 +94,18 @@ __interrupt void ADC_ISR(void) {
       switch (adc_channel++) {
         case THUMB_CHANNEL:
           adc_thmb = ADCMEM0;
-          ADCMCTL0 &= ~ADCINCH_5;  // Turn off V_THUMB (0x20) Pin 5
-          ADCMCTL0 |= ADCINCH_2;   // Turn on LDET (0x04) Pin 2
+          ADCMCTL0 &= ~ADC_THMB_MODE;  // Turn off thumb wheel conversion
+          ADCMCTL0 |= ADC_LDET_MODE;   // Turn on left detector conversion
           break;
         case LDET_CHANNEL:
           adc_ldet = ADCMEM0;
-          ADCMCTL0 &= ~ADCINCH_2;  // Turn off LDET (0x04) Pin 2
-          ADCMCTL0 |= ADCINCH_3;   // Turn on RDET (0x08) Pin 3
+          ADCMCTL0 &= ~ADC_LDET_MODE;  // Turn off left detector conversion
+          ADCMCTL0 |= ADC_RDET_MODE;   // Turn on right detector conversion
           break;
         case RDET_CHANNEL:
           adc_rdet = ADCMEM0;
-          ADCMCTL0 &= ~ADCINCH_3;  // Turn off RDET (0x08) Pin 3
-          ADCMCTL0 |= ADCINCH_5;   // Turn on V_THUMB (0x20) Pin 5
+          ADCMCTL0 &= ~ADC_RDET_MODE;  // Turn off right detector conversion
+          ADCMCTL0 |= ADC_THMB_MODE;   // Turn on thumb wheel conversion
           break;
         default:
           adc_channel = ADC_STATE_MIN;

@@ -38,6 +38,16 @@
 #define B460800_BRx (17)
 #define B460800_MCTLW (0x4A00)
 
+#define ENABLE_TRANMIST_CHAR ('~')  // Uncommon ASCII Char
+
+enum cmd_state {
+  CMD_NONE,
+  CMD_RECEIVING,
+  CMD_RECEIVED,
+  CMD_TRANSMITING,
+  CMD_INVALID
+};
+
 void init_serial_iot(void);
 void init_serial_usb(void);
 void clear_char_arr(char[], int);
@@ -156,6 +166,7 @@ void init_serial_iot(void) {
 }
 
 void init_serial_usb(void) {
+  usb_transmit_state = SET_TRANSMIT_OFF;
   clear_usb_state();
 
   usb_state = CMD_NONE;
@@ -220,6 +231,8 @@ void update_serial_states(void) {
                       iot_rx_ring_wr, &iot_rx_ring_rd, &iot_state);
 }
 
+void set_usb_transmit_state(enum transmit_state ts) { usb_transmit_state = ts; }
+
 void update_serial_state(volatile char char_rx[SMALL_RING_SIZE],
                          volatile char char_tx[SMALL_RING_SIZE],
                          char cmd[CMD_MAX_SIZE], unsigned int* cmd_idx_ptr,
@@ -275,6 +288,7 @@ void update_serial_state(volatile char char_rx[SMALL_RING_SIZE],
   }
 }
 
+// IOT Serial Interrupt
 #pragma vector = EUSCI_A0_VECTOR
 __interrupt void eUSCI_A0_ISR(void) {
   unsigned int _irx;
@@ -285,8 +299,8 @@ __interrupt void eUSCI_A0_ISR(void) {
     case SERIAL_ISR_NO_INTERRUPT:  // Vector 0 - no interrupt
       break;
     case SERIAL_ISR_RX:  // Vector 2 - RxIFG
-      _irx = iot_rx_ring_wr++;
       buf_in = UCA0RXBUF;
+      _irx = iot_rx_ring_wr++;
       iot_char_rx[_irx] = buf_in;
       if (iot_rx_ring_wr >= (sizeof(iot_char_rx))) {
         iot_rx_ring_wr = BEGINNING;
@@ -305,6 +319,7 @@ __interrupt void eUSCI_A0_ISR(void) {
   }
 }
 
+// USB Serial Interrupt
 #pragma vector = EUSCI_A1_VECTOR
 __interrupt void eUSCI_A1_ISR(void) {
   unsigned int _irx;
@@ -315,18 +330,27 @@ __interrupt void eUSCI_A1_ISR(void) {
     case SERIAL_ISR_NO_INTERRUPT:  // Vector 0 - no interrupt
       break;
     case SERIAL_ISR_RX:  // Vector 2 - RxIFG
-      _irx = usb_rx_ring_wr++;
       buf_in = UCA1RXBUF;
-      usb_char_rx[_irx] = buf_in;
-      if (usb_rx_ring_wr >= (sizeof(usb_char_rx))) {
-        usb_rx_ring_wr = BEGINNING;
+      if ((usb_transmit_state != SET_TRANSMIT_ON) &&
+          (buf_in == ENABLE_TRANMIST_CHAR)) {
+        set_usb_transmit_state(SET_TRANSMIT_ON);
+      } else {
+        _irx = usb_rx_ring_wr++;
+        usb_char_rx[_irx] = buf_in;
+        if (usb_rx_ring_wr >= (sizeof(usb_char_rx))) {
+          usb_rx_ring_wr = BEGINNING;
+        }
       }
       break;
     case SERIAL_ISR_TX:  // Vector 4 - TxIFG
-      _itx = usb_tx_ring_wr++;
-      UCA1TXBUF = usb_char_tx[_itx];
-      if (usb_tx_ring_wr >= (sizeof(usb_char_tx))) {
-        usb_tx_ring_wr = BEGINNING;
+      if (usb_transmit_state == SET_TRANSMIT_ON) {
+        _itx = usb_tx_ring_wr++;
+        UCA1TXBUF = usb_char_tx[_itx];
+        if (usb_tx_ring_wr >= (sizeof(usb_char_tx))) {
+          usb_tx_ring_wr = BEGINNING;
+          UCA1IE &= ~UCTXIE;
+        }
+      } else {
         UCA1IE &= ~UCTXIE;
       }
       break;
