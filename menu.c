@@ -143,12 +143,16 @@ void diag_menu_state_controller(void) {
 }
 
 void config_menu_state_controller(void) {
-  if (curr_config_item == MAIN_MENU_NONE) {
+  if (curr_config_item == CONFIG_MENU_NONE) {
     scroll_control(CONFIG_MENU_MIN, CONFIG_MENU_MAX, (int*)&hover_config_item);
     display_scroll(menu_config_page_strs, menu_len(CONFIG_MENU_MAX),
                    hover_config_item, BOOLEAN_TRUE);
     checkset_btn_press(&curr_main_item, SEL_BTN_PTR, hover_main_item);
   } else {  // Item was selected
+    switch (curr_config_item) {
+      default:
+        curr_config_item = CONFIG_MENU_NONE;
+    }
   }
 }
 
