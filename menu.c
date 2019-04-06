@@ -147,11 +147,27 @@ void config_menu_state_controller(void) {
     scroll_control(CONFIG_MENU_MIN, CONFIG_MENU_MAX, (int*)&hover_config_item);
     display_scroll(menu_config_page_strs, menu_len(CONFIG_MENU_MAX),
                    hover_config_item, BOOLEAN_TRUE);
+    checkset_btn_press(&curr_main_item, BACK_BTN_PTR, MAIN_MENU_NONE);
     checkset_btn_press(&curr_main_item, SEL_BTN_PTR, hover_main_item);
   } else {  // Item was selected
     switch (curr_config_item) {
       default:
         curr_config_item = CONFIG_MENU_NONE;
+    }
+  }
+}
+
+void run_menu_state_controller(void) {
+  if (curr_run_item == RUN_MENU_NONE) {
+    scroll_control(RUN_MENU_MIN, RUN_MENU_MAX, (int*)&hover_run_item);
+    display_scroll(menu_run_page_strs, menu_len(RUN_MENU_MAX), hover_run_item,
+                   BOOLEAN_TRUE);
+    checkset_btn_press(&curr_main_item, BACK_BTN_PTR, MAIN_MENU_NONE);
+    checkset_btn_press(&curr_main_item, SEL_BTN_PTR, hover_main_item);
+  } else {  // Item was selected
+    switch (curr_run_item) {
+      default:
+        curr_run_item = CONFIG_MENU_NONE;
     }
   }
 }
@@ -177,6 +193,9 @@ void menu_state_controller(void) {
         break;
       case MAIN_MENU_CONFIG:
         config_menu_state_controller();
+        break;
+      case MAIN_MENU_RUN:
+        run_menu_state_controller();
         break;
       default:
         curr_main_item = MAIN_MENU_NONE;  // selection not implemented
