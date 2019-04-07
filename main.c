@@ -38,21 +38,26 @@ void main(void) {
 
   init_ports();         // Initialize Ports
   init_clocks();        // Initialize Clock System
+  init_serial();        // Initialize serial ports
   enable_interrupts();  // Allow interrupts
   init_display();       // Setup display
   init_timers();        // Initialize Timers
   Init_LCD();           // Initialize LCD
   init_adc();           // Initialize the ADC
-  init_serial();        // Initialize serial ports
   init_scheduler();     // Initialize time based system scheduler
   init_scroll();        // Initialize the scroll of the menu system
 
   // init_baud_rate_display();
+  usb_test_transmit();
+  usb_const_out('e');
 
   while (BOOLEAN_TRUE) {  // Operational loop
     process_leds();
-
     menu_state_controller();
+
+    UCA1TXBUF = 'a';
+
+    // usb_const_out('a');
 
     // update_follow_line_state();
     // show_adc_status();

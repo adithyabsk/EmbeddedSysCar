@@ -12,8 +12,8 @@
 #endif
 
 #define BEGINNING (0)
-#define SMALL_RING_SIZE (20)
-#define CMD_MAX_SIZE (30)
+#define SMALL_RING_SIZE (10)
+#define CMD_MAX_SIZE (10)
 
 enum baud_state {
   BAUD_MIN,
@@ -93,5 +93,11 @@ void usb_transmit(void);
 void iot_transmit(void);
 
 void set_usb_transmit_state(enum transmit_state);
+
+void test_usb_loopback(void);
+void test_iot_loopback(void);
+
+void usb_test_transmit();
+void iot_test_transmit();
 
 #endif /* SERIAL_H */

@@ -47,6 +47,10 @@ void int2hex4bit(int, int, char*);
 
 void state2str(int, int, char*);
 
+void walltime2dec(int, int, char*);
+
+void usb_loopback_test_display(char*, char*);
+
 void display_scroll(const char[][DISP_TEXT_MAX], int, int, int);
 
 #endif /* DISPLAY_TEXT_H */

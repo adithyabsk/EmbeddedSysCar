@@ -15,8 +15,14 @@
 #include "common.h"
 
 #define HEX_MAX_STR_LEN (3)
-#define HEX_OFFSET (48)
 #define HEX_BASE (16)
+#define TIME_STR_LEN (5)
+#define TIME_LSB_IDX (4)
+#define TIME_LSB_DIVISOR (5)
+#define TIME_NONDEC_LSB_IDX (2)
+#define TIME_DIVISOR (10)
+#define TIME_LSB_MULT (2)
+#define ASCII_OFFSET (48)
 
 #define offset(var, n) (var + n)
 
@@ -72,7 +78,7 @@ char dec2hex(int n) {
     case 15:
       return 'F';
     default:
-      return n + HEX_OFFSET;
+      return n + ASCII_OFFSET;
   }
 }
 
@@ -84,80 +90,38 @@ void int2hex4bit(int input, int offset, char* out) {
     hex[i] = dec2hex(temp_input % HEX_BASE);
     temp_input /= HEX_BASE;
   }
-  strncpy((char*)out + offset, hex, sizeof(hex));
+  strncpy((char*)(out + offset), hex, sizeof(hex));
 }
 
 void state2str(int state, int offset, char* out) {
   if (state) {
-    strncpy((char*)out + offset, "ON ", 3);
+    strncpy((char*)(out + offset), "ON ", 3);
   } else {
-    strncpy((char*)out + offset, "OFF", 3);
+    strncpy((char*)(out + offset), "OFF", 3);
   }
 }
 
-// void show_adc_status(void) {
-//   set_clear_lines();
-//
-//   char thmb_disp[DISP_TEXT_MAX];
-//   char ldet_disp[DISP_TEXT_MAX];
-//   char rdet_disp[DISP_TEXT_MAX];
-//
-//   char thmb_str[HEX_MAX_STR_LEN];
-//   char ldet_str[HEX_MAX_STR_LEN];
-//   char rdet_str[HEX_MAX_STR_LEN];
-//
-//   int2hex4bit(adc_thmb, thmb_str);
-//   int2hex4bit(adc_ldet, ldet_str);
-//   int2hex4bit(adc_rdet, rdet_str);
-//
-//   strcpy(thmb_disp, "THMB: ");
-//   strcpy(ldet_disp, "LDET: ");
-//   strcpy(rdet_disp, "RDET: ");
-//   strcat(thmb_disp, thmb_str);
-//   strcat(ldet_disp, ldet_str);
-//   strcat(rdet_disp, rdet_str);
-//
-//   strcpy(display_line[DISP_0], thmb_disp);
-//   strcpy(display_line[DISP_1], ldet_disp);
-//   strcpy(display_line[DISP_2], rdet_disp);
-//
-//   char ir_mov_status[DISP_TEXT_MAX];
-//   if (ir_status) {
-//     strcpy(ir_mov_status, "IR 1: ");
-//   } else {
-//     strcpy(ir_mov_status, "IR 0: ");
-//   }
-//   switch (fl_state) {
-//     case LEFT_OF_LINE:
-//       strcat(ir_mov_status, "(L) ");
-//       break;
-//     case RIGHT_OF_LINE:
-//       strcat(ir_mov_status, "(R) ");
-//       break;
-//     default:
-//       strcat(ir_mov_status, "    ");
-//       break;
-//   }
-//   strcpy(display_line[DISP_3], ir_mov_status);
-//
-//   update_lines();
-// }
+void walltime2dec(int time, int offset, char* out) {
+  char dec_data[TIME_STR_LEN] = "xxx.x";
+  dec_data[TIME_LSB_IDX] =
+      ((time % TIME_LSB_DIVISOR) * TIME_LSB_MULT) + ASCII_OFFSET;
+  time /= TIME_LSB_DIVISOR;
 
-// void walltime2dec(char* data) {
-//   char dec_data[11] = "   .      ";
-//
-//   unsigned int curr_time = wall_clock_time_count;
-//
-//   dec_data[4] = ((curr_time % 5) * 2) + 48;
-//   curr_time /= 5;
-//
-//   for (int i = 2; i >= 0; i--) {
-//     dec_data[i] = (curr_time % 10) + 48;
-//     curr_time /= 10;
-//     ;
-//   }
-//   strcpy(data, dec_data);
-// }
+  for (int i = TIME_NONDEC_LSB_IDX; i >= INIT_CLEAR; i--) {
+    dec_data[i] = (time % TIME_DIVISOR) + ASCII_OFFSET;
+    time /= TIME_DIVISOR;
+    ;
+  }
+  strncpy((char*)(out + offset), dec_data, sizeof(dec_data));
+}
+
+void usb_loopback_test_display(char* rx_input, char* tx_input) {
+  char _rx[DISP_TEXT_MAX];
+  char _tx[DISP_TEXT_MAX];
+  strncpy(_rx, rx_input, DISP_TEXT_MAX);
+  strncpy(_tx, tx_input, DISP_TEXT_MAX);
+  display_screen(" USB LOOP ", _rx, _tx, EMPTY_STR, BOOLEAN_TRUE);
+}
 
 // void show_line_follow_status(void) {
 //   set_clear_lines();

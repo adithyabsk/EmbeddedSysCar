@@ -57,15 +57,17 @@ void update_serial_state(volatile char[], volatile char[], char[],
                          volatile unsigned int*, enum cmd_state*);
 
 void iot_const_out(char c) {
-  while (!(UCA0IFG & UCTXIFG)) {
-    UCA0TXBUF = c;
-  }
+  while (!(UCA0IFG & UCTXIFG))
+    ;
+
+  UCA0TXBUF = c;
 }
 
 void usb_const_out(char c) {
-  while (!(UCA1IFG & UCTXIFG)) {
-    UCA1TXBUF = c;
-  }
+  while (!(UCA1IFG & UCTXIFG))
+    ;
+
+  UCA1TXBUF = c;
 }
 
 void iot2waiting(void) { iot_state = CMD_NONE; }
@@ -171,7 +173,7 @@ void init_serial_usb(void) {
 
   usb_state = CMD_NONE;
 
-  // Configure UART0
+  // Configure UART1
   UCA1CTLW0 = INIT_CLEAR;      // Use word register
   UCA1CTLW0 |= UCSWRST;        // Set software reset enable
   UCA1CTLW0 |= UCSSEL__SMCLK;  // Set SMCLK as F_BRCLK
@@ -287,6 +289,25 @@ void update_serial_state(volatile char char_rx[SMALL_RING_SIZE],
       break;
   }
 }
+
+void test_usb_loopback(void) {
+  static int prev_wr = 0;
+  if ((usb_rx_ring_wr != prev_wr) && !(UCA1IE & UCTXIE)) {
+    clear_volatile_char_arr(usb_char_tx, SMALL_RING_SIZE);
+    usb_tx_ring_wr = BEGINNING;
+    strcpy((char*)usb_char_tx, (char*)usb_char_rx);
+    UCA1IE |= UCTXIE;
+    prev_wr = usb_rx_ring_wr;
+  }
+}
+
+// void test_iot_loopback(void) {
+//   static int prev_wr = -1;
+//   if (iot_rx_ring_wr != prev_wr) {
+//     iot_const_out(iot_char_rx[iot_rx_ring_wr]);
+//     prev_wr = iot_rx_ring_wr;
+//   }
+// }
 
 // IOT Serial Interrupt
 #pragma vector = EUSCI_A0_VECTOR
