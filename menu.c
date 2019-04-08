@@ -25,8 +25,8 @@
 #define TIME_VAL_OFFSET (4)
 #define menu_len(MAX_VAL) (MAX_VAL + 1)
 
-#define BACK_BTN_PTR ((int*)&sw1_pressed)
-#define SEL_BTN_PTR ((int*)&sw2_pressed)
+#define BACK_BTN_PTR (&sw1_pressed)
+#define SEL_BTN_PTR (&sw2_pressed)
 
 unsigned int latch_thmb_value;
 
@@ -108,7 +108,24 @@ const char menu_run_page_strs[menu_len(RUN_MENU_MAX)][DISP_TEXT_MAX] = {
 int hover_run_item = RUN_MENU_MIN;
 int curr_run_item = RUN_MENU_NONE;
 
-void init_scroll(void) { latch_thmb_value = adc_thmb; }
+// Prototypes
+void init_scroll(void);
+void scroll_control(int, int, int*);
+void checkset_btn_press(volatile int*, int*, int, VOID_FUNC_PTR);
+void update_diag_values(void);
+void diag_menu_state_controller(void);
+void config_menu_state_controller(void);
+void run_menu_state_controller(void);
+void menu_state_controller(void);
+
+// Func pointers
+VOID_FUNC_PTR init_scroll_ptr = &init_scroll;
+
+void init_scroll(void) {
+  latch_thmb_value = adc_thmb;
+  *BACK_BTN_PTR = INIT_CLEAR;
+  *SEL_BTN_PTR = INIT_CLEAR;
+}
 
 void scroll_control(int min_item, int max_item, int* curr_item) {
   if (adc_thmb > (latch_thmb_value + THMB_SCROLL_OFFSET)) {
@@ -123,11 +140,16 @@ void scroll_control(int min_item, int max_item, int* curr_item) {
   }
 }
 
-void checkset_btn_press(int* curr_item, int* btn, int set_value) {
+void checkset_btn_press(volatile int* btn, int* curr_item, int set_value,
+                        VOID_FUNC_PTR side_effect) {
   if (*btn) {
     *btn = INIT_CLEAR;
-    *curr_item = set_value;
-    init_scroll();
+    if (curr_item) {
+      *curr_item = set_value;
+    }
+    if (side_effect) {
+      (*(side_effect))();
+    }
   }
 }
 
@@ -147,7 +169,8 @@ void diag_menu_state_controller(void) {
   scroll_control(DIAG_MENU_MIN, DIAG_MENU_MAX, &hover_diag_item);
   display_scroll(menu_diag_page_strs, menu_len(DIAG_MENU_MAX), hover_diag_item,
                  BOOLEAN_FALSE);
-  checkset_btn_press(&curr_main_item, BACK_BTN_PTR, MAIN_MENU_NONE);
+  checkset_btn_press(BACK_BTN_PTR, &curr_main_item, MAIN_MENU_NONE,
+                     init_scroll_ptr);
 }
 
 void config_menu_state_controller(void) {
@@ -155,14 +178,19 @@ void config_menu_state_controller(void) {
     scroll_control(CONFIG_MENU_MIN, CONFIG_MENU_MAX, (int*)&hover_config_item);
     display_scroll(menu_config_page_strs, menu_len(CONFIG_MENU_MAX),
                    hover_config_item, BOOLEAN_TRUE);
-    checkset_btn_press(&curr_main_item, BACK_BTN_PTR, MAIN_MENU_NONE);
-    checkset_btn_press(&curr_config_item, SEL_BTN_PTR, hover_config_item);
+    checkset_btn_press(BACK_BTN_PTR, &curr_main_item, MAIN_MENU_NONE,
+                       init_scroll_ptr);
+    checkset_btn_press(SEL_BTN_PTR, &curr_config_item, hover_config_item,
+                       init_scroll_ptr);
   } else {  // Item was selected
     switch (curr_config_item) {
       case CONFIG_MENU_TEST_USB_LOOPBACK:
-        test_usb_loopback();
-        usb_loopback_test_display((char*)usb_char_rx, (char*)usb_char_tx);
-        checkset_btn_press(&curr_config_item, BACK_BTN_PTR, CONFIG_MENU_NONE);
+        checkset_btn_press(SEL_BTN_PTR, &enable_usb_loopback,
+                           !enable_usb_loopback, NULL);
+        loopback_test_display("USB LOOP: ", (char*)usb_char_rx,
+                              enable_usb_loopback);
+        checkset_btn_press(BACK_BTN_PTR, &curr_config_item, CONFIG_MENU_NONE,
+                           init_scroll_ptr);
         break;
       default:
         curr_config_item = CONFIG_MENU_NONE;
@@ -175,8 +203,10 @@ void run_menu_state_controller(void) {
     scroll_control(RUN_MENU_MIN, RUN_MENU_MAX, (int*)&hover_run_item);
     display_scroll(menu_run_page_strs, menu_len(RUN_MENU_MAX), hover_run_item,
                    BOOLEAN_TRUE);
-    checkset_btn_press(&curr_main_item, BACK_BTN_PTR, MAIN_MENU_NONE);
-    checkset_btn_press(&curr_run_item, SEL_BTN_PTR, hover_run_item);
+    checkset_btn_press(BACK_BTN_PTR, &curr_main_item, MAIN_MENU_NONE,
+                       init_scroll_ptr);
+    checkset_btn_press(SEL_BTN_PTR, &curr_run_item, hover_run_item,
+                       init_scroll_ptr);
   } else {  // Item was selected
     switch (curr_run_item) {
       default:
@@ -199,7 +229,8 @@ void menu_state_controller(void) {
     switch (curr_main_item) {
       case MAIN_MENU_BOOT:
         boot_display();
-        checkset_btn_press(&curr_main_item, BACK_BTN_PTR, MAIN_MENU_NONE);
+        checkset_btn_press(BACK_BTN_PTR, &curr_main_item, MAIN_MENU_NONE,
+                           init_scroll_ptr);
         break;
       case MAIN_MENU_DIAG:
         diag_menu_state_controller();
@@ -216,6 +247,6 @@ void menu_state_controller(void) {
     }
   }
   // Clear all switch presses that weren't captured
-  sw1_pressed = INIT_CLEAR;
-  sw2_pressed = INIT_CLEAR;
+  // sw1_pressed = INIT_CLEAR;
+  // sw2_pressed = INIT_CLEAR;
 }

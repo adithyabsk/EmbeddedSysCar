@@ -13,4 +13,6 @@
 #define ZERO_NULL (0)
 #define SINGLE_INCREMENT (1)
 
+typedef void (*VOID_FUNC_PTR)(void);
+
 #endif /* COMMON_H */

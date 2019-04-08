@@ -48,14 +48,10 @@ void main(void) {
   init_scroll();        // Initialize the scroll of the menu system
 
   // init_baud_rate_display();
-  usb_test_transmit();
-  usb_const_out('e');
 
   while (BOOLEAN_TRUE) {  // Operational loop
     process_leds();
     menu_state_controller();
-
-    UCA1TXBUF = 'a';
 
     // usb_const_out('a');
 

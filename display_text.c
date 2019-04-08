@@ -115,12 +115,12 @@ void walltime2dec(int time, int offset, char* out) {
   strncpy((char*)(out + offset), dec_data, sizeof(dec_data));
 }
 
-void usb_loopback_test_display(char* rx_input, char* tx_input) {
+void loopback_test_display(char* header, char* rx_input, int lp_state) {
   char _rx[DISP_TEXT_MAX];
-  char _tx[DISP_TEXT_MAX];
+  char lp_state_str[DISP_TEXT_MAX] = "LOOP:     ";
   strncpy(_rx, rx_input, DISP_TEXT_MAX);
-  strncpy(_tx, tx_input, DISP_TEXT_MAX);
-  display_screen(" USB LOOP ", _rx, _tx, EMPTY_STR, BOOLEAN_TRUE);
+  state2str(lp_state, 6, lp_state_str);
+  display_screen(header, "RX:       ", _rx, lp_state_str, BOOLEAN_TRUE);
 }
 
 // void show_line_follow_status(void) {

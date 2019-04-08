@@ -49,7 +49,7 @@ void state2str(int, int, char*);
 
 void walltime2dec(int, int, char*);
 
-void usb_loopback_test_display(char*, char*);
+void loopback_test_display(char*, char*, int);
 
 void display_scroll(const char[][DISP_TEXT_MAX], int, int, int);
 

@@ -290,17 +290,6 @@ void update_serial_state(volatile char char_rx[SMALL_RING_SIZE],
   }
 }
 
-void test_usb_loopback(void) {
-  static int prev_wr = 0;
-  if ((usb_rx_ring_wr != prev_wr) && !(UCA1IE & UCTXIE)) {
-    clear_volatile_char_arr(usb_char_tx, SMALL_RING_SIZE);
-    usb_tx_ring_wr = BEGINNING;
-    strcpy((char*)usb_char_tx, (char*)usb_char_rx);
-    UCA1IE |= UCTXIE;
-    prev_wr = usb_rx_ring_wr;
-  }
-}
-
 // void test_iot_loopback(void) {
 //   static int prev_wr = -1;
 //   if (iot_rx_ring_wr != prev_wr) {
@@ -360,6 +349,9 @@ __interrupt void eUSCI_A1_ISR(void) {
         usb_char_rx[_irx] = buf_in;
         if (usb_rx_ring_wr >= (sizeof(usb_char_rx))) {
           usb_rx_ring_wr = BEGINNING;
+        }
+        if (enable_usb_loopback) {
+          UCA1TXBUF = buf_in;
         }
       }
       break;

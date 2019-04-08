@@ -51,6 +51,8 @@ SERIAL_LOCAL_DEF unsigned int iot_cmd_idx;
 
 SERIAL_LOCAL_DEF enum transmit_state usb_transmit_state;
 
+SERIAL_LOCAL_DEF int enable_usb_loopback;
+
 /**
  * @brief Initializes the serial set for both A0 and A1
  *
