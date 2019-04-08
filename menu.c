@@ -111,7 +111,7 @@ int curr_run_item = RUN_MENU_NONE;
 // Prototypes
 void init_scroll(void);
 void scroll_control(int, int, int*);
-void checkset_btn_press(volatile int*, int*, int, VOID_FUNC_PTR);
+void checkset_btn_press(volatile unsigned int*, int*, int, VOID_FUNC_PTR);
 void update_diag_values(void);
 void diag_menu_state_controller(void);
 void config_menu_state_controller(void);
@@ -140,8 +140,8 @@ void scroll_control(int min_item, int max_item, int* curr_item) {
   }
 }
 
-void checkset_btn_press(volatile int* btn, int* curr_item, int set_value,
-                        VOID_FUNC_PTR side_effect) {
+void checkset_btn_press(volatile unsigned int* btn, int* curr_item,
+                        int set_value, VOID_FUNC_PTR side_effect) {
   if (*btn) {
     *btn = INIT_CLEAR;
     if (curr_item) {

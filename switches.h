@@ -11,7 +11,7 @@
 #define SWITCHES_LOCAL_DEF extern
 #endif
 
-SWITCHES_LOCAL_DEF volatile int sw1_pressed;
-SWITCHES_LOCAL_DEF volatile int sw2_pressed;
+SWITCHES_LOCAL_DEF volatile unsigned int sw1_pressed;
+SWITCHES_LOCAL_DEF volatile unsigned int sw2_pressed;
 
 #endif /* SWITCHES_INTERRUPT_H */

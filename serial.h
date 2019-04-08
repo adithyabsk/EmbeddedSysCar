@@ -23,6 +23,8 @@ enum baud_state {
   BAUD_INVALID
 };
 
+enum transmit_device { T_USB, T_IOT, T_INVALID };
+
 enum transmit_state { SET_TRANSMIT_OFF, SET_TRANSMIT_ON };
 
 SERIAL_LOCAL_DEF volatile unsigned int usb_rx_ring_wr;
@@ -49,7 +51,7 @@ SERIAL_LOCAL_DEF enum cmd_state iot_state;
 SERIAL_LOCAL_DEF char iot_cmd[CMD_MAX_SIZE];
 SERIAL_LOCAL_DEF unsigned int iot_cmd_idx;
 
-SERIAL_LOCAL_DEF enum transmit_state usb_transmit_state;
+SERIAL_LOCAL_DEF volatile enum transmit_state usb_transmit_state;
 
 SERIAL_LOCAL_DEF int enable_usb_loopback;
 
@@ -91,8 +93,8 @@ void clear_char_arr(char[], int);
 void clear_iot_state(void);
 void clear_usb_state(void);
 
-void usb_transmit(void);
-void iot_transmit(void);
+void usb_transmit(char*);
+void iot_transmit(char*);
 
 void set_usb_transmit_state(enum transmit_state);
 

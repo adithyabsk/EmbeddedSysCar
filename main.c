@@ -32,14 +32,15 @@ void main(void);
 void main(void) {
   // Disable the GPIO power-on default high-impedance mode to activate
   // previously configured port settings
+
   PM5CTL0 &= ~LOCKLPM5;
 
   fl_timer_counter = 1;
 
   init_ports();         // Initialize Ports
   init_clocks();        // Initialize Clock System
-  init_serial();        // Initialize serial ports
   enable_interrupts();  // Allow interrupts
+  init_serial();        // Initialize serial ports
   init_display();       // Setup display
   init_timers();        // Initialize Timers
   Init_LCD();           // Initialize LCD
@@ -53,19 +54,16 @@ void main(void) {
     process_leds();
     menu_state_controller();
 
-    // usb_const_out('a');
-
     // update_follow_line_state();
     // show_adc_status();
-
-    // out_character('a');
 
     // display_baud();
 
     // show_line_follow_status();
 
     // run_scheduler(); // MAKE SURE TO TURN THIS ON FOR SERIAL TO WORK
-    // update_serial_states();
+
+    update_serial_states();
 
     Display_Process();  // Dispaly update
   }
