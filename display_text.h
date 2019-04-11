@@ -53,4 +53,6 @@ void loopback_test_display(char*, char*, int);
 
 void display_scroll(const char[][DISP_TEXT_MAX], int, int, int);
 
+void display_iot_data(char[][DISP_TEXT_MAX], int, int);
+
 #endif /* DISPLAY_TEXT_H */

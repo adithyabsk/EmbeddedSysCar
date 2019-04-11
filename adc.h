@@ -11,6 +11,8 @@
 #define ADC_LOCAL_DEF extern
 #endif
 
+#include <stdint.h>
+
 /**
  * @brief Computed directional drive state
  *
@@ -28,22 +30,22 @@ enum follow_line_state {
   INVALID_FLS
 };
 
-ADC_LOCAL_DEF volatile enum follow_line_state fl_state;
+__no_init ADC_LOCAL_DEF volatile enum follow_line_state fl_state;
 
 /*
  * State variable for thumb wheel.
  */
-ADC_LOCAL_DEF volatile unsigned int adc_thmb;
+__no_init ADC_LOCAL_DEF volatile unsigned int adc_thmb;
 
 /*
  * State variable for left detector.
  */
-ADC_LOCAL_DEF volatile unsigned int adc_ldet;
+__no_init ADC_LOCAL_DEF volatile unsigned int adc_ldet;
 
 /*
  * State variable for right detector.
  */
-ADC_LOCAL_DEF volatile unsigned int adc_rdet;
+__no_init ADC_LOCAL_DEF volatile unsigned int adc_rdet;
 
 /**
  * @brief All possible states for the ADC variable

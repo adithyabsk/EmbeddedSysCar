@@ -12,6 +12,7 @@
 #endif
 
 #include "msp430.h"
+#include "stdint.h"
 
 // Timer B0
 // Calculation SMCLK / 2 / 8 / (1/x in seconds) --> rate
@@ -35,11 +36,11 @@ enum lf_routine {
   INVALID_LF_STATE
 };
 
-TIMERS_LOCAL_DEF volatile char one_time;
-TIMERS_LOCAL_DEF volatile unsigned int Time_Sequence;
-TIMERS_LOCAL_DEF unsigned int switch_debounce_count;
-TIMERS_LOCAL_DEF volatile unsigned int wall_clock_time_count;
-TIMERS_LOCAL_DEF volatile enum lf_routine lf_routine_state;
+__no_init TIMERS_LOCAL_DEF volatile char one_time;
+__no_init TIMERS_LOCAL_DEF volatile unsigned int Time_Sequence;
+__no_init TIMERS_LOCAL_DEF unsigned int switch_debounce_count;
+__no_init TIMERS_LOCAL_DEF volatile unsigned int wall_clock_time_count;
+__no_init TIMERS_LOCAL_DEF volatile enum lf_routine lf_routine_state;
 
 /**
  * @brief Initializes all of the system timers

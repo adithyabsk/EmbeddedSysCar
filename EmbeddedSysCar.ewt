@@ -2179,6 +2179,9 @@
         <name>$PROJ_DIR$\drive.c</name>
     </file>
     <file>
+        <name>$PROJ_DIR$\iot.c</name>
+    </file>
+    <file>
         <name>$PROJ_DIR$\led.c</name>
     </file>
     <file>

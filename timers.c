@@ -33,13 +33,19 @@ unsigned int wait_time_count;
 void init_timer_B0(void);
 void init_timer_B1(void);
 // void init_timer_B2(void);
-// void init_timer_B3(void);
+void init_timer_B3(void);
 
 void init_timers(void) {
   init_timer_B0();
   init_timer_B1();
   // init_timer_B2();
-  // init_timer_B3();
+  init_timer_B3();
+
+  one_time = 0;
+  Time_Sequence = 0;
+  switch_debounce_count = 0;
+  wall_clock_time_count = 0;
+  lf_routine_state = INTERCEPTING;
 }
 
 void init_timer_B0(void) {
@@ -101,31 +107,31 @@ void init_timer_B1(void) {
 //   TB2CTL &= ~TBIE;   // Disable Overflow Interrupt
 //   TB2CTL &= ~TBIFG;  // Clear overflow interrupt flag
 // }
-//
-// void init_timer_B3(void) {
-//   TB3CTL = TBSSEL__SMCLK;  // SMCLK source
-//   // TB3CTL |= TBCLR;          // Resets TB0R, clock divider, count direction
-//   // TB3CTL |= MC__CONTINOUS;  // Continuous up
-//   // TB3CTL |= ID__2;          // Divide clock by 2
-//   // TB3EX0 = TBIDEX__8;       // Divide clock by an additional 8
-//
-//   TB3CTL |= MC__UP;  // Up Mode
-//   TB3CTL |= TBCLR;   // Clear TAR
-//
-//   TB3CCR0 = (unsigned int)WHEEL_PERIOD;
-//
-//   TB3CCTL1 = OUTMOD_7;
-//   RIGHT_FORWARD_SPEED = WHEEL_OFF;
-//
-//   TB3CCTL2 = OUTMOD_7;
-//   LEFT_FORWARD_SPEED = WHEEL_OFF;
-//
-//   TB3CCTL3 = OUTMOD_7;
-//   RIGHT_REVERSE_SPEED = WHEEL_OFF;
-//
-//   TB3CCTL4 = OUTMOD_7;
-//   LEFT_REVERSE_SPEED = WHEEL_OFF;
-// }
+
+void init_timer_B3(void) {
+  TB3CTL = TBSSEL__SMCLK;  // SMCLK source
+  // TB3CTL |= TBCLR;          // Resets TB0R, clock divider, count direction
+  // TB3CTL |= MC__CONTINOUS;  // Continuous up
+  // TB3CTL |= ID__2;          // Divide clock by 2
+  // TB3EX0 = TBIDEX__8;       // Divide clock by an additional 8
+
+  TB3CTL |= MC__UP;  // Up Mode
+  TB3CTL |= TBCLR;   // Clear TAR
+
+  TB3CCR0 = (unsigned int)WHEEL_PERIOD;
+
+  TB3CCTL1 = OUTMOD_7;
+  RIGHT_FORWARD_SPEED = WHEEL_OFF;
+
+  TB3CCTL2 = OUTMOD_7;
+  LEFT_FORWARD_SPEED = WHEEL_OFF;
+
+  TB3CCTL3 = OUTMOD_7;
+  RIGHT_REVERSE_SPEED = WHEEL_OFF;
+
+  TB3CCTL4 = OUTMOD_7;
+  LEFT_REVERSE_SPEED = WHEEL_OFF;
+}
 
 #pragma vector = TIMER0_B0_VECTOR
 __interrupt void TIMER0_B0_ISR(void) {
@@ -251,26 +257,26 @@ __interrupt void TIMER1_B1_ISR(void) {
 //   }
 // }
 //
-// #pragma vector = TIMER3_B0_VECTOR
-// __interrupt void TIMER3_B0_ISR(void) {
-//   // TB3CCR0 += TB3CCR0_INTERVAL;  // Add Offset
-// }
-//
-// #pragma vector = TIMER3_B1_VECTOR
-// __interrupt void TIMER3_B1_ISR(void) {
-//   switch (__even_in_range(TB3IV, 14)) {
-//     case 0:
-//       break;
-//     case 2:
-//       // TB3CCR1 += TB3CCR1_INTERVAL;  // Add Offset
-//       break;
-//     case 4:
-//       // TB3CCR2 += TB3CCR2_INTERVAL;  // Add Offset
-//       break;
-//     case 14:
-//       // overflow
-//       break;
-//     default:
-//       break;
-//   }
-// }
+#pragma vector = TIMER3_B0_VECTOR
+__interrupt void TIMER3_B0_ISR(void) {
+  // TB3CCR0 += TB3CCR0_INTERVAL;  // Add Offset
+}
+
+#pragma vector = TIMER3_B1_VECTOR
+__interrupt void TIMER3_B1_ISR(void) {
+  switch (__even_in_range(TB3IV, 14)) {
+    case 0:
+      break;
+    case 2:
+      // TB3CCR1 += TB3CCR1_INTERVAL;  // Add Offset
+      break;
+    case 4:
+      // TB3CCR2 += TB3CCR2_INTERVAL;  // Add Offset
+      break;
+    case 14:
+      // overflow
+      break;
+    default:
+      break;
+  }
+}

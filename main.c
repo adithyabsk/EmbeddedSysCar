@@ -13,11 +13,13 @@
 #include "common.h"
 #include "display.h"
 #include "drive.h"
+#include "iot.h"
 #include "led.h"
 #include "menu.h"
 #include "ports.h"
 #include "scheduler.h"
 #include "serial.h"
+#include "switches.h"
 #include "system.h"
 #include "timers.h"
 
@@ -39,8 +41,8 @@ void main(void) {
 
   init_ports();         // Initialize Ports
   init_clocks();        // Initialize Clock System
-  enable_interrupts();  // Allow interrupts
   init_serial();        // Initialize serial ports
+  enable_interrupts();  // Allow interrupts
   init_display();       // Setup display
   init_timers();        // Initialize Timers
   Init_LCD();           // Initialize LCD
@@ -48,23 +50,20 @@ void main(void) {
   init_scheduler();     // Initialize time based system scheduler
   init_scroll();        // Initialize the scroll of the menu system
   init_iot();
+  init_switches();
+  init_drive();
 
-  // init_baud_rate_display();
+  iot_alive();
 
   while (BOOLEAN_TRUE) {  // Operational loop
     process_leds();
+
     menu_state_controller();
-
-    // update_follow_line_state();
-    // show_adc_status();
-
-    // display_baud();
-
-    // show_line_follow_status();
-
     update_serial_states();
     process_commands();
+
     run_scheduler();
+    arcade_drive_state_machine();
 
     Display_Process();  // Dispaly update
   }

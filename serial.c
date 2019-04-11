@@ -7,12 +7,14 @@
 #define SERIAL_LOCAL_DEF
 #include "serial.h"
 
+#include <ctype.h>
 #include <stdlib.h>
 #include <string.h>
 
 #include "msp430.h"
 
 #include "common.h"
+#include "drive.h"
 #include "ports.h"
 #include "scheduler.h"
 #include "switches.h"
@@ -43,13 +45,7 @@
 
 #define ENABLE_TRANMIST_CHAR ('~')  // Uncommon ASCII Char
 
-enum cmd_state {
-  CMD_NONE,
-  CMD_RECEIVING,
-  CMD_RECEIVED,
-  CMD_TRANSMITING,
-  CMD_INVALID
-};
+enum cmd_state { CMD_NONE, CMD_RECEIVING, CMD_INVALID };
 
 void init_serial_iot(void);
 void init_serial_usb(void);
@@ -97,17 +93,13 @@ void usb_transmit(char* tx) {
   }
 }
 
-void schedule_test_transmit(void) {
-  VOID_FUNC_PTR ts_func = &iot_test_transmit;  // define function pointer
-  schedule_func_call(ts_func, 10);             // wait 2 seconds
-}
-
 void init_serial(void) {
-  system_baud = BAUD_115200;
   usb_state = CMD_NONE;
 
   init_serial_iot();
   init_serial_usb();
+
+  enable_usb_loopback = BOOLEAN_FALSE;
 }
 
 void clear_iot_state(void) {
@@ -117,6 +109,10 @@ void clear_iot_state(void) {
 
   iot_cmd_idx = BEGINNING;
   memset(iot_cmd, 0, CMD_BUFFER);
+
+  fill_iot_resp_buff = BOOLEAN_FALSE;
+  memset(iot_resp_buff, 0, RESP_BUFFER);
+  iot_resp_buff_idx = 0;
 }
 
 void clear_usb_state(void) {
@@ -137,7 +133,7 @@ void init_serial_iot(void) {
   UCA0CTLW0 = INIT_CLEAR;      // Use word register
   UCA0CTLW0 |= UCSWRST;        // Set software reset enable
   UCA0CTLW0 |= UCSSEL__SMCLK;  // Set SMCLK as F_BRCLK
-  set_iot_baud_rate(system_baud);
+  set_iot_baud_rate(BAUD_115200);
 
   UCA0CTLW0 &= ~UCSWRST;  // Set software reset enable
   UCA0IE |= UCRXIE;       // Enable Rx interrupt
@@ -155,7 +151,7 @@ void init_serial_usb(void) {
   UCA1CTLW0 |= UCSWRST;        // Set software reset enable
   UCA1CTLW0 |= UCSSEL__SMCLK;  // Set SMCLK as F_BRCLK
 
-  set_usb_baud_rate(system_baud);
+  set_usb_baud_rate(BAUD_115200);
   UCA1CTLW0 &= ~UCSWRST;  // Set software reset enable
   UCA1IE |= UCRXIE;       // Enable Rx interrupt
   UCA1IE &= ~UCTXIE;      // Disable Tx interrupt
@@ -223,8 +219,8 @@ void serial_passthrough(char str_buffer[CMD_BUFFER], int length,
   }
 }
 
-int read_char(volatile char* char_rx, unsigned int* rx_rd_ptr,
-              volatile unsigned int* rx_wr_ptr, char* out) {
+unsigned int read_char(volatile char* char_rx, unsigned int* rx_rd_ptr,
+                       volatile unsigned int* rx_wr_ptr, char* out) {
   unsigned int _rx_rd = *rx_rd_ptr;
   unsigned int _rx_wr = *rx_wr_ptr;
   if (_rx_rd != _rx_wr) {
@@ -236,6 +232,14 @@ int read_char(volatile char* char_rx, unsigned int* rx_rd_ptr,
     return BOOLEAN_TRUE;
   } else {
     return BOOLEAN_FALSE;
+  }
+}
+
+void add_cmd(char* cmd) {  // end_ptr + 1 - cmd
+  memset((char*)(cmd_list + cmd_list_wr), 0, CMD_BUFFER);
+  strcpy(cmd_list[cmd_list_wr], cmd);
+  if (++cmd_list_wr > (CMD_MAX_SIZE - 1)) {
+    cmd_list_wr = 0;
   }
 }
 
@@ -257,6 +261,17 @@ void process_serial_stream(volatile char char_rx[SMALL_RING_SIZE],
   }
   int extra_cmd_txt;
   int buff_len = strlen(read_buffer);
+  if ((td == T_IOT) && (fill_iot_resp_buff)) {
+    if (buff_len <= (RESP_BUFFER - 1 - iot_resp_buff_idx)) {
+      char* curr_char;
+      for (curr_char = read_buffer; (curr_char - read_buffer) < buff_len;
+           curr_char++) {
+        iot_resp_buff[iot_resp_buff_idx++] = *curr_char;
+      }
+    } else {
+      fill_iot_resp_buff = BOOLEAN_FALSE;
+    }
+  }
 
   do {
     extra_cmd_txt = 0;
@@ -296,7 +311,7 @@ void process_serial_stream(volatile char char_rx[SMALL_RING_SIZE],
             cmd_list_wr = 0;
           }
           *state = CMD_NONE;
-        } else if (cmd_len == (CMD_BUFFER - 1)) {
+        } else if (cmd_len > (CMD_BUFFER - 1)) {
           memset(cmd, 0, CMD_BUFFER);
           *cmd_idx_ptr = 0;
           *state = CMD_NONE;
@@ -342,6 +357,46 @@ void process_fram_cmd(char* cmd) {
   }
 }
 
+void process_drive_cmd(char* cmd) {
+  int cmdlen = strlen(cmd);
+  if (cmdlen == 7) {
+    char cmd1[5] = "   \r";
+    char cmd2[5] = "   \r";
+    strncpy(cmd1, cmd, 3);
+    strncpy(cmd2, (char*)cmd + 3, 3);
+    process_drive_cmd(cmd1);
+    process_drive_cmd(cmd2);
+  } else if (cmdlen == 4) {
+    if (isdigit(cmd[2])) {
+      int drive_time = (int)(cmd[2] - '0');
+      switch (cmd[1]) {
+        case 'W':
+          sched_drive_state = DRIVE_FORWARD;
+          sched_drive_time = drive_time;
+          schedule_drive_state();
+          break;
+        case 'A':
+          sched_drive_state = DRIVE_LEFT;
+          sched_drive_time = drive_time;
+          schedule_drive_state();
+          break;
+        case 'S':
+          sched_drive_state = DRIVE_REVERSE;
+          sched_drive_time = drive_time;
+          schedule_drive_state();
+          break;
+        case 'D':
+          sched_drive_state = DRIVE_RIGHT;
+          sched_drive_time = drive_time;
+          schedule_drive_state();
+          break;
+        default:
+          break;
+      }
+    }
+  }
+}
+
 void process_commands(void) {
   if (cmd_list_wr != cmd_list_rd) {
     int i;
@@ -351,6 +406,12 @@ void process_commands(void) {
       if (curr_cmd[0] == '^') {  // FRAM CMDs
         process_fram_cmd(curr_cmd);
       } else if (curr_cmd[0] == '$') {  // CAR CMDs
+        process_drive_cmd(curr_cmd);
+      } else if (curr_cmd[0] == '@') {  // IOT capture cmd
+        iot_transmit(&(curr_cmd[1]));
+        fill_iot_resp_buff = BOOLEAN_TRUE;
+        memset(iot_resp_buff, 0, RESP_BUFFER);
+        iot_resp_buff_idx = 0;
       }
     }
   }

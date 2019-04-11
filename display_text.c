@@ -10,9 +10,9 @@
 
 #include "msp430.h"
 
-#include "display.h"
-
 #include "common.h"
+#include "display.h"
+#include "iot.h"
 
 #define HEX_MAX_STR_LEN (3)
 #define HEX_BASE (16)
@@ -43,8 +43,6 @@ void display_scroll(const char config_list[][DISP_TEXT_MAX], int list_len,
   if (display_selector) {  // Always scroll
     sel_elem[0] = '<';
     sel_elem[9] = '>';
-  } else {
-    // Do nothing
   }
   if (list_len <= DISP_MAX_ROWS) {  // Move selector
     display_screen((curr_item == 0) ? sel_elem : config_list[0],
@@ -115,13 +113,34 @@ void walltime2dec(int time, int offset, char* out) {
   strncpy((char*)(out + offset), dec_data, sizeof(dec_data));
 }
 
-void loopback_test_display(char* header, char* rx_input, int lp_state) {
-  char _rx[DISP_TEXT_MAX];
-  char lp_state_str[DISP_TEXT_MAX] = "LOOP:     ";
-  strncpy(_rx, rx_input, DISP_TEXT_MAX);
-  state2str(lp_state, 6, lp_state_str);
-  display_screen(header, "RX:       ", _rx, lp_state_str, BOOLEAN_TRUE);
+// void loopback_test_display(char* header, char* rx_input, int lp_state) {
+//   char _rx[DISP_TEXT_MAX];
+//   char lp_state_str[DISP_TEXT_MAX] = "LOOP:     ";
+//   strncpy(_rx, rx_input, DISP_TEXT_MAX-1);
+//   state2str(lp_state, 6, lp_state_str);
+//   display_screen(header, "RX:       ", _rx, lp_state_str, BOOLEAN_TRUE);
+// }
+
+void cleanse_inline_null(char* str, int str_len) {
+  char* c;
+  for (c = str; (int)(c - str) < str_len; c++) {
+    if (*c == '\0') *c = ' ';
+  }
 }
+
+void display_iot_data(char iot_scrn_strs[][DISP_TEXT_MAX], int start, int end) {
+  int i;
+  for (i = 0; i < enum_len(IF_MAX); i++) {
+    char disp_str[DISP_TEXT_MAX] = EMPTY_STR;  // pad with spaces
+    strncpy(disp_str,
+            (char*)(iot_ifconfig[i].value + iot_ifconfig[i].display_offset),
+            DISP_TEXT_MAX - 1);
+    cleanse_inline_null(disp_str, DISP_TEXT_MAX - 1);
+    strcpy(iot_scrn_strs[start + 1 + i * 2], disp_str);
+  }
+}
+
+void should_allow_horiz_scroll(char* full_data, int selector) {}
 
 // void show_line_follow_status(void) {
 //   set_clear_lines();

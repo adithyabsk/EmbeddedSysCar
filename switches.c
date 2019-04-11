@@ -13,6 +13,11 @@
 #include "ports.h"
 #include "timers.h"
 
+void init_switches(void) {
+  sw1_pressed = 0;
+  sw2_pressed = 0;
+}
+
 #pragma vector = PORT4_VECTOR
 __interrupt void switchP4_ISR(void) {
   if (SW1_PRESSED) {

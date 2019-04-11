@@ -7,10 +7,11 @@
 #ifndef SCHEDULER_H
 #define SCHEDULER_H
 
+#include <stdint.h>
 #include "common.h"
 
 void init_scheduler(void);
-int schedule_func_call(VOID_FUNC_PTR, int);
+unsigned int schedule_func_call(VOID_FUNC_PTR, int);
 void run_scheduler(void);
 
 #endif /* SCHEDULER_H */

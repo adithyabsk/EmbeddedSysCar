@@ -180,16 +180,4 @@ void set_smclk_mode(int smclk_mode);
  */
 enum smclk_state { SET_GPIO, SET_FUNCTION, INVALID_PIN_STATE };
 
-enum iot_rst_state { SET_RESET_IOT, SET_RELEASE_IOT, INVALID_IOT_RST_STATE };
-
-/**
- * @brief Sets the output of the IOT_RESET port
- *
- * @param iot_rst_mode is a boolean flag. RELASE allows IOT to operate and
- * RESET sets the IOT back to reset
- */
-void set_iot_rst_state(enum iot_rst_state);
-
-void init_iot(void);
-
 #endif /* ADC_INTERRUPT_HEADER_H */

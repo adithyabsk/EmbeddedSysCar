@@ -22,6 +22,11 @@ void init_adc(void) {
   // V_DETECT_R Port 1 Pin 3 (0x08)
   // V_THUMB    Port 1 Pin 5 (0x20)
 
+  fl_state = NO_LINE;
+  adc_thmb = 0;
+  adc_ldet = 0;
+  adc_rdet = 0;
+
   // ADCCTL1 & ADCBUSY  identifies a conversion is in process
 
   // ADCCTL0 Register

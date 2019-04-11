@@ -19,11 +19,24 @@
 #define LEFT_FORWARD_SPEED (TB3CCR2)
 #define RIGHT_REVERSE_SPEED (TB3CCR3)
 #define LEFT_REVERSE_SPEED (TB3CCR4)
-#define WHEEL_PERIOD (40000U)
+#define WHEEL_PERIOD (256)
 #define WHEEL_OFF (0)
+
+enum drive_state {
+  DRIVE_NONE,
+  DRIVE_FORWARD,
+  DRIVE_REVERSE,
+  DRIVE_LEFT,
+  DRIVE_RIGHT,
+  DRIVE_INVALID
+};
 
 DRIVE_LOCAL_DEF volatile enum follow_line_state prev_fl_state;
 DRIVE_LOCAL_DEF volatile unsigned int fl_timer_counter;
+
+DRIVE_LOCAL_DEF enum drive_state car_drive_state;
+DRIVE_LOCAL_DEF unsigned int sched_drive_time;
+DRIVE_LOCAL_DEF enum drive_state sched_drive_state;
 
 /**
  * @brief Stops all car motion
@@ -64,5 +77,9 @@ void forward_turn(int cycle_offset);
 void update_speeds(void);
 
 void run_controller(void);
+
+void init_drive(void);
+void arcade_drive_state_machine(void);
+void schedule_drive_state(void);
 
 #endif /* DRIVE_H */

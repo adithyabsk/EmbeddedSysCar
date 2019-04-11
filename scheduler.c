@@ -6,6 +6,7 @@
 
 #include "scheduler.h"
 
+#include <stdint.h>
 #include <string.h>
 
 #include "common.h"
@@ -17,7 +18,7 @@ struct sched_entry {
   VOID_FUNC_PTR func;
   unsigned int call_time;
   unsigned int wait_time;
-  unsigned int completed;
+  uint8_t completed;
 };
 
 unsigned int sched_pos = INIT_CLEAR;
@@ -31,7 +32,7 @@ void assign_schedule_item(VOID_FUNC_PTR f, int wt, int pos) {
   scheduler[pos].completed = INIT_CLEAR;
 }
 
-int schedule_func_call(VOID_FUNC_PTR f, int wt) {
+unsigned int schedule_func_call(VOID_FUNC_PTR f, int wt) {
   int i;
   for (i = INIT_CLEAR; i < SCHED_SIZE; i++) {
     if (scheduler[i].completed) {
