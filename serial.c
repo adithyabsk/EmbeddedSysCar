@@ -34,6 +34,8 @@
 #define SERIAL_ISR_RX (2)
 #define SERIAL_ISR_TX (4)
 // Pulled from the MSP430 documentation
+#define B9600_BRx (52)
+#define B9600_MCTLW (0x4911)
 #define B115200_BRx (4)
 #define B115200_MCTLW (0x5551)
 #define B460800_BRx (17)
@@ -51,10 +53,8 @@ enum cmd_state {
 
 void init_serial_iot(void);
 void init_serial_usb(void);
-void clear_char_arr(char[], int);
-void clear_volatile_char_arr(volatile char[], int);
 void process_serial_stream(volatile char[], char cmd[], unsigned int*,
-                           const unsigned int, volatile unsigned int*,
+                           volatile unsigned int*, unsigned int*,
                            enum cmd_state*, char, enum transmit_device);
 
 void iot_const_out(char c) {
@@ -74,20 +74,6 @@ void iot2waiting(void) { iot_state = CMD_NONE; }
 
 void usb2waiting(void) { usb_state = CMD_NONE; }
 
-void fill_ring_buffer(volatile char* dst, char* src,
-                      volatile unsigned int* start_idx) {
-  int str_len = strlen(src);
-  if ((*start_idx + strlen(src)) <= SMALL_RING_SIZE) {
-    strncpy((char*)(dst + *start_idx), src, str_len);
-    *start_idx = *start_idx + str_len;
-  } else {
-    int offset = SMALL_RING_SIZE - *start_idx;
-    strncpy((char*)(dst + *start_idx), src, offset);
-    strncpy((char*)dst, (char*)(src + offset), str_len - offset);
-    *start_idx = str_len - offset;
-  }
-}
-
 void iot_transmit(char* tx) {
   int i;
   for (i = 0; i < strlen(tx); i++) {
@@ -95,27 +81,20 @@ void iot_transmit(char* tx) {
   }
 }
 
+/*
+Debugging character dropping:
+* usb transmit does not recieve the dropped character
+* char_rx has all of the characters
+* Error is somewhere between the read in and the transmit
+*/
+
 void usb_transmit(char* tx) {
   if (usb_transmit_state == SET_TRANSMIT_ON) {
     int i;
     for (i = 0; i < strlen(tx); i++) {
-      usb_const_out(tx[i]);
+      usb_const_out((char)tx[i]);
     }
   }
-}
-
-void usb_test_transmit() {
-  char transmit[SMALL_RING_SIZE] = "$TEST_CMD ";
-  clear_volatile_char_arr(usb_char_tx, SMALL_RING_SIZE);
-  strcpy((char*)usb_char_tx, transmit);
-  UCA1IE |= UCTXIE;
-}
-
-void iot_test_transmit() {
-  char transmit[SMALL_RING_SIZE] = "$TEST_CMD ";
-  clear_volatile_char_arr(iot_char_tx, SMALL_RING_SIZE);
-  strcpy((char*)iot_char_tx, transmit);
-  UCA0IE |= UCTXIE;
 }
 
 void schedule_test_transmit(void) {
@@ -134,27 +113,19 @@ void init_serial(void) {
 void clear_iot_state(void) {
   iot_rx_ring_wr = BEGINNING;
   iot_rx_ring_rd = BEGINNING;
-  clear_volatile_char_arr(iot_char_rx, SMALL_RING_SIZE);  // Init IOT Rx Buffer
-
-  iot_tx_ring_wr = BEGINNING;
-  iot_tx_ring_rd = BEGINNING;
-  clear_volatile_char_arr(iot_char_tx, SMALL_RING_SIZE);  // Init IOT Tx Buffer
+  memset((char*)iot_char_rx, 0, SMALL_RING_SIZE);
 
   iot_cmd_idx = BEGINNING;
-  clear_char_arr(iot_cmd, CMD_MAX_SIZE);
+  memset(iot_cmd, 0, CMD_BUFFER);
 }
 
 void clear_usb_state(void) {
   usb_rx_ring_wr = BEGINNING;
   usb_rx_ring_rd = BEGINNING;
-  clear_volatile_char_arr(usb_char_rx, SMALL_RING_SIZE);  // Init USB Rx Buffer
-
-  usb_tx_ring_wr = BEGINNING;
-  usb_tx_ring_rd = BEGINNING;
-  clear_volatile_char_arr(usb_char_tx, SMALL_RING_SIZE);  // Init USB Tx Buffer
+  memset((char*)usb_char_rx, 0, SMALL_RING_SIZE);
 
   usb_cmd_idx = BEGINNING;
-  clear_char_arr(usb_cmd, CMD_MAX_SIZE);
+  memset(usb_cmd, 0, CMD_BUFFER);
 }
 
 void init_serial_iot(void) {
@@ -190,158 +161,206 @@ void init_serial_usb(void) {
   UCA1IE &= ~UCTXIE;      // Disable Tx interrupt
 }
 
-void clear_char_arr(char arr[], int length) {
-  int i;
-  for (i = INIT_CLEAR; i < length; i++) {
-    arr[i] = INIT_CLEAR;
-  }
-}
-
-void clear_volatile_char_arr(volatile char arr[], int length) {
-  int i;
-  for (i = INIT_CLEAR; i < length; i++) {
-    arr[i] = INIT_CLEAR;
-  }
-}
-
-void set_iot_baud_rate(enum baud_state b) {
+enum response_status set_iot_baud_rate(enum baud_state b) {
   switch (b) {
+    case BAUD_9600:
+      UCA0BRW = B9600_BRx;
+      UCA0MCTLW = B9600_MCTLW;
+      return PROCESS_BAUD_9600;
     case BAUD_115200:
       UCA0BRW = B115200_BRx;
       UCA0MCTLW = B115200_MCTLW;
-      break;
+      return PROCESS_BAUD_115200;
     case BAUD_460800:
       UCA0BRW = B460800_BRx;
       UCA0MCTLW = B460800_MCTLW;
+      return PROCESS_BAUD_460800;
     default:
-      break;
+      return PROCESS_FAILED;
   }
 }
 
-void set_usb_baud_rate(enum baud_state b) {
+enum response_status set_usb_baud_rate(enum baud_state b) {
   switch (b) {
+    case BAUD_9600:
+      UCA1BRW = B9600_BRx;
+      UCA1MCTLW = B9600_MCTLW;
+      return PROCESS_BAUD_9600;
     case BAUD_115200:
       UCA1BRW = B115200_BRx;
       UCA1MCTLW = B115200_MCTLW;
-      break;
+      return PROCESS_BAUD_115200;
     case BAUD_460800:
       UCA1BRW = B460800_BRx;
       UCA1MCTLW = B460800_MCTLW;
+      return PROCESS_BAUD_460800;
     default:
-      break;
+      return PROCESS_FAILED;
   }
 }
 
 void update_serial_states(void) {
-  process_serial_stream(usb_char_rx, usb_cmd, &usb_cmd_idx, usb_rx_ring_wr,
-                        &usb_rx_ring_rd, &usb_state, '^', T_USB);
-  process_serial_stream(iot_char_rx, iot_cmd, &iot_cmd_idx, iot_rx_ring_wr,
+  process_serial_stream(iot_char_rx, iot_cmd, &iot_cmd_idx, &iot_rx_ring_wr,
                         &iot_rx_ring_rd, &iot_state, '$', T_IOT);
+  process_serial_stream(usb_char_rx, usb_cmd, &usb_cmd_idx, &usb_rx_ring_wr,
+                        &usb_rx_ring_rd, &usb_state, '^', T_USB);
 }
 
-void serial_passthrough(
-    volatile char char_rx[SMALL_RING_SIZE], volatile unsigned int* rx_rd_ptr,
-    const unsigned int leading_index,  // could be wr_idx or start_ptr distance
-    enum transmit_device td) {
-  char transmit_str[SMALL_RING_SIZE];
-  clear_char_arr(transmit_str, SMALL_RING_SIZE);
-  if (*rx_rd_ptr < leading_index) {  // normal case (lagging read head)
-    int str_len = leading_index - *rx_rd_ptr;
-    char* new_ptr = (char*)(char_rx + (*rx_rd_ptr));
-    strncpy(transmit_str, new_ptr, str_len);  // copy string
-    memset(new_ptr, 0, str_len);              // clear string
-  } else if (leading_index <
-             *rx_rd_ptr) {  // infrequent case (leading read head)
-    int l1 = SMALL_RING_SIZE - *rx_rd_ptr;
-    char* s1 = (char*)(char_rx + (*rx_rd_ptr));
-    char* t2 = (char*)(transmit_str + l1);
-    strncpy(transmit_str, s1, l1);
-    strncpy(t2, (char*)char_rx, leading_index);
-    memset(s1, 0, l1);  // clear source one (char_rx, substring one)
-    memset((char*)char_rx, 0,
-           leading_index);  // clear source two (char_rx, substring two)
-  } else {
-    return;  // do nothing otherwise
-  }
-  *rx_rd_ptr = leading_index;
-  // transmit the string
+void serial_passthrough(char str_buffer[CMD_BUFFER], int length,
+                        enum transmit_device td) {
+  char transmit_str[CMD_BUFFER];
+  memset(transmit_str, 0, CMD_BUFFER);
+  strncpy(transmit_str, str_buffer, length);
   switch (td) {
     case T_USB:
-      usb_transmit(transmit_str);
+      iot_transmit(transmit_str);  // USB Rx --> IOT Tx
       break;
     case T_IOT:
-      iot_transmit(transmit_str);
+      usb_transmit(transmit_str);  // IOT Tx --> USB Rx
       break;
     default:
       break;
+  }
+}
+
+int read_char(volatile char* char_rx, unsigned int* rx_rd_ptr,
+              volatile unsigned int* rx_wr_ptr, char* out) {
+  unsigned int _rx_rd = *rx_rd_ptr;
+  unsigned int _rx_wr = *rx_wr_ptr;
+  if (_rx_rd != _rx_wr) {
+    *out = char_rx[_rx_rd];
+    if (++(_rx_rd) >= (SMALL_RING_SIZE - 1)) {
+      _rx_rd = 0;
+    }
+    *rx_rd_ptr = _rx_rd;
+    return BOOLEAN_TRUE;
+  } else {
+    return BOOLEAN_FALSE;
   }
 }
 
 void process_serial_stream(volatile char char_rx[SMALL_RING_SIZE],
                            char cmd[CMD_MAX_SIZE], unsigned int* cmd_idx_ptr,
-                           const unsigned int rx_wr,
-                           volatile unsigned int* rx_rd_ptr,
-                           enum cmd_state* state, char command_char,
-                           enum transmit_device td) {
-  // char* start_ptr;
-  // char* end_ptr;
-  switch (*state) {
-    case CMD_NONE:
-      // start_ptr = strchr((const char*)char_rx, command_char);
-      // if (start_ptr) {
-      //   clear_char_arr(cmd, CMD_MAX_SIZE);
-      //   *cmd_idx_ptr = BEGINNING;
-      //   unsigned int ld_idx = (int)(start_ptr - char_rx);
-      //   if(ld_idx != *rx_rd_ptr) {
-      //     serial_passthrough(char_rx, rx_rd_ptr, ld_idx);
-      //   } else {
-      //     // Do not transmit because command char is first new char
-      //   }
-      //   *state = CMD_RECEIVING;
-      // } else {
-      //   // pass through
-      //   serial_passthrough(char_rx, rx_rd_ptr, rx_wr);
-      // }
-      serial_passthrough(char_rx, rx_rd_ptr, rx_wr, td);
-      break;
-    case CMD_RECEIVING:
-      // end_ptr = strchr((const char*)cmd, '\r');
-      // if (!end_ptr) {
-      //   // read recieved data into cmd
-      //   unsigned int i;
-      //   for (i = INIT_CLEAR; i < abs(rx_wr - (*rx_rd_ptr)); i++) {
-      //     cmd[(*cmd_idx_ptr)++] =
-      //         char_rx[(((*rx_rd_ptr) + i) % SMALL_RING_SIZE)];
-      //   }
-      //   // set rx pointer even with write point
-      //   *rx_rd_ptr = rx_wr;
-      // } else if() { // reached max command size
-      //   // clear command temp vars
-      //   // go back to cmd_none
-      // } else {
-      //   // graceful ending
-      //   // add command to the ledger (global vars)
-      //   // clear stuff that needs cleaning
-      //   // transistion back to CMD_NONE
-      // }
-      break;
+                           volatile unsigned int* rx_wr_ptr,
+                           unsigned int* rx_rd_ptr, enum cmd_state* state,
+                           char command_char, enum transmit_device td) {
+  char* start_ptr;
+  char* end_ptr;
+  int cmd_len;
+
+  char read_buffer[CMD_BUFFER];
+  int i = 0;
+  memset(read_buffer, 0, CMD_BUFFER);
+  while ((i < (CMD_BUFFER - 1)) &&
+         read_char(char_rx, rx_rd_ptr, rx_wr_ptr, &(read_buffer[i]))) {
+    i++;
+  }
+  int extra_cmd_txt;
+  int buff_len = strlen(read_buffer);
+
+  do {
+    extra_cmd_txt = 0;
+    switch (*state) {
+      case CMD_NONE:
+        start_ptr = strchr(read_buffer, command_char);
+        if (start_ptr) {
+          memset(cmd, 0, CMD_BUFFER);
+          *cmd_idx_ptr = BEGINNING;
+          unsigned int pass_len = (unsigned int)(start_ptr - read_buffer);
+          if (pass_len) {
+            serial_passthrough(read_buffer, pass_len, td);
+          }
+          strcpy(cmd, start_ptr);
+          *cmd_idx_ptr = (unsigned int)strlen(start_ptr);
+          *state = CMD_RECEIVING;
+        } else if (buff_len) {
+          serial_passthrough(read_buffer, CMD_BUFFER, td);
+        }
+        break;
+      case CMD_RECEIVING:
+        strncpy((char*)(cmd + *cmd_idx_ptr), read_buffer,
+                CMD_BUFFER - *cmd_idx_ptr);
+        *cmd_idx_ptr = *cmd_idx_ptr + strlen(read_buffer);
+        end_ptr = strchr(cmd, '\r');
+        cmd_len = strlen(cmd);
+        if (end_ptr) {
+          memset((char*)(cmd_list + cmd_list_wr), 0, CMD_BUFFER);
+          strncpy(cmd_list[cmd_list_wr], cmd, end_ptr + 1 - cmd);
+          if ((end_ptr - cmd) != cmd_len - 1) {
+            extra_cmd_txt = 1;
+            memset(read_buffer, 0, CMD_BUFFER);
+            strcpy(read_buffer, end_ptr);
+          }
+          *cmd_idx_ptr = 0;
+          if (++cmd_list_wr > (CMD_MAX_SIZE - 1)) {
+            cmd_list_wr = 0;
+          }
+          *state = CMD_NONE;
+        } else if (cmd_len == (CMD_BUFFER - 1)) {
+          memset(cmd, 0, CMD_BUFFER);
+          *cmd_idx_ptr = 0;
+          *state = CMD_NONE;
+        }
+        break;
+      default:
+        break;
+    }
+  } while (extra_cmd_txt);
+}
+
+char* process_status(enum response_status ps) {
+  static char b9600[7] = "9_600\r";
+  static char b115200[9] = "115_200\r";
+  static char b460800[9] = "460_800\r";
+  static char ok[4] = "OK\r";
+  static char failed[8] = "FAILED\r";
+  static char invalid[9] = "INVALID\r";
+
+  switch (ps) {
+    case PROCESS_OK:
+      return ok;
+    case PROCESS_BAUD_9600:
+      return b9600;
+    case PROCESS_BAUD_115200:
+      return b115200;
+    case PROCESS_BAUD_460800:
+      return b460800;
+    case PROCESS_FAILED:
+      return failed;
     default:
-      break;
+      return invalid;
+  }
+}
+
+void process_fram_cmd(char* cmd) {
+  if (!strcmp(cmd, "^\r")) {
+    usb_transmit(process_status(PROCESS_OK));
+  } else if (!strcmp(cmd, "^F\r")) {
+    usb_transmit(process_status(set_iot_baud_rate(BAUD_115200)));
+  } else if (!strcmp(cmd, "^S\r")) {
+    usb_transmit(process_status(set_iot_baud_rate(BAUD_9600)));
   }
 }
 
 void process_commands(void) {
-  // global vars:
-  // comand list
-  // command rd index,
-  // command write index
+  if (cmd_list_wr != cmd_list_rd) {
+    int i;
+    char* curr_cmd;
+    for (i = 0; i < abs(cmd_list_wr - cmd_list_rd); i++) {
+      curr_cmd = cmd_list[(cmd_list_rd + i) % CMD_MAX_SIZE];
+      if (curr_cmd[0] == '^') {  // FRAM CMDs
+        process_fram_cmd(curr_cmd);
+      } else if (curr_cmd[0] == '$') {  // CAR CMDs
+      }
+    }
+  }
+  cmd_list_rd = cmd_list_wr;
 }
 
 // IOT Serial Interrupt
 #pragma vector = EUSCI_A0_VECTOR
 __interrupt void eUSCI_A0_ISR(void) {
   unsigned int _irx;
-  unsigned int _itx;
   char buf_in;
 
   switch (__even_in_range(UCA0IV, SERIAL_ISR_RANGE)) {
@@ -351,17 +370,11 @@ __interrupt void eUSCI_A0_ISR(void) {
       buf_in = UCA0RXBUF;
       _irx = iot_rx_ring_wr++;
       iot_char_rx[_irx] = buf_in;
-      if (iot_rx_ring_wr >= (sizeof(iot_char_rx))) {
+      if (iot_rx_ring_wr >= (SMALL_RING_SIZE - 1)) {
         iot_rx_ring_wr = BEGINNING;
       }
       break;
     case SERIAL_ISR_TX:  // Vector 4 - TxIFG
-      _itx = iot_tx_ring_wr++;
-      UCA0TXBUF = iot_char_tx[_itx];
-      if (iot_tx_ring_wr >= (sizeof(iot_char_tx))) {
-        iot_tx_ring_wr = BEGINNING;
-        UCA0IE &= ~UCTXIE;
-      }
       break;
     default:
       break;
@@ -372,9 +385,7 @@ __interrupt void eUSCI_A0_ISR(void) {
 #pragma vector = EUSCI_A1_VECTOR
 __interrupt void eUSCI_A1_ISR(void) {
   unsigned int _irx;
-  unsigned int _itx;
   char buf_in;
-  char transmit_char;
 
   switch (__even_in_range(UCA1IV, SERIAL_ISR_RANGE)) {
     case SERIAL_ISR_NO_INTERRUPT:  // Vector 0 - no interrupt
@@ -387,7 +398,7 @@ __interrupt void eUSCI_A1_ISR(void) {
       } else {
         _irx = usb_rx_ring_wr++;
         usb_char_rx[_irx] = buf_in;
-        if (usb_rx_ring_wr >= (sizeof(usb_char_rx))) {
+        if (usb_rx_ring_wr >= (SMALL_RING_SIZE - 1)) {
           usb_rx_ring_wr = BEGINNING;
         }
         if (enable_usb_loopback) {
@@ -396,20 +407,7 @@ __interrupt void eUSCI_A1_ISR(void) {
       }
       break;
     case SERIAL_ISR_TX:  // Vector 4 - TxIFG
-                         // _itx = usb_tx_ring_rd;
-                         // transmit_char = usb_char_tx[_itx];
-                         // if (
-                         //   (usb_transmit_state == SET_TRANSMIT_ON)
-                         //   && (_itx != usb_tx_ring_wr)
-                         //   && (transmit_char != '\0')) {
-                         //   UCA1TXBUF = transmit_char;
-                         //   if(++usb_tx_ring_rd > SMALL_RING_SIZE-1) {
-                         //     usb_tx_ring_rd = BEGINNING;
-                         //   }
-                         // } else {
-                         //   UCA1IE &= ~UCTXIE;
-                         // }
-                         // break;
+      break;
     default:
       break;
   }

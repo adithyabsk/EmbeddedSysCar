@@ -47,6 +47,7 @@ void main(void) {
   init_adc();           // Initialize the ADC
   init_scheduler();     // Initialize time based system scheduler
   init_scroll();        // Initialize the scroll of the menu system
+  init_iot();
 
   // init_baud_rate_display();
 
@@ -61,9 +62,9 @@ void main(void) {
 
     // show_line_follow_status();
 
-    // run_scheduler(); // MAKE SURE TO TURN THIS ON FOR SERIAL TO WORK
-
     update_serial_states();
+    process_commands();
+    run_scheduler();
 
     Display_Process();  // Dispaly update
   }

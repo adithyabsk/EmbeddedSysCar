@@ -13,95 +13,6 @@
 
 #include "msp430.h"
 
-/**
- * @brief General function to call all of the port initializations
- *
- * Port 1 pins:
- * pin 0: RED_LED       (GPIO) (OUTPUT) (HIGH)
- * pin 1: A1_SEEED      (ADC)
- * pin 2: V_DETECT_L    (ADC)
- * pin 3: V_DETECT_R    (ADC)
- * pin 4: A4_SEEED      (ADC)
- * pin 5: V_THUMB       (ADC)
- * pin 6: UCA0RXD       (FUNCTION)
- * pin 7: UCA0TXD       (FUNCTION)
- *
- * Port 2 pins:
- * pin 0: P2_0          (GPIO)
- * pin 1: P2_1          (GPIO)
- * pin 2: P2_2          (GPIO)
- * pin 3: SW2           (GPIO) (INPUT) (PULL_UP) (INTERRUPT)
- * pin 4: P2_4          (GPIO)
- * pin 5: P2_5          (GPIO)
- * pin 6: LFXOUT        (FUNCTION)
- * pin 7: LFXIN         (FUNCTION)
- *
- * Port 3 pins:
- * pin 0: TEST_PROBE    (GPIO)
- * pin 1: OA20          (FUNCTION)
- * pin 2: OA2N          (FUNCTION)
- * pin 3: OA2P          (FUNCTION)
- * pin 4: SMCLK_OUT     (GPIO) or (FUNCTION) // Based on paramerter input
- * pin 5: OA3O          (FUNCTION)
- * pin 6: P3_6          (GPIO)
- * pin 7: P3_7          (GPIO)
- *
- * Port 4 pins:
- * pin 0: RESET_LCD     (GPIO) (OUTPUT) (LOW)
- * pin 1: SW1           (GPIO) (INPUT) (PULL_UP) (INTERRUPT)
- * pin 2: UCA1RXD       (FUNCTION)
- * pin 3: UCA1TXD       (FUNCTION)
- * pin 4: UCB1_CS_LCD   (GPIO) (OUTPUT) (HIGH)
- * pin 5: UCB1CLK       (FUNCTION)
- * pin 6: UCB1SIMO      (FUNCTION)
- * pin 7: UCB1SOMI      (FUNCTION)
- *
- * Port 5 pins:
- * pin 0: IOT_RESET     (GPIO)
- * pin 1: IOT_LINK      (GPIO)
- * pin 2: IOT_PROG_SEL  (GPIO)
- * pin 3: IOT_PROG_MODE (GPIO)
- * pin 4: IR_LED        (GPIO) (OUTPUT) (LOW)
- *
- * Port 6 pins:
- * pin 0: R_FORWARD     (FUNCTION)
- * pin 1: L_FORWARD     (FUNCTION)
- * pin 2: R_REVERSE     (FUNCTION)
- * pin 3: L_REVERSE     (FUNCTION)
- * pin 4: LCD_BACKLITE  (GPIO) (OUTPUT) (HIGH)
- * pin 5: P6_5          (GPIO)
- * pin 6: GRN_LED       (GPIO) (OUTPUT) (LOW)
- */
-void init_ports(void);
-
-/**
- * @brief Sets the SMCLK select bit mode
- *
- * @param smclk_mode is a boolean flag. 0 sets it GPIO and 1 sets it
- * to FUNCTION
- */
-void set_smclk_mode(int smclk_mode);
-
-/**
- * @brief Sets the output of the IOT_RESET port
- *
- * @param iot_rst_mode is a boolean flag. RELASE allows IOT to operate and
- * RESET sets the IOT back to reset
- */
-void set_iot_rst_state(int iot_rst_mode);
-
-/**
- * @brief All possible states for the smclk input
- *
- * Three channels are defined:
- * 1. GPIO: represents an initialization of 00
- * 2. FUNCTION: represents an initialization of 01
- * 3. INVALID_PIN_STATE: invalid pin select bit state
- */
-enum smclk_state { SET_GPIO, SET_FUNCTION, INVALID_PIN_STATE };
-
-enum iot_rst_state { SET_RESET_IOT, SET_RELEASE_IOT, INVALID_IOT_RST_STATE };
-
 // Register initializaiton macros
 #define INIT_OUTPUT (0xFF)
 #define INIT_LOW (0x00)
@@ -189,5 +100,96 @@ enum iot_rst_state { SET_RESET_IOT, SET_RELEASE_IOT, INVALID_IOT_RST_STATE };
 #define GREEN_LED_ON (P6OUT |= GRN_LED)
 #define GREEN_LED_OFF (P6OUT &= ~GRN_LED)
 #define LCD_BACKLITE_TOGGLE (P6OUT ^= LCD_BACKLITE)
+
+/**
+ * @brief General function to call all of the port initializations
+ *
+ * Port 1 pins:
+ * pin 0: RED_LED       (GPIO) (OUTPUT) (HIGH)
+ * pin 1: A1_SEEED      (ADC)
+ * pin 2: V_DETECT_L    (ADC)
+ * pin 3: V_DETECT_R    (ADC)
+ * pin 4: A4_SEEED      (ADC)
+ * pin 5: V_THUMB       (ADC)
+ * pin 6: UCA0RXD       (FUNCTION)
+ * pin 7: UCA0TXD       (FUNCTION)
+ *
+ * Port 2 pins:
+ * pin 0: P2_0          (GPIO)
+ * pin 1: P2_1          (GPIO)
+ * pin 2: P2_2          (GPIO)
+ * pin 3: SW2           (GPIO) (INPUT) (PULL_UP) (INTERRUPT)
+ * pin 4: P2_4          (GPIO)
+ * pin 5: P2_5          (GPIO)
+ * pin 6: LFXOUT        (FUNCTION)
+ * pin 7: LFXIN         (FUNCTION)
+ *
+ * Port 3 pins:
+ * pin 0: TEST_PROBE    (GPIO)
+ * pin 1: OA20          (FUNCTION)
+ * pin 2: OA2N          (FUNCTION)
+ * pin 3: OA2P          (FUNCTION)
+ * pin 4: SMCLK_OUT     (GPIO) or (FUNCTION) // Based on paramerter input
+ * pin 5: OA3O          (FUNCTION)
+ * pin 6: P3_6          (GPIO)
+ * pin 7: P3_7          (GPIO)
+ *
+ * Port 4 pins:
+ * pin 0: RESET_LCD     (GPIO) (OUTPUT) (LOW)
+ * pin 1: SW1           (GPIO) (INPUT) (PULL_UP) (INTERRUPT)
+ * pin 2: UCA1RXD       (FUNCTION)
+ * pin 3: UCA1TXD       (FUNCTION)
+ * pin 4: UCB1_CS_LCD   (GPIO) (OUTPUT) (HIGH)
+ * pin 5: UCB1CLK       (FUNCTION)
+ * pin 6: UCB1SIMO      (FUNCTION)
+ * pin 7: UCB1SOMI      (FUNCTION)
+ *
+ * Port 5 pins:
+ * pin 0: IOT_RESET     (GPIO)
+ * pin 1: IOT_LINK      (GPIO)
+ * pin 2: IOT_PROG_SEL  (GPIO)
+ * pin 3: IOT_PROG_MODE (GPIO)
+ * pin 4: IR_LED        (GPIO) (OUTPUT) (LOW)
+ *
+ * Port 6 pins:
+ * pin 0: R_FORWARD     (FUNCTION)
+ * pin 1: L_FORWARD     (FUNCTION)
+ * pin 2: R_REVERSE     (FUNCTION)
+ * pin 3: L_REVERSE     (FUNCTION)
+ * pin 4: LCD_BACKLITE  (GPIO) (OUTPUT) (HIGH)
+ * pin 5: P6_5          (GPIO)
+ * pin 6: GRN_LED       (GPIO) (OUTPUT) (LOW)
+ */
+void init_ports(void);
+
+/**
+ * @brief Sets the SMCLK select bit mode
+ *
+ * @param smclk_mode is a boolean flag. 0 sets it GPIO and 1 sets it
+ * to FUNCTION
+ */
+void set_smclk_mode(int smclk_mode);
+
+/**
+ * @brief All possible states for the smclk input
+ *
+ * Three channels are defined:
+ * 1. GPIO: represents an initialization of 00
+ * 2. FUNCTION: represents an initialization of 01
+ * 3. INVALID_PIN_STATE: invalid pin select bit state
+ */
+enum smclk_state { SET_GPIO, SET_FUNCTION, INVALID_PIN_STATE };
+
+enum iot_rst_state { SET_RESET_IOT, SET_RELEASE_IOT, INVALID_IOT_RST_STATE };
+
+/**
+ * @brief Sets the output of the IOT_RESET port
+ *
+ * @param iot_rst_mode is a boolean flag. RELASE allows IOT to operate and
+ * RESET sets the IOT back to reset
+ */
+void set_iot_rst_state(enum iot_rst_state);
+
+void init_iot(void);
 
 #endif /* ADC_INTERRUPT_HEADER_H */

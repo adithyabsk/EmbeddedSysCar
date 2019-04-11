@@ -56,7 +56,7 @@ void run_scheduler(void) {
   int i;
   for (i = 0; i < SCHED_SIZE; i++) {
     if ((curr_time > (scheduler[i].call_time + scheduler[i].wait_time)) &&
-        (scheduler[i].call_time != 0) && (scheduler[i].completed == 0)) {
+        (scheduler[i].func) && (scheduler[i].completed == 0)) {
       (*(scheduler[i].func))();
       scheduler[i].completed = BOOLEAN_TRUE;
     }

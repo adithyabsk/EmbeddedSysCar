@@ -118,14 +118,14 @@ void config_menu_state_controller(void);
 void run_menu_state_controller(void);
 void menu_state_controller(void);
 
-// Func pointers
-VOID_FUNC_PTR init_scroll_ptr = &init_scroll;
-
 void init_scroll(void) {
   latch_thmb_value = adc_thmb;
   *BACK_BTN_PTR = INIT_CLEAR;
   *SEL_BTN_PTR = INIT_CLEAR;
 }
+
+// Func pointers
+VOID_FUNC_PTR init_scroll_ptr = &init_scroll;
 
 void scroll_control(int min_item, int max_item, int* curr_item) {
   if (adc_thmb > (latch_thmb_value + THMB_SCROLL_OFFSET)) {
@@ -216,35 +216,34 @@ void run_menu_state_controller(void) {
 }
 
 void menu_state_controller(void) {
-  if (curr_main_item == MAIN_MENU_NONE) {
-    scroll_control(MAIN_MENU_MIN, MAIN_MENU_MAX, (int*)&hover_main_item);
-    display_scroll(menu_main_page_strs, menu_len(MAIN_MENU_MAX),
-                   hover_main_item, BOOLEAN_TRUE);
-    if (sw2_pressed) {
-      sw2_pressed = INIT_CLEAR;
-      curr_main_item = hover_main_item;  // item selected
-      init_scroll();
-    }
-  } else {  // Item was selected
-    switch (curr_main_item) {
-      case MAIN_MENU_BOOT:
-        boot_display();
-        checkset_btn_press(BACK_BTN_PTR, &curr_main_item, MAIN_MENU_NONE,
-                           init_scroll_ptr);
-        break;
-      case MAIN_MENU_DIAG:
-        diag_menu_state_controller();
-        break;
-      case MAIN_MENU_CONFIG:
-        config_menu_state_controller();
-        break;
-      case MAIN_MENU_RUN:
-        run_menu_state_controller();
-        break;
-      default:
-        curr_main_item = MAIN_MENU_NONE;  // selection not implemented
-        break;
-    }
+  switch (curr_main_item) {
+    case MAIN_MENU_NONE:
+      scroll_control(MAIN_MENU_MIN, MAIN_MENU_MAX, (int*)&hover_main_item);
+      display_scroll(menu_main_page_strs, menu_len(MAIN_MENU_MAX),
+                     hover_main_item, BOOLEAN_TRUE);
+      if (sw2_pressed) {
+        sw2_pressed = INIT_CLEAR;
+        curr_main_item = hover_main_item;  // item selected
+        init_scroll();
+      }
+      break;
+    case MAIN_MENU_BOOT:
+      boot_display();
+      checkset_btn_press(BACK_BTN_PTR, &curr_main_item, MAIN_MENU_NONE,
+                         init_scroll_ptr);
+      break;
+    case MAIN_MENU_DIAG:
+      diag_menu_state_controller();
+      break;
+    case MAIN_MENU_CONFIG:
+      config_menu_state_controller();
+      break;
+    case MAIN_MENU_RUN:
+      run_menu_state_controller();
+      break;
+    default:
+      curr_main_item = MAIN_MENU_NONE;  // selection not implemented
+      break;
   }
   // Clear all switch presses that weren't captured
   // sw1_pressed = INIT_CLEAR;

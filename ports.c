@@ -9,6 +9,7 @@
 #include "msp430.h"
 
 #include "common.h"
+#include "scheduler.h"
 
 static void init_port_1();
 static void init_port_2();
@@ -304,11 +305,18 @@ void set_smclk_mode(int smclk_mode) {
   }
 }
 
-void set_iot_rst_state(int iot_rst_state) {
+void set_iot_rst_state(enum iot_rst_state irs) {
   // Port 5, pin 0
-  if (iot_rst_state == SET_RELEASE_IOT) {
+  if (irs == SET_RELEASE_IOT) {
     P5OUT |= IOT_RESET;  // High (disable reset)
   } else {
     P5OUT &= ~IOT_RESET;  // Low (synchronous low reset)
   }
+}
+
+void enable_iot(void) { set_iot_rst_state(SET_RELEASE_IOT); }
+
+void init_iot(void) {
+  VOID_FUNC_PTR ei_func = &enable_iot;
+  schedule_func_call(ei_func, 1);
 }
