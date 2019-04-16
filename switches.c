@@ -13,7 +13,7 @@
 #include "ports.h"
 #include "timers.h"
 
-void init_switches(void) {
+inline void init_switches(void) {
   sw1_pressed = 0;
   sw2_pressed = 0;
 }

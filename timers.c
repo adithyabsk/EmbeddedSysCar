@@ -35,7 +35,7 @@ void init_timer_B1(void);
 // void init_timer_B2(void);
 void init_timer_B3(void);
 
-void init_timers(void) {
+inline void init_timers(void) {
   init_timer_B0();
   init_timer_B1();
   // init_timer_B2();

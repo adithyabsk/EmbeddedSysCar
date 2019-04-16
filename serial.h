@@ -60,7 +60,7 @@ SERIAL_LOCAL_DEF unsigned int iot_cmd_idx;
 
 SERIAL_LOCAL_DEF volatile enum transmit_state usb_transmit_state;
 
-SERIAL_LOCAL_DEF unsigned int enable_usb_loopback;
+SERIAL_LOCAL_DEF int enable_usb_loopback;
 
 SERIAL_LOCAL_DEF char cmd_list[CMD_MAX_SIZE][CMD_BUFFER];
 SERIAL_LOCAL_DEF unsigned int cmd_list_wr;
@@ -78,7 +78,7 @@ SERIAL_LOCAL_DEF unsigned int iot_resp_buff_idx;
  * respectively
  *
  */
-void init_serial(void);
+extern inline void init_serial(void);
 
 /**
  * @brief Output a constant value to the iot tx register

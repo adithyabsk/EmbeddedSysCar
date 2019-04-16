@@ -15,9 +15,27 @@
 #define IR_TOLERANCE (0x100)
 #define BLACK (0x500)
 
+/**
+ * @brief All possible states for the ADC variable
+ *
+ * Three channels are defined:
+ * 1. THUMB_CHANNEL: represents the thumb wheel
+ * 2. LDET_CHANNEL: left detector
+ * 3. RDET_CHANNEL: right detector
+ * 4. INVALID_ADC_STATE: invalid adc state
+ */
+enum adc_state {
+  ADC_STATE_MIN,
+  THUMB_CHANNEL = ADC_STATE_MIN,
+  LDET_CHANNEL,
+  RDET_CHANNEL,
+  ADC_STATE_MAX = RDET_CHANNEL,
+  INVALID_ADC_STATE
+};
+
 enum adc_state adc_channel = ADC_STATE_MIN;
 
-void init_adc(void) {
+inline void init_adc(void) {
   // V_DETECT_L Port 1 Pin 2 (0x04)
   // V_DETECT_R Port 1 Pin 3 (0x08)
   // V_THUMB    Port 1 Pin 5 (0x20)

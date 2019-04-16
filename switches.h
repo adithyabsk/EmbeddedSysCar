@@ -16,6 +16,6 @@
 __no_init SWITCHES_LOCAL_DEF volatile unsigned int sw1_pressed;
 __no_init SWITCHES_LOCAL_DEF volatile unsigned int sw2_pressed;
 
-void init_switches(void);
+extern inline void init_switches(void);
 
 #endif /* SWITCHES_INTERRUPT_H */

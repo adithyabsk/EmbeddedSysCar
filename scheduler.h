@@ -10,7 +10,7 @@
 #include <stdint.h>
 #include "common.h"
 
-void init_scheduler(void);
+extern inline void init_scheduler(void);
 unsigned int schedule_func_call(VOID_FUNC_PTR, int);
 void run_scheduler(void);
 

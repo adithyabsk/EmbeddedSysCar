@@ -10,14 +10,6 @@
 #include "display.h"
 
 /**
- * @brief Initializes the display variables
- * @note This must be called before any of the other functions
- * can be called.
- *
- */
-void init_display(void);
-
-/**
  * @brief Displays a clear screen
  *
  */

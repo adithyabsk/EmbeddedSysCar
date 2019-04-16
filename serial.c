@@ -1,4 +1,4 @@
-/** @file led.c
+/** @file serial.c
  *  @brief Implementation of serial
  *
  *  @author Adithya Balaji (adithyabsk)
@@ -93,16 +93,8 @@ void usb_transmit(char* tx) {
   }
 }
 
-void init_serial(void) {
-  usb_state = CMD_NONE;
-
-  init_serial_iot();
-  init_serial_usb();
-
-  enable_usb_loopback = BOOLEAN_FALSE;
-}
-
-void clear_iot_state(void) {
+inline void init_serial(void) {
+  // Init IOT
   iot_rx_ring_wr = BEGINNING;
   iot_rx_ring_rd = BEGINNING;
   memset((char*)iot_char_rx, 0, SMALL_RING_SIZE);
@@ -113,19 +105,6 @@ void clear_iot_state(void) {
   fill_iot_resp_buff = BOOLEAN_FALSE;
   memset(iot_resp_buff, 0, RESP_BUFFER);
   iot_resp_buff_idx = 0;
-}
-
-void clear_usb_state(void) {
-  usb_rx_ring_wr = BEGINNING;
-  usb_rx_ring_rd = BEGINNING;
-  memset((char*)usb_char_rx, 0, SMALL_RING_SIZE);
-
-  usb_cmd_idx = BEGINNING;
-  memset(usb_cmd, 0, CMD_BUFFER);
-}
-
-void init_serial_iot(void) {
-  clear_iot_state();
 
   iot_state = CMD_NONE;
 
@@ -138,11 +117,16 @@ void init_serial_iot(void) {
   UCA0CTLW0 &= ~UCSWRST;  // Set software reset enable
   UCA0IE |= UCRXIE;       // Enable Rx interrupt
   UCA0IE &= ~UCTXIE;      // Disable Tx interrupt
-}
 
-void init_serial_usb(void) {
+  // Init USB
   usb_transmit_state = SET_TRANSMIT_OFF;
-  clear_usb_state();
+
+  usb_rx_ring_wr = BEGINNING;
+  usb_rx_ring_rd = BEGINNING;
+  memset((char*)usb_char_rx, 0, SMALL_RING_SIZE);
+
+  usb_cmd_idx = BEGINNING;
+  memset(usb_cmd, 0, CMD_BUFFER);
 
   usb_state = CMD_NONE;
 
@@ -155,6 +139,8 @@ void init_serial_usb(void) {
   UCA1CTLW0 &= ~UCSWRST;  // Set software reset enable
   UCA1IE |= UCRXIE;       // Enable Rx interrupt
   UCA1IE &= ~UCTXIE;      // Disable Tx interrupt
+
+  enable_usb_loopback = BOOLEAN_FALSE;
 }
 
 enum response_status set_iot_baud_rate(enum baud_state b) {

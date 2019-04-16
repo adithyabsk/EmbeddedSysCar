@@ -10,6 +10,7 @@
 #include "msp430.h"
 
 #include "adc.h"
+#include "config.h"
 
 #ifndef DRIVE_LOCAL_DEF
 #define DRIVE_LOCAL_DEF extern
@@ -37,6 +38,9 @@ DRIVE_LOCAL_DEF volatile unsigned int fl_timer_counter;
 DRIVE_LOCAL_DEF enum drive_state car_drive_state;
 DRIVE_LOCAL_DEF unsigned int sched_drive_time;
 DRIVE_LOCAL_DEF enum drive_state sched_drive_state;
+
+DRIVE_LOCAL_DEF struct config_value forward_alignment;
+DRIVE_LOCAL_DEF struct config_value reverse_alignment;
 
 /**
  * @brief Stops all car motion
@@ -78,7 +82,8 @@ void update_speeds(void);
 
 void run_controller(void);
 
-void init_drive(void);
+// Initialize the state variables and config vars for the car
+extern inline void init_drive(void);
 void arcade_drive_state_machine(void);
 void schedule_drive_state(void);
 

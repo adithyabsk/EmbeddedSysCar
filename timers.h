@@ -48,6 +48,6 @@ __no_init TIMERS_LOCAL_DEF volatile enum lf_routine lf_routine_state;
  * This inclues TimerB0, TimerB1, TimerB2, and TimerB3
  *
  */
-void init_timers(void);
+extern inline void init_timers(void);
 
 #endif /* TIMERS_H */

@@ -23,17 +23,6 @@ const char ifconfig_search_strs[enum_len(IF_MAX)][MAX_KEY_SIZE] = {
 
 const char WHITESPACE[] = " \f\n\r\t\v";
 
-void init_iot_ifconfig(void) {
-  int i;
-  for (i = 0; i < enum_len(IF_MAX); i++) {
-    memset(iot_ifconfig[i].key, 0, MAX_KEY_SIZE);
-    memset(iot_ifconfig[i].value, 0, MAX_VALUE_SIZE);
-    strcpy(iot_ifconfig[i].key, ifconfig_search_strs[i]);
-    iot_ifconfig[i].display_offset = 0;
-    iot_ifconfig[i].max_offset = 0;
-  }
-}
-
 void capval(char* key, char* value) {
   char* found_key = strstr(iot_resp_buff, key);
   if (found_key) {
@@ -75,10 +64,18 @@ void set_iot_rst_state(enum iot_rst_state irs) {
 
 void enable_iot(void) { set_iot_rst_state(SET_ENABLE_IOT); }
 
-void init_iot(void) {
+inline void init_iot(void) {
   VOID_FUNC_PTR ei_func = &enable_iot;
   schedule_func_call(ei_func, 1);
-  init_iot_ifconfig();
+
+  int i;
+  for (i = 0; i < enum_len(IF_MAX); i++) {
+    memset(iot_ifconfig[i].key, 0, MAX_KEY_SIZE);
+    memset(iot_ifconfig[i].value, 0, MAX_VALUE_SIZE);
+    strcpy(iot_ifconfig[i].key, ifconfig_search_strs[i]);
+    iot_ifconfig[i].display_offset = 0;
+    iot_ifconfig[i].max_offset = 0;
+  }
 }
 
 VOID_FUNC_PTR iot_check = &iot_alive;

@@ -162,22 +162,4 @@
  */
 void init_ports(void);
 
-/**
- * @brief Sets the SMCLK select bit mode
- *
- * @param smclk_mode is a boolean flag. 0 sets it GPIO and 1 sets it
- * to FUNCTION
- */
-void set_smclk_mode(int smclk_mode);
-
-/**
- * @brief All possible states for the smclk input
- *
- * Three channels are defined:
- * 1. GPIO: represents an initialization of 00
- * 2. FUNCTION: represents an initialization of 01
- * 3. INVALID_PIN_STATE: invalid pin select bit state
- */
-enum smclk_state { SET_GPIO, SET_FUNCTION, INVALID_PIN_STATE };
-
 #endif /* ADC_INTERRUPT_HEADER_H */

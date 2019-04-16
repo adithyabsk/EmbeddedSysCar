@@ -26,7 +26,7 @@ extern volatile unsigned char display_changed;
 extern volatile unsigned char update_display;
 extern volatile unsigned int update_display_count;
 
-void init_display(void) {
+inline void init_display(void) {
   int i;
 
   for (i = INIT_CLEAR; i < DISP_TEXT_MAX; i++) {

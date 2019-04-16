@@ -27,13 +27,6 @@ void init_ports(void) {
 }
 
 static void init_port_1(void) {
-  // Clear P1
-  P1SEL1 = INIT_CLEAR;
-  P1SEL0 = INIT_CLEAR;
-  P1DIR = INIT_OUTPUT;  // Default OUT
-  P1OUT = INIT_LOW;
-  P1REN = INIT_CLEAR;
-
   // PIN 0 GPIO (00)
   P1SEL1 &= ~RED_LED;
   P1SEL0 &= ~RED_LED;
@@ -70,13 +63,6 @@ static void init_port_1(void) {
 }
 
 static void init_port_2(void) {
-  // Clear P2
-  P2SEL1 = INIT_CLEAR;
-  P2SEL0 = INIT_CLEAR;
-  P2DIR = INIT_OUTPUT;
-  P2OUT = INIT_LOW;
-  P2REN = INIT_CLEAR;
-
   // PIN 0 GPIO (00)
   P2SEL1 &= ~P2_0;
   P2SEL0 &= ~P2_0;
@@ -119,13 +105,6 @@ static void init_port_2(void) {
 }
 
 static void init_port_3() {
-  // Clear P3
-  P3SEL1 = INIT_CLEAR;
-  P3SEL0 = INIT_CLEAR;
-  P3DIR = INIT_OUTPUT;
-  P3OUT = INIT_LOW;
-  P3REN = INIT_CLEAR;
-
   // PIN 0 GPIO (00)
   P3SEL1 &= ~TEST_PROBE;
   P3SEL0 &= ~TEST_PROBE;
@@ -160,13 +139,6 @@ static void init_port_3() {
 }
 
 static void init_port_4() {
-  // Clear P4
-  P4SEL1 = INIT_CLEAR;
-  P4SEL0 = INIT_CLEAR;
-  P4DIR = INIT_OUTPUT;
-  P4OUT = INIT_LOW;
-  P4REN = INIT_CLEAR;
-
   // PIN 0 GPIO (00)
   P4SEL1 &= ~RESET_LCD;
   P4SEL0 &= ~RESET_LCD;
@@ -213,13 +185,6 @@ static void init_port_4() {
 }
 
 static void init_port_5(void) {
-  // Clear P5
-  P5SEL1 = INIT_CLEAR;
-  P5SEL0 = INIT_CLEAR;
-  P5DIR = INIT_OUTPUT;
-  P5OUT = INIT_LOW;
-  P5REN = INIT_CLEAR;
-
   // PIN 0 GPIO (00)
   P5SEL1 &= ~IOT_RESET;
   P5SEL0 &= ~IOT_RESET;
@@ -249,13 +214,6 @@ static void init_port_5(void) {
 }
 
 static void init_port_6(void) {
-  // Clear P6
-  P6SEL1 = INIT_CLEAR;
-  P6SEL0 = INIT_CLEAR;
-  P6DIR = INIT_OUTPUT;
-  P6OUT = INIT_LOW;
-  P6REN = INIT_CLEAR;
-
   // PIN 0 TB3.1 (01)
   P6SEL1 &= ~R_FORWARD;
   P6SEL0 |= R_FORWARD;
@@ -290,16 +248,4 @@ static void init_port_6(void) {
   P6SEL1 &= ~GRN_LED;
   P6SEL0 &= ~GRN_LED;
   P6DIR |= GRN_LED;  // Output
-}
-
-void set_smclk_mode(int smclk_mode) {
-  // Port 3
-  // PIN 4 SMCLK (01)
-  if (smclk_mode == SET_GPIO) {
-    P3SEL1 &= ~SMCLK_OUT;
-    P3SEL0 &= ~SMCLK_OUT;
-  } else {
-    P3SEL1 &= ~SMCLK_OUT;
-    P3SEL0 |= SMCLK_OUT;
-  }
 }

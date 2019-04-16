@@ -5,6 +5,7 @@
  *  @author Jim Carlson
  */
 
+#define CLOCKS_INLINE_DEF
 #include "clocks.h"
 
 #include "msp430.h"
@@ -15,7 +16,7 @@
 
 void software_trim(void);
 
-void init_clocks(void) {
+inline void init_clocks(void) {
   // -----------------------------------------------------------------------------
   // Clock Configurtaions
   // This is the clock initialization for the program.
@@ -121,18 +122,4 @@ void software_trim(void) {
   CSCTL1 = csCtl1Copy;  // Reload locked DCOFTRIM
   while (CSCTL7 & (FLLUNLOCK0 | FLLUNLOCK1))
     ;  // Poll until FLL is locked
-}
-
-void reset_smclk8hz(void) {
-  CSCTL5 &= ~DIVM__2;
-  CSCTL5 &= ~DIVS__8;
-  set_smclk_mode(SET_GPIO);
-  CSCTL5 |= DIVM__1;
-  CSCTL5 |= DIVS__1;
-}
-
-void set_smclk500mhz(void) {
-  set_smclk_mode(SET_FUNCTION);
-  CSCTL5 |= DIVM__2;
-  CSCTL5 |= DIVS__8;
 }

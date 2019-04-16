@@ -11,6 +11,6 @@
  * @brief Enable system interrupts
  *
  */
-void enable_interrupts(void);
+extern inline void enable_interrupts(void);
 
 #endif /* SYSTEM_H */

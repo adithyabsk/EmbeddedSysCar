@@ -43,7 +43,7 @@ enum menu_main_pages {
 };
 
 const char menu_main_page_strs[enum_len(MAIN_MENU_MAX)][DISP_TEXT_MAX] = {
-    " BT  DISP ", "   DIAG   ", "  CONFIG  ", "   RUNx   "};
+    " BT  DISP ", "   DIAG   ", "  CONFIG  ", "   RUN    "};
 
 int hover_main_item = MAIN_MENU_MIN;
 int curr_main_item = MAIN_MENU_NONE;
@@ -102,44 +102,25 @@ int curr_diag_item = DIAG_MENU_NONE;
 // enum menu_config_pages {
 //   CONFIG_MENU_MIN,
 //   CONFIG_MENU_IR = CONFIG_MENU_MIN,
-//   CONFIG_MENU_WHL_VALS,
-//   CONFIG_MENU_PID_VALS,
-//   CONFIG_MENU_TEST_SWs,
+//   CONFIG_MENU_LEFT_ALIGN,
+//   CONFIG_MENU_LEFT_ALIGN_DATA,
+//   CONFIG_MENU_RIGHT_ALIGN,
+//   CONFIG_MENU_RIGHT_ALIGN_DATA,
 //   CONFIG_MENU_TEST_USB_LOOPBACK,
-//   CONFIG_MENU_TSTtxUSB,
-//   CONFIG_MENU_TSTtxIOT,
-//   CONFIG_MENU_MAX = CONFIG_MENU_TSTtxIOT,
+//   CONFIG_MENU_MAX = CONFIG_MENU_TEST_USB_LOOPBACK,
 //   CONFIG_MENU_NONE
 // };
 //
 // const char menu_config_page_strs[enum_len(CONFIG_MENU_MAX)][DISP_TEXT_MAX] =
 // {
-//     " IR       ", " WHL VALS ", " PID VALS ", " TEST SWS ",
-//     " TSTUSBLP ", " TSTtxUSB ", " TSTtxIOT "};
+//     " IR       ", "  LALIGN  ", "         ", " RALIGN ", "          ",
+//     " TSTUSBLP "
+// };
 //
 // int hover_config_item = CONFIG_MENU_MIN;
 // int curr_config_item = CONFIG_MENU_NONE;
 
-// enum menu_run_pages {
-//   RUN_MENU_MIN,
-//   RUN_MENU_INT_LINE = RUN_MENU_MIN,
-//   RUN_MENU_FRWD,
-//   RUN_MENU_BKWD,
-//   RUN_MENU_TIMED_FWD,
-//   RUN_MENU_TIMED_BKD,
-//   RUN_MENU_MAX = RUN_MENU_TIMED_BKD,
-//   RUN_MENU_NONE
-// };
-//
-// const char menu_run_page_strs[enum_len(RUN_MENU_MAX)][DISP_TEXT_MAX] = {
-//     " INT LINE ", "   FRWD   ", "   BKWD   ", "  T_FRWD  ", "  T_BKWD  ",
-// };
-//
-// int hover_run_item = RUN_MENU_MIN;
-// int curr_run_item = RUN_MENU_NONE;
-
 // Prototypes
-void init_scroll(void);
 void scroll_control(int, int, int*);
 void checkset_btn_press(volatile unsigned int*, int*, int, VOID_FUNC_PTR);
 void update_diag_values(void);
@@ -148,7 +129,7 @@ void config_menu_state_controller(void);
 void run_menu_state_controller(void);
 void menu_state_controller(void);
 
-void init_scroll(void) {
+inline void init_scroll(void) {
   latch_thmb_value = adc_thmb;
   *BACK_BTN_PTR = INIT_CLEAR;
   *SEL_BTN_PTR = INIT_CLEAR;
@@ -239,11 +220,10 @@ void iot_screen_state_controller(void) {
       break;
     // case IOT_SCRN_PING:
     case IOT_SCRN_MAC:
-      // case IOT_SCRN_WSTATE:
-      // case IOT_SCRN_SSID:
-      // case IOT_SCRN_IP:
-      // case IOT_SCRN_SUBNET:
-      // case IOT_SCRN_GATEWAY:
+    case IOT_SCRN_SSID:
+    case IOT_SCRN_IP:
+    case IOT_SCRN_SUBNET:
+    case IOT_SCRN_GATEWAY:
       // scroll the view above if necessary
       if (iot_ifconfig[sel].scrollable) {
         iot_scrn_horiz_scroll = !iot_scrn_horiz_scroll;
@@ -305,20 +285,6 @@ void diag_menu_state_controller(void) {
 //   }
 // }
 
-// void run_menu_state_controller(void) {
-//   switch (curr_run_item) {
-//     case RUN_MENU_NONE:
-//       scroll_control(RUN_MENU_MIN, RUN_MENU_MAX, (int*)&hover_run_item);
-//       display_scroll(menu_run_page_strs, enum_len(RUN_MENU_MAX),
-//                      hover_run_item, BOOLEAN_TRUE);
-//       checkset_btn_press(SEL_BTN_PTR, &curr_run_item, hover_run_item,
-//                          init_scroll_ptr);
-//       break;
-//     default:
-//       curr_run_item = CONFIG_MENU_NONE;
-//   }
-// }
-
 void menu_state_controller(void) {
   switch (curr_main_item) {
     case MAIN_MENU_NONE:
@@ -338,7 +304,7 @@ void menu_state_controller(void) {
     //   config_menu_state_controller();
     //   break;
     // case MAIN_MENU_RUN:
-    //   run_menu_state_controller();
+    //   // Run arcade mode drive
     //   break;
     default:
       curr_main_item = MAIN_MENU_NONE;  // selection not implemented

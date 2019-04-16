@@ -40,7 +40,8 @@ struct iot_field {
 __no_init IOT_LOCAL_DEF struct iot_field iot_ifconfig[enum_len(IF_MAX)];
 
 void iotresp2ifconfig(void);
-void init_iot(void);
+
+extern inline void init_iot(void);
 
 void iot_alive(void);
 

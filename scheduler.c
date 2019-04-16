@@ -43,7 +43,7 @@ unsigned int schedule_func_call(VOID_FUNC_PTR f, int wt) {
   return BOOLEAN_FALSE;
 }
 
-void init_scheduler(void) {
+inline void init_scheduler(void) {
   memset(&scheduler, INIT_CLEAR, sizeof(scheduler));
   int i;
   for (i = INIT_CLEAR; i < SCHED_SIZE; i++) {

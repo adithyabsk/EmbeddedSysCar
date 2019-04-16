@@ -11,13 +11,13 @@
 
 #include "adc.h"
 #include "common.h"
+#include "config.h"
 #include "scheduler.h"
 
 #define BASE_WHEEL_CYCLES (256U)
 #define ALIGNMENT (10)
-#define LEFT_FORWARD_CYCLES (BASE_WHEEL_CYCLES - ALIGNMENT)  // WHEEL_PERIOD
-#define RIGHT_FORWARD_CYCLES \
-  (BASE_WHEEL_CYCLES + ALIGNMENT)  // (BASE_WHEEL_CYCLES + 15000U)
+#define LEFT_FORWARD_CYCLES (BASE_WHEEL_CYCLES)
+#define RIGHT_FORWARD_CYCLES (BASE_WHEEL_CYCLES)
 #define LEFT_REVERSE_CYCLES (BASE_WHEEL_CYCLES)
 #define RIGHT_REVERSE_CYCLES (BASE_WHEEL_CYCLES)
 
@@ -28,7 +28,12 @@ enum drive_state prev_drive_state = DRIVE_NONE;
 
 void schedule_drive_state(void);
 
-void init_drive(void) {
+inline void init_drive(void) {
+  init_config(&forward_alignment, (int)(-WHEEL_PERIOD / 2),
+              (int)(WHEEL_PERIOD / 2), INIT_CLEAR);
+  init_config(&reverse_alignment, (int)(-WHEEL_PERIOD / 2),
+              (int)(WHEEL_PERIOD / 2), INIT_CLEAR);
+
   car_drive_state = DRIVE_NONE;
   sched_drive_time = 0;
   sched_drive_state = DRIVE_NONE;
@@ -46,32 +51,40 @@ void drive_forward(void) {
   stop_drive();
 
   // Turn on forward
-  LEFT_FORWARD_SPEED = WHEEL_PERIOD;   // LEFT_FORWARD_CYCLES;
-  RIGHT_FORWARD_SPEED = WHEEL_PERIOD;  // RIGHT_FORWARD_CYCLES;
+  LEFT_FORWARD_SPEED =
+      (unsigned int)(WHEEL_PERIOD + forward_alignment.curr_val);
+  RIGHT_FORWARD_SPEED =
+      (unsigned int)(WHEEL_PERIOD - forward_alignment.curr_val);
 }
 
 void drive_reverse(void) {
   stop_drive();
 
   // Turn on reverse
-  LEFT_REVERSE_SPEED = WHEEL_PERIOD;   // LEFT_REVERSE_CYCLES;
-  RIGHT_REVERSE_SPEED = WHEEL_PERIOD;  // RIGHT_REVERSE_CYCLES;
+  LEFT_REVERSE_SPEED =
+      (unsigned int)(WHEEL_PERIOD + reverse_alignment.curr_val);
+  RIGHT_REVERSE_SPEED =
+      (unsigned int)(WHEEL_PERIOD - reverse_alignment.curr_val);
 }
 
 void drive_cw(void) {
   stop_drive();
   // Turn on forward left
-  LEFT_FORWARD_SPEED = WHEEL_PERIOD;
+  LEFT_FORWARD_SPEED =
+      (unsigned int)(WHEEL_PERIOD + forward_alignment.curr_val);
   // Turn on reverse right
-  RIGHT_REVERSE_SPEED = WHEEL_PERIOD;  // 25000U;
+  RIGHT_REVERSE_SPEED =
+      (unsigned int)(WHEEL_PERIOD - reverse_alignment.curr_val);
 }
 
 void drive_ccw(void) {
   stop_drive();
   // Turn on forward right
-  RIGHT_FORWARD_SPEED = WHEEL_PERIOD;  // 25000U;
+  RIGHT_FORWARD_SPEED =
+      (unsigned int)(WHEEL_PERIOD - forward_alignment.curr_val);
   // Turn on reverse left
-  LEFT_REVERSE_SPEED = WHEEL_PERIOD;
+  LEFT_REVERSE_SPEED =
+      (unsigned int)(WHEEL_PERIOD + reverse_alignment.curr_val);
 }
 
 void forward_turn(int cycle_offset) {

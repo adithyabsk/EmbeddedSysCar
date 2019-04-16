@@ -8,6 +8,6 @@
 #define MENU_H
 
 void menu_state_controller(void);
-void init_scroll(void);
+extern inline void init_scroll(void);
 
 #endif /* MENU_H */

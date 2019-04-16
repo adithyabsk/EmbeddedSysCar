@@ -11,6 +11,6 @@
  * @brief Initialize system clock settings
  *
  */
-void init_clocks(void);
+extern inline void init_clocks(void);
 
 #endif /* CLOCKS_H */

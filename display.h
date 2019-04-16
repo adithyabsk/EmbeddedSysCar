@@ -72,7 +72,7 @@ void LCD_iot_meassage_print(int nema_index);
  * can be called.
  *
  */
-void init_display(void);
+extern inline void init_display(void);
 
 /**
  * @brief Displays a clear screen

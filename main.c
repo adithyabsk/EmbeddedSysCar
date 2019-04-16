@@ -25,9 +25,6 @@
 
 #define DELAY_TIME (1000000)
 
-// Function Prototypes
-void main(void);
-
 // Global Variables
 // volatile char slow_input_down;
 
