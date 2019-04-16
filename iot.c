@@ -18,6 +18,8 @@
 
 enum iot_rst_state { SET_RESET_IOT, SET_ENABLE_IOT, INVALID_IOT_RST_STATE };
 
+void iot_setup(void);
+
 const char ifconfig_search_strs[enum_len(IF_MAX)][MAX_KEY_SIZE] = {
     "MAC=", "WSTATE=", " SSID=", "IP addr=", "SubNet=", "Gateway="};
 
@@ -62,7 +64,16 @@ void set_iot_rst_state(enum iot_rst_state irs) {
   }
 }
 
-void enable_iot(void) { set_iot_rst_state(SET_ENABLE_IOT); }
+VOID_FUNC_PTR iot_setup_ptr = &iot_setup;
+void iot_setup(void) {
+  add_cmd("@AT+NSTCP=9005,1\r");
+  add_cmd("@AT+WSYNCINTRL=65535\r");
+}
+
+void enable_iot(void) {
+  set_iot_rst_state(SET_ENABLE_IOT);
+  schedule_func_call(iot_setup_ptr, 50);
+}
 
 inline void init_iot(void) {
   VOID_FUNC_PTR ei_func = &enable_iot;
@@ -80,13 +91,6 @@ inline void init_iot(void) {
 
 VOID_FUNC_PTR iot_check = &iot_alive;
 void iot_alive(void) {
-  static int count = 0;
-
   add_cmd("@AT+PING=8.8.8.8,1\r");
-  add_cmd("@AT+NSTCP=9005,1\r");
-  add_cmd("@AT+WSYNCINTRL=65535\r");
-
-  if (++count < 10) {
-    schedule_func_call(iot_check, 100);
-  }
+  schedule_func_call(iot_check, 50);
 }

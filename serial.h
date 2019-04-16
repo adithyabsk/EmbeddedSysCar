@@ -15,8 +15,7 @@
 
 #define BEGINNING (0)
 #define SMALL_RING_SIZE (500)
-#define CMD_MAX_SIZE (8)
-#define CMD_MAX_SIZE_MOD (3)  // MAKE SURE TO CHANGE THIS IF THE ABOVE CHANGES
+#define CMD_MAX_SIZE (40)
 #define CMD_BUFFER (30)
 #define RESP_BUFFER (500)
 

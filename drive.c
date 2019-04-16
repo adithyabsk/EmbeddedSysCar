@@ -51,10 +51,10 @@ void drive_forward(void) {
   stop_drive();
 
   // Turn on forward
-  LEFT_FORWARD_SPEED =
-      (unsigned int)(WHEEL_PERIOD + forward_alignment.curr_val);
-  RIGHT_FORWARD_SPEED =
-      (unsigned int)(WHEEL_PERIOD - forward_alignment.curr_val);
+  LEFT_FORWARD_SPEED = WHEEL_PERIOD;
+  // (unsigned int)(WHEEL_PERIOD + forward_alignment.curr_val);
+  RIGHT_FORWARD_SPEED = WHEEL_PERIOD;
+  // (unsigned int)(WHEEL_PERIOD - forward_alignment.curr_val);
 }
 
 void drive_reverse(void) {

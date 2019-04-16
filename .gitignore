@@ -73,3 +73,7 @@ dkms.conf
 # More IAR
 *.dep
 path.txt
+
+*__pycache__/*
+*.sublime-project
+*.sublime-workspace

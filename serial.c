@@ -112,7 +112,10 @@ inline void init_serial(void) {
   UCA0CTLW0 = INIT_CLEAR;      // Use word register
   UCA0CTLW0 |= UCSWRST;        // Set software reset enable
   UCA0CTLW0 |= UCSSEL__SMCLK;  // Set SMCLK as F_BRCLK
-  set_iot_baud_rate(BAUD_115200);
+
+  // set_iot_baud_rate(BAUD_115200);
+  UCA0BRW = B115200_BRx;
+  UCA0MCTLW = B115200_MCTLW;
 
   UCA0CTLW0 &= ~UCSWRST;  // Set software reset enable
   UCA0IE |= UCRXIE;       // Enable Rx interrupt
@@ -135,7 +138,10 @@ inline void init_serial(void) {
   UCA1CTLW0 |= UCSWRST;        // Set software reset enable
   UCA1CTLW0 |= UCSSEL__SMCLK;  // Set SMCLK as F_BRCLK
 
-  set_usb_baud_rate(BAUD_115200);
+  // set_usb_baud_rate(BAUD_115200);
+  UCA1BRW = B115200_BRx;
+  UCA1MCTLW = B115200_MCTLW;
+
   UCA1CTLW0 &= ~UCSWRST;  // Set software reset enable
   UCA1IE |= UCRXIE;       // Enable Rx interrupt
   UCA1IE &= ~UCTXIE;      // Disable Tx interrupt
@@ -143,6 +149,7 @@ inline void init_serial(void) {
   enable_usb_loopback = BOOLEAN_FALSE;
 }
 
+/*
 enum response_status set_iot_baud_rate(enum baud_state b) {
   switch (b) {
     case BAUD_9600:
@@ -180,6 +187,7 @@ enum response_status set_usb_baud_rate(enum baud_state b) {
       return PROCESS_FAILED;
   }
 }
+*/
 
 void update_serial_states(void) {
   process_serial_stream(iot_char_rx, iot_cmd, &iot_cmd_idx, &iot_rx_ring_wr,
@@ -309,6 +317,7 @@ void process_serial_stream(volatile char char_rx[SMALL_RING_SIZE],
   } while (extra_cmd_txt);
 }
 
+/*
 char* process_status(enum response_status ps) {
   static char b9600[7] = "9_600\r";
   static char b115200[9] = "115_200\r";
@@ -332,7 +341,9 @@ char* process_status(enum response_status ps) {
       return invalid;
   }
 }
+*/
 
+/*
 void process_fram_cmd(char* cmd) {
   if (!strcmp(cmd, "^\r")) {
     usb_transmit(process_status(PROCESS_OK));
@@ -342,43 +353,26 @@ void process_fram_cmd(char* cmd) {
     usb_transmit(process_status(set_iot_baud_rate(BAUD_9600)));
   }
 }
+*/
 
 void process_drive_cmd(char* cmd) {
-  int cmdlen = strlen(cmd);
-  if (cmdlen == 7) {
-    char cmd1[5] = "   \r";
-    char cmd2[5] = "   \r";
-    strncpy(cmd1, cmd, 3);
-    strncpy(cmd2, (char*)cmd + 3, 3);
-    process_drive_cmd(cmd1);
-    process_drive_cmd(cmd2);
-  } else if (cmdlen == 4) {
-    if (isdigit(cmd[2])) {
-      int drive_time = (int)(cmd[2] - '0');
-      switch (cmd[1]) {
-        case 'W':
-          sched_drive_state = DRIVE_FORWARD;
-          sched_drive_time = drive_time;
-          schedule_drive_state();
-          break;
-        case 'A':
-          sched_drive_state = DRIVE_LEFT;
-          sched_drive_time = drive_time;
-          schedule_drive_state();
-          break;
-        case 'S':
-          sched_drive_state = DRIVE_REVERSE;
-          sched_drive_time = drive_time;
-          schedule_drive_state();
-          break;
-        case 'D':
-          sched_drive_state = DRIVE_RIGHT;
-          sched_drive_time = drive_time;
-          schedule_drive_state();
-          break;
-        default:
-          break;
-      }
+  if (strlen(cmd) == 3) {
+    switch (cmd[1]) {
+      case 'w':
+        car_drive_state = DRIVE_FORWARD;
+        break;
+      case 'a':
+        car_drive_state = DRIVE_LEFT;
+        break;
+      case 's':
+        car_drive_state = DRIVE_REVERSE;
+        break;
+      case 'd':
+        car_drive_state = DRIVE_RIGHT;
+        break;
+      default:
+        car_drive_state = DRIVE_NONE;
+        break;
     }
   }
 }
@@ -390,7 +384,7 @@ void process_commands(void) {
     for (i = 0; i < abs(cmd_list_wr - cmd_list_rd); i++) {
       curr_cmd = cmd_list[(cmd_list_rd + i) % CMD_MAX_SIZE];
       if (curr_cmd[0] == '^') {  // FRAM CMDs
-        process_fram_cmd(curr_cmd);
+        // process_fram_cmd(curr_cmd);
       } else if (curr_cmd[0] == '$') {  // CAR CMDs
         process_drive_cmd(curr_cmd);
       } else if (curr_cmd[0] == '@') {  // IOT capture cmd
