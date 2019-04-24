@@ -50,7 +50,7 @@ void main(void) {
   init_adc();           // Initialize the ADC
   init_scheduler();     // Initialize time based system scheduler
 
-  // init_scroll();  // Initialize the scroll of the menu system
+  init_scroll();  // Initialize the scroll of the menu system
 
   init_iot();  // FIX ME
   init_switches();
@@ -63,7 +63,7 @@ void main(void) {
   while (BOOLEAN_TRUE) {  // Operational loop
     process_leds();
 
-    // menu_state_controller();
+    menu_state_controller();
 
     run_scheduler();
     arcade_drive_state_machine();

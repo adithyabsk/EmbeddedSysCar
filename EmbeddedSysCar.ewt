@@ -2194,6 +2194,9 @@
         <name>$PROJ_DIR$\main.c</name>
     </file>
     <file>
+        <name>$PROJ_DIR$\menu.c</name>
+    </file>
+    <file>
         <name>$PROJ_DIR$\ports.c</name>
     </file>
     <file>

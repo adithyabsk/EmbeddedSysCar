@@ -72,20 +72,20 @@ void drive_cw(void) {
   stop_drive();
   // Turn on forward left
   LEFT_FORWARD_SPEED =
-      (unsigned int)(WHEEL_PERIOD + forward_alignment.curr_val);
+      (unsigned int)((WHEEL_PERIOD + forward_alignment.curr_val) / WHEEL_SPLIT);
   // Turn on reverse right
   RIGHT_REVERSE_SPEED =
-      (unsigned int)(WHEEL_PERIOD - reverse_alignment.curr_val);
+      (unsigned int)((WHEEL_PERIOD - reverse_alignment.curr_val) / WHEEL_SPLIT);
 }
 
 void drive_ccw(void) {
   stop_drive();
   // Turn on forward right
   RIGHT_FORWARD_SPEED =
-      (unsigned int)(WHEEL_PERIOD - forward_alignment.curr_val);
+      (unsigned int)((WHEEL_PERIOD - forward_alignment.curr_val) / WHEEL_SPLIT);
   // Turn on reverse left
   LEFT_REVERSE_SPEED =
-      (unsigned int)(WHEEL_PERIOD + reverse_alignment.curr_val);
+      (unsigned int)((WHEEL_PERIOD + reverse_alignment.curr_val) / WHEEL_SPLIT);
 }
 
 void forward_turn(int cycle_offset) {
