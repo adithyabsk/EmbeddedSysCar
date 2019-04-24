@@ -2170,6 +2170,9 @@
         <name>$PROJ_DIR$\clocks.c</name>
     </file>
     <file>
+        <name>$PROJ_DIR$\commands.c</name>
+    </file>
+    <file>
         <name>$PROJ_DIR$\config.c</name>
     </file>
     <file>

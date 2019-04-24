@@ -13,6 +13,7 @@
 #include "common.h"
 #include "config.h"
 #include "scheduler.h"
+#include "timers.h"
 
 #define BASE_WHEEL_CYCLES (256U)
 #define ALIGNMENT (10)
@@ -23,20 +24,20 @@
 
 #define PID_GAIN (0.7f)
 #define PID_LOSS (0.4f)
+#define WHEEL_SPLIT (2)
 
 enum drive_state prev_drive_state = DRIVE_NONE;
 
-void schedule_drive_state(void);
-
 inline void init_drive(void) {
-  init_config(&forward_alignment, (int)(-WHEEL_PERIOD / 2),
-              (int)(WHEEL_PERIOD / 2), INIT_CLEAR);
-  init_config(&reverse_alignment, (int)(-WHEEL_PERIOD / 2),
-              (int)(WHEEL_PERIOD / 2), INIT_CLEAR);
+  init_config(&forward_alignment, (int)(-WHEEL_PERIOD / WHEEL_SPLIT),
+              (int)(WHEEL_PERIOD / WHEEL_SPLIT), INIT_CLEAR);
+  init_config(&reverse_alignment, (int)(-WHEEL_PERIOD / WHEEL_SPLIT),
+              (int)(WHEEL_PERIOD / WHEEL_SPLIT), INIT_CLEAR);
 
   car_drive_state = DRIVE_NONE;
-  sched_drive_time = 0;
-  sched_drive_state = DRIVE_NONE;
+  car_run_status = RS_WAITING;
+  curr_checkpoint = CHECK_0;
+  drive_start_time = INIT_CLEAR;
 }
 
 void stop_drive(void) {
@@ -114,22 +115,24 @@ void reverse_turn(int cycle_offset) {
   RIGHT_REVERSE_SPEED = computed_right;
 }
 
-void set_stop(void) { car_drive_state = DRIVE_NONE; }
+void set_drive_stop(void) { car_drive_state = DRIVE_NONE; }
 
-VOID_FUNC_PTR set_stop_ptr = &set_stop;
-VOID_FUNC_PTR reschedule_ptr = &schedule_drive_state;
+void set_drive_forward(void) { car_drive_state = DRIVE_FORWARD; }
 
-void schedule_drive_state(void) {
-  if (car_drive_state != DRIVE_NONE) {
-    schedule_func_call(reschedule_ptr, 3);
-  } else {
-    car_drive_state = sched_drive_state;
-    schedule_func_call(set_stop_ptr, sched_drive_time * 5);
-  }
-}
+void set_drive_reverse(void) { car_drive_state = DRIVE_REVERSE; }
+
+void set_drive_left(void) { car_drive_state = DRIVE_LEFT; }
+
+void set_drive_right(void) { car_drive_state = DRIVE_RIGHT; }
 
 void arcade_drive_state_machine(void) {
+  static int has_updated_rs = INIT_CLEAR;
   if (car_drive_state != prev_drive_state) {
+    if (!has_updated_rs) {
+      has_updated_rs = BOOLEAN_TRUE;
+      car_run_status = RS_ARCADE;
+      drive_start_time = wall_clock_time_count;
+    }
     switch (car_drive_state) {
       case DRIVE_NONE:
         stop_drive();

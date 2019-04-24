@@ -9,12 +9,13 @@
 
 #include <string.h>
 
+#include "common.h"
 #include "display.h"
 #include "ports.h"
 #include "scheduler.h"
 #include "serial.h"
 
-#define MIN(a, b) ((a < b) ? a : b)
+#define MAX_IOT_CMD_SIZE (40)
 
 enum iot_rst_state { SET_RESET_IOT, SET_ENABLE_IOT, INVALID_IOT_RST_STATE };
 
@@ -26,12 +27,12 @@ const char ifconfig_search_strs[enum_len(IF_MAX)][MAX_KEY_SIZE] = {
 const char WHITESPACE[] = " \f\n\r\t\v";
 
 void capval(char* key, char* value) {
-  char* found_key = strstr(iot_resp_buff, key);
+  char* found_key = strstr((char*)iot_resp_buff.buff, key);
   if (found_key) {
     int key_len = strlen(key);
-    // check if key isn't at end of buffer
-    if ((int)(found_key + key_len - 1) <
-        (int)(iot_resp_buff + RESP_BUFFER - 1)) {
+    // check if key isn't at end of buff
+    if ((int)(found_key + max_str_len(key_len)) <
+        (int)(iot_resp_buff.buff + max_str_len(RESP_BUFF_SIZE))) {
       unsigned int found_value_len =
           strcspn((char*)(found_key + key_len), WHITESPACE);
       unsigned int rest_of_strlen = strlen((char*)(found_key + key_len));
@@ -43,16 +44,18 @@ void capval(char* key, char* value) {
   }
 }
 
+VOID_FUNC_PTR ir2ic_func = &iotresp2ifconfig;
 void iotresp2ifconfig(void) {
   int i;
-  for (i = 0; i < enum_len(IF_MAX); i++) {
+  for (i = INIT_CLEAR; i < enum_len(IF_MAX); i++) {
     capval(iot_ifconfig[i].key, iot_ifconfig[i].value);
     int len = strlen(iot_ifconfig[i].value);
-    iot_ifconfig[i].scrollable = (len > DISP_TEXT_MAX - 1);
+    iot_ifconfig[i].scrollable = (len > max_str_len(DISP_TEXT_SIZE));
     if (iot_ifconfig[i].scrollable) {
-      iot_ifconfig[i].max_offset = len - (DISP_TEXT_MAX - 1);
+      iot_ifconfig[i].max_offset = len - max_str_len(DISP_TEXT_SIZE);
     }
   }
+  iot_resp_buff.should_cap = BOOLEAN_FALSE;
 }
 
 void set_iot_rst_state(enum iot_rst_state irs) {
@@ -66,8 +69,11 @@ void set_iot_rst_state(enum iot_rst_state irs) {
 
 VOID_FUNC_PTR iot_setup_ptr = &iot_setup;
 void iot_setup(void) {
-  add_cmd("@AT+NSTCP=9005,1\r");
-  add_cmd("@AT+WSYNCINTRL=65535\r");
+  iot_transmit("AT+WSYNCINTRL=65535\r");
+  iot_transmit("AT+NSTCP=9005,1\r");
+  iot_transmit("AT+NSTAT=?\r");
+  init_resp_buff(&iot_resp_buff, BOOLEAN_TRUE);
+  schedule_func_call(ir2ic_func, 10);
 }
 
 void enable_iot(void) {
@@ -91,6 +97,6 @@ inline void init_iot(void) {
 
 VOID_FUNC_PTR iot_check = &iot_alive;
 void iot_alive(void) {
-  add_cmd("@AT+PING=8.8.8.8,1\r");
-  schedule_func_call(iot_check, 50);
+  iot_transmit("AT+PING=8.8.8.8,1\r");
+  schedule_func_call(iot_check, 100);
 }

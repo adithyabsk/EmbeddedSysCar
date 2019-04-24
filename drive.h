@@ -11,6 +11,7 @@
 
 #include "adc.h"
 #include "config.h"
+#include "display.h"
 
 #ifndef DRIVE_LOCAL_DEF
 #define DRIVE_LOCAL_DEF extern
@@ -23,6 +24,8 @@
 #define WHEEL_PERIOD (256)
 #define WHEEL_OFF (0)
 
+enum run_status { RS_WAITING, RS_ARCADE, RS_AUTONOMOUS };
+
 enum drive_state {
   DRIVE_NONE,
   DRIVE_FORWARD,
@@ -30,6 +33,20 @@ enum drive_state {
   DRIVE_LEFT,
   DRIVE_RIGHT,
   DRIVE_INVALID
+};
+
+enum checkpoint {
+  CHECK_0,
+  CHECK_1,
+  CHECK_2,
+  CHECK_3,
+  CHECK_4,
+  CHECK_5,
+  CHECK_6,
+  CHECK_7,
+  CHECK_8,
+  CHECK_NONE,
+  CHECK_LIST_MAX = CHECK_NONE
 };
 
 DRIVE_LOCAL_DEF volatile enum follow_line_state prev_fl_state;
@@ -41,6 +58,10 @@ DRIVE_LOCAL_DEF enum drive_state sched_drive_state;
 
 DRIVE_LOCAL_DEF struct config_value forward_alignment;
 DRIVE_LOCAL_DEF struct config_value reverse_alignment;
+
+DRIVE_LOCAL_DEF enum run_status car_run_status;
+DRIVE_LOCAL_DEF enum checkpoint curr_checkpoint;
+DRIVE_LOCAL_DEF unsigned int drive_start_time;
 
 /**
  * @brief Stops all car motion
@@ -86,5 +107,15 @@ void run_controller(void);
 extern inline void init_drive(void);
 void arcade_drive_state_machine(void);
 void schedule_drive_state(void);
+
+void set_drive_stop(void);
+
+void set_drive_forward(void);
+
+void set_drive_reverse(void);
+
+void set_drive_left(void);
+
+void set_drive_right(void);
 
 #endif /* DRIVE_H */

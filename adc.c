@@ -70,7 +70,7 @@ inline void init_adc(void) {
   ADCCTL2 |= ADCRES_2;   // ADC resolution 10b = 12 bit
                          // (14 clock cycle conversion time)
   ADCCTL2 &= ~ADCDF;     // ADC data read-back format 0b = Binary unsigned.
-  ADCCTL2 &= ~ADCSR;     // ADC sampling rate 0b = ADC buffer supports
+  ADCCTL2 &= ~ADCSR;     // ADC sampling rate 0b = ADC buff supports
                          // up to 200 ksps
 
   // ADCMCTL0 Register

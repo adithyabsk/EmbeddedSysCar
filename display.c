@@ -20,7 +20,7 @@
 #define DISPL_START (0)
 
 // Library LCD variable access
-extern char display_line[DISP_MAX_ROWS][DISP_TEXT_MAX];
+extern char display_line[DISP_MAX_ROWS][DISP_TEXT_SIZE];
 extern char* display[DISP_MAX_ROWS];
 extern volatile unsigned char display_changed;
 extern volatile unsigned char update_display;
@@ -29,7 +29,7 @@ extern volatile unsigned int update_display_count;
 inline void init_display(void) {
   int i;
 
-  for (i = INIT_CLEAR; i < DISP_TEXT_MAX; i++) {
+  for (i = INIT_CLEAR; i < DISP_TEXT_SIZE; i++) {
     display_line[DISP_0][i] = INIT_CLEAR;
     display_line[DISP_1][i] = INIT_CLEAR;
     display_line[DISP_2][i] = INIT_CLEAR;

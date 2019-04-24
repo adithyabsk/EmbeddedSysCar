@@ -10,9 +10,12 @@
 
 #include "msp430.h"
 
+#include "commands.h"
 #include "common.h"
 #include "display.h"
+#include "drive.h"
 #include "iot.h"
+#include "timers.h"
 
 #define HEX_MAX_STR_LEN (3)
 #define HEX_BASE (16)
@@ -23,21 +26,21 @@
 #define TIME_DIVISOR (10)
 #define TIME_LSB_MULT (2)
 #define ASCII_OFFSET (48)
+#define IP_ADDR_OFFSET (3)
 
 #define offset(var, n) (var + n)
+
+const char checkpoint_strs[enum_len(CHECK_LIST_MAX)][DISP_TEXT_SIZE] = {
+    "Arrived 00", "Arrived 01", "Arrived 02", "Arrived 03", "Arrived 04",
+    "Arrived 05", "Arrived 06", "Arrived 07", "Arrived 08", EMPTY_STR};
 
 void clear_display(void) {
   display_screen(NULL_STR, NULL_STR, NULL_STR, NULL_STR, BOOLEAN_TRUE);
 }
 
-void boot_display(void) {
-  display_screen("EMBEDDED  ", "SYSTEMS   ", "CAR       ", EMPTY_STR,
-                 BOOLEAN_FALSE);
-}
-
-void display_scroll(const char config_list[][DISP_TEXT_MAX], int list_len,
+void display_scroll(const char config_list[][DISP_TEXT_SIZE], int list_len,
                     int curr_item, int display_selector) {
-  char sel_elem[DISP_TEXT_MAX];
+  char sel_elem[DISP_TEXT_SIZE];
   strcpy(sel_elem, config_list[curr_item]);
 
   if (display_selector) {  // Always scroll
@@ -113,97 +116,35 @@ void walltime2dec(int time, int offset, char* out) {
   strncpy((char*)(out + offset), dec_data, sizeof(dec_data));
 }
 
-// void loopback_test_display(char* header, char* rx_input, int lp_state) {
-//   char _rx[DISP_TEXT_MAX];
-//   char lp_state_str[DISP_TEXT_MAX] = "LOOP:     ";
-//   strncpy(_rx, rx_input, DISP_TEXT_MAX-1);
-//   state2str(lp_state, 6, lp_state_str);
-//   display_screen(header, "RX:       ", _rx, lp_state_str, BOOLEAN_TRUE);
-// }
-
 void cleanse_inline_null(char* str, int str_len) {
   char* c;
   for (c = str; (int)(c - str) < str_len; c++) {
-    if (*c == '\0') *c = ' ';
+    if (*c == NULL_CHAR) *c = ' ';
   }
 }
 
-void display_iot_data(char iot_scrn_strs[][DISP_TEXT_MAX], int start, int end) {
-  int i;
-  for (i = 0; i < enum_len(IF_MAX); i++) {
-    char disp_str[DISP_TEXT_MAX] = EMPTY_STR;  // pad with spaces
-    strncpy(disp_str,
-            (char*)(iot_ifconfig[i].value + iot_ifconfig[i].display_offset),
-            DISP_TEXT_MAX - 1);
-    cleanse_inline_null(disp_str, DISP_TEXT_MAX - 1);
-    strcpy(iot_scrn_strs[start + 1 + i * 2], disp_str);
+void display_run_status(void) {
+  char time_str[DISP_TEXT_SIZE] = " CK xxx.x ";
+  walltime2dec(wall_clock_time_count - drive_start_time, TIME_VAL_OFFSET,
+               time_str);
+  switch (car_run_status) {
+    case RS_WAITING:
+      display_screen(" Waiting  ", "    for   ", "  Input   ", EMPTY_STR,
+                     BOOLEAN_FALSE);
+      break;
+    case RS_ARCADE:
+      display_screen(checkpoint_strs[curr_checkpoint], most_recent_cmd,
+                     &iot_ifconfig[IF_IP_ADDR].value[IP_ADDR_OFFSET], time_str,
+                     BOOLEAN_FALSE);
+      break;
+    case RS_AUTONOMOUS:
+      break;
   }
 }
 
-void should_allow_horiz_scroll(char* full_data, int selector) {}
-
-// void show_line_follow_status(void) {
-//   set_clear_lines();
-//
-//   char status_disp[DISP_TEXT_MAX];
-//   char time_disp[DISP_TEXT_MAX];
-//
-//   switch (lf_routine_state) {
-//     case INTERCEPTING:
-//       strcpy(status_disp, "Intercept ");
-//       break;
-//     case WAITING:
-//       strcpy(status_disp, "Waiting   ");
-//       break;
-//     case TURNING:
-//       strcpy(status_disp, "Turning   ");
-//       break;
-//     case FOLLOWING_LINE:
-//       strcpy(status_disp, "Circling  ");
-//       break;
-//     case 4:
-//       strcpy(status_disp, "Stopped   ");
-//       break;
-//   }
-//   strcpy(display_line[DISP_0], status_disp);
-//   walltime2dec(time_disp);
-//   strcpy(display_line[DISP_1], time_disp);
-//
-//   char ir_mov_status[DISP_TEXT_MAX];
-//   if (ir_status) {
-//     strcpy(ir_mov_status, "IR 1      ");
-//   } else {
-//     strcpy(ir_mov_status, "IR 0      ");
-//   }
-//   strcpy(display_line[DISP_3], ir_mov_status);
-//
-//   update_lines();
-// }
-
-// void display_baud(void) {
-//   switch (iot_state) {
-//     case CMD_RECEIVED:
-//       display_screen(" Recieved ", NULL_STR, NULL_STR, iot_cmd,
-//       BOOLEAN_TRUE); break;
-//     case CMD_TRANSMITING:
-//       display_screen(" Transmit ", iot_cmd, NULL_STR, NULL_STR,
-//       BOOLEAN_TRUE); break;
-//     default:
-//       display_screen(" Waiting  ", EMPTY_STR, NULL_STR, EMPTY_STR,
-//                      BOOLEAN_TRUE);
-//       break;
-//   }
-//   switch (system_baud) {
-//     case BAUD_115200:
-//       set_line("  115200  ", DISP_2, BOOLEAN_FALSE);
-//       break;
-//     case BAUD_460800:
-//       set_line("  460800  ", DISP_2, BOOLEAN_FALSE);
-//       break;
-//     default:
-//       set_line("  ERROR   ", DISP_2, BOOLEAN_FALSE);
-//       break;
-//   }
-//
-//   update_lines();
-// }
+void truncate_disp_str(char out[DISP_TEXT_SIZE], char* input) {
+  memset(out, ' ', DISP_TEXT_SIZE);
+  out[max_str_len(DISP_TEXT_SIZE)] = NULL_CHAR;
+  int str_len = MIN(strlen(input), max_str_len(DISP_TEXT_SIZE));
+  strncpy(out, input, str_len);
+}

@@ -16,7 +16,6 @@ command_dict = {
     " ": "$e\r",  # Enable Toggle
 }
 
-
 def getch():
     @timeout_decorator.timeout(1)
     def _getch():
@@ -28,7 +27,6 @@ def getch():
         finally:
             termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
         return ch
-
     try:
         return _getch()
     except:

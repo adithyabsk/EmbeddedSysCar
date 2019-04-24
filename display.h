@@ -8,10 +8,9 @@
 #define DISPLAY_H
 
 #define DISP_MAX_ROWS (4)
-#define DISP_TEXT_MAX (11)
+#define DISP_TEXT_SIZE (11)
 #define EMPTY_STR ("          ")
 #define NULL_STR ("")
-#define NULL_CHAR ('\0')
 
 /*
  * External LCD Functions

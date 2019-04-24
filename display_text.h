@@ -9,6 +9,8 @@
 
 #include "display.h"
 
+#define TIME_VAL_OFFSET (4)
+
 /**
  * @brief Displays a clear screen
  *
@@ -33,7 +35,7 @@ void show_line_follow_status(void);
 
 void display_baud(void);
 
-void boot_display(void);
+void display_run_status(void);
 
 void int2hex4bit(int, int, char*);
 
@@ -43,8 +45,10 @@ void walltime2dec(int, int, char*);
 
 void loopback_test_display(char*, char*, int);
 
-void display_scroll(const char[][DISP_TEXT_MAX], int, int, int);
+void display_scroll(const char[][DISP_TEXT_SIZE], int, int, int);
 
-void display_iot_data(char[][DISP_TEXT_MAX], int, int);
+void display_iot_data(char[][DISP_TEXT_SIZE], int, int);
+
+void truncate_disp_str(char[DISP_TEXT_SIZE], char*);
 
 #endif /* DISPLAY_TEXT_H */

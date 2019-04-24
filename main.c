@@ -12,16 +12,20 @@
 #include "clocks.h"
 #include "common.h"
 #include "display.h"
+#include "display_text.h"
 #include "drive.h"
 #include "iot.h"
 #include "led.h"
 #include "menu.h"
+
 #include "ports.h"
 #include "scheduler.h"
 #include "serial.h"
 #include "switches.h"
 #include "system.h"
 #include "timers.h"
+
+#include "commands.h"
 
 #define DELAY_TIME (1000000)
 
@@ -45,22 +49,27 @@ void main(void) {
   Init_LCD();           // Initialize LCD
   init_adc();           // Initialize the ADC
   init_scheduler();     // Initialize time based system scheduler
-  init_scroll();        // Initialize the scroll of the menu system
-  init_iot();
+
+  init_scroll();  // Initialize the scroll of the menu system
+
+  init_iot();  // FIX ME
   init_switches();
   init_drive();
 
-  iot_alive();
+  init_command_processor();  // Initialize commands queue data structure
+
+  // iot_alive(); FIX THIS!!
 
   while (BOOLEAN_TRUE) {  // Operational loop
     process_leds();
 
     menu_state_controller();
-    update_serial_states();
-    process_commands();
 
     run_scheduler();
     arcade_drive_state_machine();
+
+    search_cmds();
+    process_cmd_queue();
 
     Display_Process();  // Dispaly update
   }

@@ -13,61 +13,29 @@
 #define SERIAL_LOCAL_DEF extern
 #endif
 
-#define BEGINNING (0)
-#define SMALL_RING_SIZE (500)
-#define CMD_MAX_SIZE (40)
-#define CMD_BUFFER (30)
-#define RESP_BUFFER (500)
+#define SERIAL_RING_SIZE (30)
+#define RESP_BUFF_SIZE (250)
 
-enum baud_state {
-  BAUD_MIN,
-  BAUD_9600 = BAUD_MIN,
-  BAUD_115200,
-  BAUD_460800,
-  BAUD_MAX = BAUD_460800,
-  BAUD_INVALID
+struct serial_ring_buff {
+  volatile char buff[SERIAL_RING_SIZE];
+  int rd_idx;  // not modified in ISR
+  volatile int wr_idx;
 };
 
-enum response_status {
-  PROCESS_OK,
-  PROCESS_FAILED,
-  PROCESS_BAUD_9600,
-  PROCESS_BAUD_115200,
-  PROCESS_BAUD_460800,
-  PROCESS_INVALID
+struct resp_buff {
+  volatile char buff[RESP_BUFF_SIZE];
+  int wr_idx;  // only modified by ISR
+  volatile int should_cap;
 };
 
 enum transmit_device { T_USB, T_IOT, T_INVALID };
 
 enum transmit_state { SET_TRANSMIT_OFF, SET_TRANSMIT_ON };
 
-SERIAL_LOCAL_DEF volatile unsigned int usb_rx_ring_wr;
-SERIAL_LOCAL_DEF unsigned int usb_rx_ring_rd;
-SERIAL_LOCAL_DEF volatile char usb_char_rx[SMALL_RING_SIZE];
+SERIAL_LOCAL_DEF struct serial_ring_buff iot_ring_buff;
+SERIAL_LOCAL_DEF struct serial_ring_buff usb_ring_buff;
 
-SERIAL_LOCAL_DEF volatile unsigned int iot_rx_ring_wr;
-SERIAL_LOCAL_DEF unsigned int iot_rx_ring_rd;
-SERIAL_LOCAL_DEF volatile char iot_char_rx[SMALL_RING_SIZE];
-
-SERIAL_LOCAL_DEF enum cmd_state usb_state;
-SERIAL_LOCAL_DEF char usb_cmd[CMD_BUFFER];
-SERIAL_LOCAL_DEF unsigned int usb_cmd_idx;
-
-SERIAL_LOCAL_DEF enum cmd_state iot_state;
-SERIAL_LOCAL_DEF char iot_cmd[CMD_BUFFER];
-SERIAL_LOCAL_DEF unsigned int iot_cmd_idx;
-
-SERIAL_LOCAL_DEF volatile enum transmit_state usb_transmit_state;
-
-SERIAL_LOCAL_DEF int enable_usb_loopback;
-
-SERIAL_LOCAL_DEF char cmd_list[CMD_MAX_SIZE][CMD_BUFFER];
-SERIAL_LOCAL_DEF unsigned int cmd_list_wr;
-SERIAL_LOCAL_DEF unsigned int cmd_list_rd;
-
-SERIAL_LOCAL_DEF unsigned int fill_iot_resp_buff;
-SERIAL_LOCAL_DEF char iot_resp_buff[RESP_BUFFER];
-SERIAL_LOCAL_DEF unsigned int iot_resp_buff_idx;
+SERIAL_LOCAL_DEF struct resp_buff iot_resp_buff;
 
 /**
  * @brief Initializes the serial set for both A0 and A1
@@ -80,46 +48,27 @@ SERIAL_LOCAL_DEF unsigned int iot_resp_buff_idx;
 extern inline void init_serial(void);
 
 /**
- * @brief Output a constant value to the iot tx register
- *
- * @note Make sure disable the TxISR
+ * @brief Transmits a null terminated string through the USB serial interface
  *
  */
-void iot_const_out(char);
+void usb_transmit(char*);
 
 /**
- * @brief Output a constant value to the usb tx register
- *
- * @note Make sure disable the TxISR
+ * @brief Transmits a null terminated string through the IOT serial interface
  *
  */
-void usb_const_out(char c);
-
-void schedule_test_transmit(void);
-
-enum response_status set_iot_baud_rate(enum baud_state);
-enum response_status set_usb_baud_rate(enum baud_state);
-
-void update_serial_states(void);
-
-void clear_char_arr(char[], int);
-
-void clear_iot_state(void);
-void clear_usb_state(void);
-
-void usb_transmit(char*);
 void iot_transmit(char*);
 
-void set_usb_transmit_state(enum transmit_state);
+/**
+ * @brief Places the selected unread buff into a passed unread character array
+ *
+ */
+int read_buff(struct serial_ring_buff*, char[SERIAL_RING_SIZE]);
 
-void test_usb_loopback(void);
-void test_iot_loopback(void);
-
-void usb_test_transmit(void);
-void iot_test_transmit(void);
-
-void process_commands(void);
-
-void add_cmd(char*);
+/**
+ * @brief Prepares IOT response buffer for data capture
+ *
+ */
+void init_resp_buff(struct resp_buff*, int);
 
 #endif /* SERIAL_H */
