@@ -210,7 +210,7 @@ static void init_port_5(void) {
   // PIN 4 GPIO (00)
   P5SEL1 &= ~IR_LED;
   P5SEL0 &= ~IR_LED;
-  P1DIR |= IR_LED;
+  P5DIR |= IR_LED;
 }
 
 static void init_port_6(void) {

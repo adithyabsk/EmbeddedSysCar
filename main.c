@@ -59,8 +59,6 @@ void main(void) {
   init_command_processor();  // Initialize commands queue data structure
 
   iot_alive();
-  // IR_LED_TOGGLE;
-  (P5OUT |= IR_LED);
 
   while (BOOLEAN_TRUE) {  // Operational loop
     process_leds();
