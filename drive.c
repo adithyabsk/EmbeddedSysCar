@@ -22,9 +22,27 @@
 #define LEFT_REVERSE_CYCLES (BASE_WHEEL_CYCLES)
 #define RIGHT_REVERSE_CYCLES (BASE_WHEEL_CYCLES)
 
-#define PID_GAIN (0.7f)
-#define PID_LOSS (0.4f)
+#define Kp (0.7f)
 #define WHEEL_SPLIT (2)
+
+#define IR_TOLERANCE (0x100)
+#define BLACK (0x500)
+
+enum follow_line_state {
+  NO_LINE,
+  LEFT_OF_LINE,
+  RIGHT_OF_LINE,
+  SIDEWAYS,
+  INVALID_FLS
+};
+
+struct line_status {
+  unsigned int line_color;  // False is black, true is white
+  int detector_diff;
+  enum follow_line_state fl_state;
+};
+
+struct line_status car_line_status;
 
 enum drive_state prev_drive_state = DRIVE_NONE;
 
@@ -38,6 +56,10 @@ inline void init_drive(void) {
   car_run_status = RS_WAITING;
   curr_checkpoint = CHECK_0;
   drive_start_time = INIT_CLEAR;
+
+  car_line_status.line_color = BOOLEAN_TRUE;
+  car_line_status.detector_diff = INIT_CLEAR;
+  car_line_status.fl_state = NO_LINE;
 }
 
 void stop_drive(void) {
@@ -157,80 +179,32 @@ void arcade_drive_state_machine(void) {
   }
 }
 
-unsigned int compute_speed(int cycles, int should_add, float mult,
-                           int counter) {
-  unsigned int temp_comp;
-  if (should_add) {
-    temp_comp = (unsigned int)(cycles + cycles * mult * 0.5 * counter);
-  } else {
-    temp_comp = (unsigned int)(cycles - cycles * mult * 0.5 * counter);
-  }
-  if (should_add && (temp_comp < cycles)) {
-    return WHEEL_PERIOD;
-  } else if ((!should_add && (temp_comp > cycles)) | (temp_comp < 13000)) {
-    return 13000;
-  } else {
-    return temp_comp;
-  }
+// void update_follow_line_state(void) {
+//   int left = adc_ldet;
+//   int right = adc_rdet;
+//   if ((right > BLACK) && (left > BLACK)) {
+//     fl_state = SIDEWAYS;
+//   } else if ((right > BLACK) && (left <= BLACK)) {
+//     fl_state = LEFT_OF_LINE;
+//   } else if ((right <= BLACK) && (left > BLACK)) {
+//     fl_state = RIGHT_OF_LINE;
+//   } else {
+//     fl_state = NO_LINE;
+//   }
+// }
+
+static int get_detector_diff(void) {
+  int _ldet = (int)adc_ldet;
+  int _rdet = (int)adc_rdet;
+
+  return (_ldet - _rdet);
 }
 
-void update_speeds(void) {
-  unsigned int computed_left, computed_right;
-  static int last_known_state = SIDEWAYS;
-  switch (fl_state) {
-    case NO_LINE:
-      switch (last_known_state) {
-        case LEFT_OF_LINE:
-          computed_left =
-              compute_speed(LEFT_FORWARD_CYCLES, 1, PID_GAIN, fl_timer_counter);
-          computed_right = compute_speed(RIGHT_FORWARD_CYCLES, 0, PID_LOSS,
-                                         fl_timer_counter);
-          break;
-        case RIGHT_OF_LINE:
-          computed_left =
-              compute_speed(LEFT_FORWARD_CYCLES, 0, PID_LOSS, fl_timer_counter);
-          computed_right = compute_speed(RIGHT_FORWARD_CYCLES, 1, PID_GAIN,
-                                         fl_timer_counter);
-          break;
-        default:
-          computed_left = LEFT_FORWARD_CYCLES;
-          computed_right = RIGHT_FORWARD_CYCLES;
-          break;
-      }
-      break;
-    case SIDEWAYS:
-      computed_left = LEFT_FORWARD_CYCLES;
-      computed_right = RIGHT_FORWARD_CYCLES;
-      break;
-    case LEFT_OF_LINE:
-      computed_left =
-          compute_speed(LEFT_FORWARD_CYCLES, 1, PID_GAIN, fl_timer_counter);
-      computed_right =
-          compute_speed(RIGHT_FORWARD_CYCLES, 0, PID_LOSS, fl_timer_counter);
-      break;
-    case RIGHT_OF_LINE:
-      computed_left =
-          compute_speed(LEFT_FORWARD_CYCLES, 0, PID_LOSS, fl_timer_counter);
-      computed_right =
-          compute_speed(RIGHT_FORWARD_CYCLES, 1, PID_GAIN, fl_timer_counter);
-      break;
-    default:
-      break;
-  }
-  fl_timer_counter++;
-
-  // Define volatile access order
-  enum follow_line_state _fl_state = fl_state;
-  enum follow_line_state _prev_fl_state = prev_fl_state;
-
-  if (_fl_state != _prev_fl_state) {
-    fl_timer_counter = 1;
-  }
-  if (_fl_state != NO_LINE) {
-    last_known_state = _fl_state;
-  }
-  prev_fl_state = _fl_state;
-
-  LEFT_FORWARD_SPEED = computed_left;
-  RIGHT_FORWARD_SPEED = computed_right;
-}
+// void follow_line(void) {
+//
+//   curr_pos =
+//
+//
+//   LEFT_FORWARD_SPEED = computed_left;
+//   RIGHT_FORWARD_SPEED = computed_right;
+// }

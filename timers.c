@@ -182,44 +182,7 @@ __interrupt void TIMER1_B1_ISR(void) {
     case 0:
       break;
     case 2:
-      TB1CCR1 += TB1CCR1_INTERVAL;  // Add Offset
-      switch (lf_routine_state) {
-        case INTERCEPTING:
-          drive_forward();
-          if (fl_state == SIDEWAYS) lf_routine_state = INTERCEPTED;
-          break;
-        case INTERCEPTED:
-          stop_drive();
-          if (wait_time_count++ > WAIT_MAX) lf_routine_state = TURNING;
-          break;
-        case TURNING:
-          drive_ccw();
-          if (turn_time_count++ > TURN_MAX) lf_routine_state = TURNED;
-          break;
-        case TURNED:
-          stop_drive();
-          lf_routine_state = FOLLOWING_LINE;
-          break;
-        case FOLLOWING_LINE:
-          update_speeds();
-          if (line_follow_count++ > LINE_FOLLOW_MAX) {
-            lf_routine_state = TURNINTOCIRCLE;
-            stop_drive();
-            line_follow_count = 0;
-            turn_time_count = 0;
-          }
-          break;
-        case TURNINTOCIRCLE:
-          drive_ccw();
-          if (turn_time_count++ > (unsigned int)(TURN_MAX - 100U)) {
-            stop_drive();
-            TB1CCTL1 &= ~CCIE;
-            lf_routine_state = WAITING;
-          }
-          break;
-        default:
-          break;
-      }
+      // TB1CCR1 += TB1CCR1_INTERVAL;
       break;
     case 4:
       TB1CCR2 += TB1CCR2_INTERVAL;

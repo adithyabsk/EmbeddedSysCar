@@ -87,7 +87,7 @@ void int2hex4bit(int input, int offset, char* out) {
   char hex[HEX_MAX_STR_LEN];
   int i;
   int temp_input = input;
-  for (i = offset(HEX_MAX_STR_LEN, -1); i >= 0; i--) {
+  for (i = offset(HEX_MAX_STR_LEN, -1); i >= INIT_CLEAR; i--) {
     hex[i] = dec2hex(temp_input % HEX_BASE);
     temp_input /= HEX_BASE;
   }

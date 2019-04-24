@@ -35,14 +35,14 @@ enum menu_main_pages {
   MAIN_MENU_MIN,
   MAIN_MENU_DIAG = MAIN_MENU_MIN,
   MAIN_MENU_RUN,
-  MAIN_MENU_NONE1,
+  MAIN_MENU_BLTEST,
   MAIN_MENU_NONE2,
   MAIN_MENU_MAX = MAIN_MENU_NONE2,
   MAIN_MENU_NONE
 };
 
 const char menu_main_page_strs[enum_len(MAIN_MENU_MAX)][DISP_TEXT_SIZE] = {
-    "  CONFIG  ", "   RUN    ", EMPTY_STR, EMPTY_STR};
+    "  CONFIG  ", "   RUN    ", "  BLTEST  ", EMPTY_STR};
 
 int hover_main_item = MAIN_MENU_MIN;
 int curr_main_item = MAIN_MENU_NONE;
@@ -121,10 +121,19 @@ static void diag_menu_state_controller(void) {
     case DIAG_MENU_NONE:
       update_diag_values();
       scroll_control(DIAG_MENU_MIN, DIAG_MENU_MAX, &hover_diag_item);
-      display_scroll(menu_diag_page_strs, enum_len(DIAG_MENU_MAX),
-                     hover_diag_item, BOOLEAN_FALSE);
+      if (hover_diag_item == DIAG_MENU_IR) {
+        display_scroll(menu_diag_page_strs, enum_len(DIAG_MENU_MAX),
+                       hover_diag_item, BOOLEAN_TRUE);
+      } else {
+        display_scroll(menu_diag_page_strs, enum_len(DIAG_MENU_MAX),
+                       hover_diag_item, BOOLEAN_FALSE);
+      }
       checkset_btn_press(SEL_BTN_PTR, &curr_diag_item, hover_diag_item,
                          init_scroll_ptr);
+      break;
+    case DIAG_MENU_IR:
+      IR_LED_TOGGLE;
+      curr_diag_item = DIAG_MENU_NONE;
       break;
     default:
       curr_diag_item = DIAG_MENU_NONE;
@@ -149,6 +158,9 @@ void menu_state_controller(void) {
       break;
     case MAIN_MENU_RUN:
       display_run_status();
+      break;
+    case MAIN_MENU_BLTEST:
+
       break;
     default:
       curr_main_item = MAIN_MENU_NONE;  // selection not implemented

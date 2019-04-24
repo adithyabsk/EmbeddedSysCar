@@ -12,9 +12,6 @@
 #include "common.h"
 #include "ports.h"
 
-#define IR_TOLERANCE (0x100)
-#define BLACK (0x500)
-
 /**
  * @brief All possible states for the ADC variable
  *
@@ -40,7 +37,6 @@ inline void init_adc(void) {
   // V_DETECT_R Port 1 Pin 3 (0x08)
   // V_THUMB    Port 1 Pin 5 (0x20)
 
-  fl_state = NO_LINE;
   adc_thmb = 0;
   adc_ldet = 0;
   adc_rdet = 0;
@@ -80,20 +76,6 @@ inline void init_adc(void) {
   ADCIE |= ADCIE0;    // Enable ADC conv complete interrupt
   ADCCTL0 |= ADCENC;  // ADC enable conversion.
   ADCCTL0 |= ADCSC;   // ADC start conversion.
-}
-
-void update_follow_line_state(void) {
-  int left = adc_ldet;
-  int right = adc_rdet;
-  if ((right > BLACK) && (left > BLACK)) {
-    fl_state = SIDEWAYS;
-  } else if ((right > BLACK) && (left <= BLACK)) {
-    fl_state = LEFT_OF_LINE;
-  } else if ((right <= BLACK) && (left > BLACK)) {
-    fl_state = RIGHT_OF_LINE;
-  } else {
-    fl_state = NO_LINE;
-  }
 }
 
 #pragma vector = ADC_VECTOR

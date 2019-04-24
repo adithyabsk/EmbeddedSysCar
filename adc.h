@@ -13,25 +13,6 @@
 
 #include <stdint.h>
 
-/**
- * @brief Computed directional drive state
- *
- * Three channels are defined:
- * 1. IMBALANCE_LEFT: car should drive right
- * 2. BALANCED: car should drive straight
- * 3. IMBALANCE_RIGHT: car should drive left
- * 4. INVALID_FLS: invalid car drive state
- */
-enum follow_line_state {
-  NO_LINE,
-  LEFT_OF_LINE,
-  RIGHT_OF_LINE,
-  SIDEWAYS,
-  INVALID_FLS
-};
-
-__no_init ADC_LOCAL_DEF volatile enum follow_line_state fl_state;
-
 /*
  * State variable for thumb wheel.
  */
