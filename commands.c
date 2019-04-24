@@ -101,8 +101,12 @@ void process_cmd_queue(void) {
 void cmd_search_fsm(enum cmd_search_state* css,
                     char search_buff[SERIAL_RING_SIZE], char cmd_start_char,
                     struct cmd_buff* sel_cmd_buff) {
-  char* cmd_end_ptr = strchr(search_buff, '\r');
   char* cmd_start_ptr = strchr(search_buff, cmd_start_char);
+  char* cmd_end_ptr = NULL;
+  if (cmd_start_ptr) {
+    cmd_end_ptr = strchr(cmd_start_ptr, '\r');
+  }
+
   char partial_cmd[SERIAL_RING_SIZE];
 
   int test_len = strlen(search_buff);
