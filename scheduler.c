@@ -12,7 +12,7 @@
 #include "common.h"
 #include "timers.h"
 
-#define SCHED_SIZE (10)
+#define SCHED_SIZE (20)
 
 struct sched_entry {
   VOID_FUNC_PTR func;

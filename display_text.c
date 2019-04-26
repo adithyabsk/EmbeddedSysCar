@@ -34,6 +34,10 @@ const char checkpoint_strs[enum_len(CHECK_LIST_MAX)][DISP_TEXT_SIZE] = {
     "Arrived 00", "Arrived 01", "Arrived 02", "Arrived 03", "Arrived 04",
     "Arrived 05", "Arrived 06", "Arrived 07", "Arrived 08", EMPTY_STR};
 
+const char auton_strs[enum_len(BL_MAX)][DISP_TEXT_SIZE] = {
+    " BL Start ", " Intercept", " BL Travel", " BL Circle",
+    "  BL Exit ", "  BL Stop ", " Pre Start"};
+
 void clear_display(void) {
   display_screen(NULL_STR, NULL_STR, NULL_STR, NULL_STR, BOOLEAN_TRUE);
 }
@@ -138,6 +142,9 @@ void display_run_status(void) {
                      BOOLEAN_FALSE);
       break;
     case RS_AUTONOMOUS:
+      display_screen(auton_strs[(int)as], most_recent_cmd,
+                     &iot_ifconfig[IF_IP_ADDR].value[IP_ADDR_OFFSET], time_str,
+                     BOOLEAN_FALSE);
       break;
   }
 }

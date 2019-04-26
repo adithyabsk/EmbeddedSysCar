@@ -10,7 +10,6 @@
 struct config_value {
   int min_val;
   int max_val;
-  int default_val;
   int curr_val;
 };
 

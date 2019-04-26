@@ -55,18 +55,20 @@ void main(void) {
   init_iot();  // FIX ME
   init_switches();
   init_drive();
+  init_drive_config();
 
   init_command_processor();  // Initialize commands queue data structure
+
+  init_auto_setup();
 
   iot_alive();
 
   while (BOOLEAN_TRUE) {  // Operational loop
-    process_leds();
+    // process_leds();
 
     menu_state_controller();
 
     run_scheduler();
-    arcade_drive_state_machine();
 
     search_cmds();
     process_cmd_queue();

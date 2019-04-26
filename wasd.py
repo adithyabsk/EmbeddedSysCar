@@ -12,15 +12,23 @@ PORT = 9005
 # PORT = 65432        # Port to listen on (non-privileged ports are > 1023)
 
 RETRY_TIME = 2
-DELAY_TIME = 0.1
+DELAY_TIME = 0.2
+SPAM_P_LIMIT = 5
 
 command_dict = {
     "w": "$w\r",  # right
     "a": "$a\r",  # left
     "s": "$s\r",  # back
     "d": "$d\r",  # right
-    " ": "$e\r",  # Enable Toggle
+    "p": "$p\r",  # stop car
+    "+": "$+\r",  # Increment Checkpoint
+    "-": "$-\r",  # Decrement Checkpoint
+    "@": "$@\r",  # switch to arcade
+    "#": "$#\r",  # switch to auton
+    "%": "$%\r",  # start auton
+    "&": "$&\r",  # stop auton
     "?": "quit",
+    "t": "t",
 }
 
 
@@ -43,6 +51,10 @@ def getch():
 
 
 if __name__ == "__main__":
+    is_arcade = True
+    spam_p_count = 0
+    prev_cmd = None
+
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     connected = False
 
@@ -60,11 +72,27 @@ if __name__ == "__main__":
         else:
             try:
                 cmd = command_dict.get(getch(), None)
-                if cmd is None:
-                    cmd = "$p\r"
+                if cmd == "$@\r":
+                    is_arcade = True
+                elif cmd == "$#\r":
+                    is_arcade = False
                 elif cmd == "quit":
                     quit()
-                s.sendall(cmd.encode("utf-8"))
+                elif (cmd is None) and is_arcade and (spam_p_count < SPAM_P_LIMIT):
+                    cmd = "$p\r"
+                    spam_p_count += 1
+                elif cmd in ["$+\r", "$-\r"]:
+                    print("entered")
+                    if prev_cmd == cmd:
+                        cmd = None
+                    spam_p_count = SPAM_P_LIMIT
+                else:
+                    spam_p_count = 0
+
+                prev_cmd = cmd
+
+                if cmd is not None:
+                    s.sendall(cmd.encode("utf-8"))
             except Exception as e:
                 print("Server disconnected")
                 print(e)

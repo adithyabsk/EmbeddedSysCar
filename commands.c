@@ -15,7 +15,7 @@
 #include "drive.h"
 #include "serial.h"
 
-#define CMD_LOOKUP_COUNT (6)
+#define CMD_LOOKUP_COUNT (11)
 
 enum cmd_search_state { SS_NONE, SS_INTERCEPTING };
 
@@ -42,12 +42,17 @@ enum cmd_search_state iot_cmd_search_state;
 enum cmd_search_state usb_cmd_search_state;
 
 static struct cmd_lookup_item cmd_lookup_table[CMD_LOOKUP_COUNT] = {
-    {"$w\r", &set_drive_forward}, {"$a\r", &set_drive_left},
-    {"$s\r", &set_drive_reverse}, {"$d\r", &set_drive_right},
+    {"$w\r", &set_drive_forward},
+    {"$a\r", &set_drive_left},
+    {"$s\r", &set_drive_reverse},
+    {"$d\r", &set_drive_right},
     {"$p\r", &set_drive_stop},
-    // {"$+\r", &increment_checkpoint},
-    // {"$*\r", &toggle_auto},
-};
+    {"$+\r", &increment_checkpoint},
+    {"$-\r", &decrement_checkpoint},
+    {"$@\r", &set_arcade_drive},
+    {"$#\r", &set_auton_drive},
+    {"$%\r", &start_auto},
+    {"$&\r", &stop_auto}};
 
 static void lookup_cmd(char[CMD_STR_SIZE]);
 static int load_cmd_buff(char[SERIAL_RING_SIZE], struct cmd_buff*);

@@ -84,6 +84,8 @@
 #define IR_LED (0x10)         // pin 4
 
 // Port 5 Control
+#define IR_LED_ON (P5OUT |= IR_LED)
+#define IR_LED_OFF (P5OUT &= ~IR_LED)
 #define IR_LED_TOGGLE (P5OUT ^= IR_LED)
 #define IR_LED_STATE (P5IN & IR_LED)
 

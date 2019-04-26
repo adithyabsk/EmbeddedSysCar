@@ -35,6 +35,17 @@ enum drive_state {
   DRIVE_INVALID
 };
 
+enum auton_states {
+  BL_START,
+  INTERCEPT,
+  BL_TRAVEL,
+  BL_CIRCLE,
+  BL_EXIT,
+  BL_STOP,
+  BL_NONE,
+  BL_MAX = BL_NONE
+};
+
 enum checkpoint {
   CHECK_0,
   CHECK_1,
@@ -49,6 +60,8 @@ enum checkpoint {
   CHECK_LIST_MAX = CHECK_NONE
 };
 
+DRIVE_LOCAL_DEF enum auton_states as;
+
 DRIVE_LOCAL_DEF volatile enum follow_line_state prev_fl_state;
 DRIVE_LOCAL_DEF volatile unsigned int fl_timer_counter;
 
@@ -56,12 +69,18 @@ DRIVE_LOCAL_DEF enum drive_state car_drive_state;
 DRIVE_LOCAL_DEF unsigned int sched_drive_time;
 DRIVE_LOCAL_DEF enum drive_state sched_drive_state;
 
-DRIVE_LOCAL_DEF struct config_value forward_alignment;
-DRIVE_LOCAL_DEF struct config_value reverse_alignment;
+DRIVE_LOCAL_DEF struct config_value f_align;
+DRIVE_LOCAL_DEF struct config_value r_align;
+DRIVE_LOCAL_DEF struct config_value p_gain;
+DRIVE_LOCAL_DEF struct config_value d_gain;
 
 DRIVE_LOCAL_DEF enum run_status car_run_status;
 DRIVE_LOCAL_DEF enum checkpoint curr_checkpoint;
 DRIVE_LOCAL_DEF unsigned int drive_start_time;
+
+DRIVE_LOCAL_DEF unsigned int is_arcade;
+
+void increment_checkpoint(void);
 
 /**
  * @brief Stops all car motion
@@ -105,8 +124,7 @@ void run_controller(void);
 
 // Initialize the state variables and config vars for the car
 extern inline void init_drive(void);
-void arcade_drive_state_machine(void);
-void schedule_drive_state(void);
+extern inline void init_drive_config(void);
 
 void set_drive_stop(void);
 
@@ -117,5 +135,19 @@ void set_drive_reverse(void);
 void set_drive_left(void);
 
 void set_drive_right(void);
+
+void follow_line_state_controller(void);
+
+void init_auto_setup(void);
+
+void set_arcade_drive(void);
+void set_auton_drive(void);
+
+void main_drive_controller(void);
+
+void decrement_checkpoint(void);
+
+void start_auto(void);
+void stop_auto(void);
 
 #endif /* DRIVE_H */

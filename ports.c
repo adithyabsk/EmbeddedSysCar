@@ -237,8 +237,8 @@ static void init_port_6(void) {
   // PIN 4 TB3.5 (01)
   P6SEL1 &= ~LCD_BACKLITE;
   P6SEL0 &= ~LCD_BACKLITE;
-  P6OUT |= LCD_BACKLITE;
-  P6DIR |= LCD_BACKLITE;  // Output
+  P6DIR |= LCD_BACKLITE;   // Output
+  P6OUT &= ~LCD_BACKLITE;  // Backlite off
 
   // PIN 5 GPIO (00)
   P6SEL1 &= ~P6_5;

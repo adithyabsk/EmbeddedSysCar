@@ -12,6 +12,7 @@
 #include "ports.h"
 #include "timers.h"
 
+/*
 #define Time_Sequence_Rate (50)            // 50 millisecods
 #define S1250 (1250 / Time_Sequence_Rate)  // 1.25 seconds
 #define S1000 (1000 / Time_Sequence_Rate)  // 1 second
@@ -59,3 +60,4 @@ void process_leds(void) {
       break;
   }
 }
+*/
