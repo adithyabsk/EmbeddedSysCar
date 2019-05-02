@@ -103,7 +103,11 @@ static void init_horiz_scroll(void) {
 
 static void scroll_control(int min_item, int max_item, int* curr_item,
                            int divider) {
-  if (adc_thmb > (latch_thmb_value + (int)(THMB_SCROLL_OFFSET / divider))) {
+  int _divider;
+  if (divider < 1) {
+    _divider = 1;
+  }
+  if (adc_thmb > (latch_thmb_value + (int)(THMB_SCROLL_OFFSET / _divider))) {
     if (*curr_item >= max_item) {
       *curr_item = min_item;
     } else {

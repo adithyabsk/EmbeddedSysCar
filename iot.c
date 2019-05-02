@@ -16,6 +16,10 @@
 #include "serial.h"
 
 #define MAX_IOT_CMD_SIZE (40)
+#define ENABLE_IOT_DELAY (0)
+#define IOT_SETUP_DELAY (50)
+#define IOT_PING_DELAY (100)
+#define IOT_IFCONFIG_DELAY (10)
 
 enum iot_rst_state { SET_RESET_IOT, SET_ENABLE_IOT, INVALID_IOT_RST_STATE };
 
@@ -44,7 +48,7 @@ void capval(char* key, char* value) {
   }
 }
 
-VOID_FUNC_PTR ir2ic_func = &iotresp2ifconfig;
+VOID_FUNC_PTR iotresp2ifconfig_ptr = &iotresp2ifconfig;
 void iotresp2ifconfig(void) {
   int i;
   for (i = INIT_CLEAR; i < enum_len(IF_MAX); i++) {
@@ -73,30 +77,30 @@ void iot_setup(void) {
   iot_transmit("AT+NSTCP=9005,1\r");
   iot_transmit("AT+NSTAT=?\r");
   init_resp_buff(&iot_resp_buff, BOOLEAN_TRUE);
-  schedule_func_call(ir2ic_func, 10);
+  schedule_func_call(iotresp2ifconfig_ptr, IOT_IFCONFIG_DELAY);
 }
 
 void enable_iot(void) {
   set_iot_rst_state(SET_ENABLE_IOT);
-  schedule_func_call(iot_setup_ptr, 50);
+  schedule_func_call(iot_setup_ptr, IOT_SETUP_DELAY);
 }
+VOID_FUNC_PTR ei_func = &enable_iot;
 
 inline void init_iot(void) {
-  VOID_FUNC_PTR ei_func = &enable_iot;
-  schedule_func_call(ei_func, 1);
+  schedule_func_call(ei_func, ENABLE_IOT_DELAY);
 
   int i;
-  for (i = 0; i < enum_len(IF_MAX); i++) {
-    memset(iot_ifconfig[i].key, 0, MAX_KEY_SIZE);
-    memset(iot_ifconfig[i].value, 0, MAX_VALUE_SIZE);
+  for (i = INIT_CLEAR; i < enum_len(IF_MAX); i++) {
+    memset(iot_ifconfig[i].key, INIT_CLEAR, MAX_KEY_SIZE);
+    memset(iot_ifconfig[i].value, INIT_CLEAR, MAX_VALUE_SIZE);
     strcpy(iot_ifconfig[i].key, ifconfig_search_strs[i]);
-    iot_ifconfig[i].display_offset = 0;
-    iot_ifconfig[i].max_offset = 0;
+    iot_ifconfig[i].display_offset = INIT_CLEAR;
+    iot_ifconfig[i].max_offset = INIT_CLEAR;
   }
 }
 
 VOID_FUNC_PTR iot_check = &iot_alive;
 void iot_alive(void) {
   iot_transmit("AT+PING=8.8.8.8,1\r");
-  schedule_func_call(iot_check, 100);
+  schedule_func_call(iot_check, IOT_PING_DELAY);
 }

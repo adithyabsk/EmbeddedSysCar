@@ -55,9 +55,9 @@ void run_scheduler(void) {
   unsigned int curr_time = wall_clock_time_count;
 
   int i;
-  for (i = 0; i < SCHED_SIZE; i++) {
+  for (i = INIT_CLEAR; i < SCHED_SIZE; i++) {
     if ((curr_time > (scheduler[i].call_time + scheduler[i].wait_time)) &&
-        (scheduler[i].func) && (scheduler[i].completed == 0)) {
+        (scheduler[i].func) && (scheduler[i].completed == INIT_CLEAR)) {
       (*(scheduler[i].func))();
       scheduler[i].completed = BOOLEAN_TRUE;
     }

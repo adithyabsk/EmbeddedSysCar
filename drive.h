@@ -62,9 +62,6 @@ enum checkpoint {
 
 DRIVE_LOCAL_DEF enum auton_states as;
 
-DRIVE_LOCAL_DEF volatile enum follow_line_state prev_fl_state;
-DRIVE_LOCAL_DEF volatile unsigned int fl_timer_counter;
-
 DRIVE_LOCAL_DEF enum drive_state car_drive_state;
 DRIVE_LOCAL_DEF unsigned int sched_drive_time;
 DRIVE_LOCAL_DEF enum drive_state sched_drive_state;

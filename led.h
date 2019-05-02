@@ -14,6 +14,6 @@
  * @brief Cyclical blinking pattern for Red Green LEDs
  *
  */
-void process_leds(void);
+extern inline void process_leds(void);
 
 #endif /* LED_H */

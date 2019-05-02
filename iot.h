@@ -7,7 +7,6 @@
 #ifndef IOT_H
 #define IOT_H
 
-#include <stdint.h>
 #include "common.h"
 
 #ifndef IOT_LOCAL_DEF
